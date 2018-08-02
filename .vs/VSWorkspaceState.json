@@ -1,0 +1,18 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\actions",
+    "\\android",
+    "\\android\\app",
+    "\\assets",
+    "\\assets\\style",
+    "\\components",
+    "\\components\\group",
+    "\\components\\member",
+    "\\components\\places",
+    "\\components\\settings",
+    "\\components\\shared"
+  ],
+  "SelectedNode": "\\components\\places\\CreatePlace.js",
+  "PreviewInSolutionExplorer": false
+}
