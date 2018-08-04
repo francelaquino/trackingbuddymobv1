@@ -10,9 +10,9 @@
     "\\components\\group",
     "\\components\\member",
     "\\components\\places",
-    "\\components\\settings",
-    "\\components\\shared"
+    "\\redux",
+    "\\redux\\actions"
   ],
-  "SelectedNode": "\\components\\places\\CreatePlace.js",
+  "SelectedNode": "\\assets\\style\\GlobalStyle.js",
   "PreviewInSolutionExplorer": false
 }

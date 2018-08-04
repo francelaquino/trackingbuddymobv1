@@ -4,7 +4,7 @@ import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOp
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right, List, ListItem,Tab,Badge, Tabs, TabHeading,FooterTab, Footer } from 'native-base';
 import { connect } from 'react-redux';
 import { NavigationActions } from 'react-navigation'
-import {  getMember, displayMember, deleteMember,displayHomeMember } from '../../actions/memberActions' ;
+import {  getMember, displayMember, deleteMember,displayHomeMember } from '../../redux/actions/memberActions' ;
 import Loading  from '../shared/Loading';
 import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
@@ -17,14 +17,14 @@ class InfoMember extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            id:this.props.memberid,
+            uid: this.props.memberuid,
             firstname:this.props.memberfirstname,
         };
       }
 
       
     componentWillMount() {
-        this.props.getMember(this.state.id).then(res=>{
+        this.props.getMember(this.state.uid).then(res=>{
             this.setState({loading:false})
         }).catch(function(err) {
             this.setState({loading:false})
@@ -34,11 +34,10 @@ class InfoMember extends Component {
     onDelete(){
         let self=this;
         this.setState({loading:true})
-        this.props.deleteMember(this.state.id).then(res=>{
-                ToastAndroid.showWithGravityAndOffset("Member successfully deleted",ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
+        this.props.deleteMember(this.state.uid).then(res=>{
                 self.setState({loading:false})
                 self.props.displayMember();
-                self.props.displayHomeMember();
+                //self.props.displayHomeMember();
                 self.props.navigate.goBack();
         }).catch(function(err) {
             self.setState({loading:false})

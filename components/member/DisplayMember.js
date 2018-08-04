@@ -7,7 +7,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { connect } from 'react-redux';
-import { displayMember  } from '../../actions/memberActions' ;
+import { displayMember  } from '../../redux/actions/memberActions' ;
 import Loading  from '../shared/Loading';
 import OfflineNotice  from '../shared/OfflineNotice';
 var globalStyle = require('../../assets/style/GlobalStyle');
@@ -42,11 +42,11 @@ class DisplayMember extends Component {
         return (
             <FlatList
                 style={{flex:1}}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.uid}
                 data={data}
                 renderItem={({ item }) => (
 
-                        <ListItem key={item.id}  button avatar style={globalStyle.listItem}  onPress={() => {this.props.navigation.navigate("MemberHome",{id:item.id,firstname:item.firstname})}}>
+                        <ListItem key={item.uid}  button avatar style={globalStyle.listItem}  onPress={() => {this.props.navigation.navigate("MemberHome",{uid:item.uid,firstname:item.firstname})}}>
                             <Left style={globalStyle.listLeft}>
                                 <View style={globalStyle.listAvatarContainer} >
                                 { item.avatar==='' ?  <Thumbnail  style={globalStyle.listAvatar} source={{uri: this.state.emptyPhoto}} /> :

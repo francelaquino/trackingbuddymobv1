@@ -97,6 +97,7 @@ module.exports = StyleSheet.create({
         height: 50,
         fontSize: 15,
         textAlign:'center',
+
     },
     primaryBKColor:{
         backgroundColor:theme.primaryColor,

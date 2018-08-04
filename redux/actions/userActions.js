@@ -25,108 +25,6 @@ export const submitSignUp=(user)=> dispatch=> {
 
 
 
-export const getProfile = () => dispatch => {
-   
-    try {
-        return new Promise((resolve) => {
-            firebase.database().ref(".info/connected").on("value", function (snap) {
-                if (snap.val() === true) {
-                    firebase.database().ref().child("users/" + userdetails.userid).once("value", function (snapshot) {
-                        let profile = {
-                            firstname: snapshot.val().firstname,
-                            lastname: snapshot.val().lastname,
-                            middlename: snapshot.val().middlename,
-                            email: snapshot.val().email,
-                            avatar: snapshot.val().avatar,
-                            mobileno: snapshot.val().mobileno,
-                        }
-                        dispatch({
-                            type: GET_PROFILE,
-                            payload: profile
-                        });
-                        resolve("");
-                    });
-                } else {
-                    dispatch({
-                        type: GET_PROFILE,
-                        payload: []
-                    });
-                    resolve("Network connection error")
-                }
-            })
-        });
-    } catch (e) {
-        dispatch({
-            type: GET_PROFILE,
-            payload: []
-        });
-    }
-       
-};
-
-
-
-export const updateProfile = (info) => async dispatch => {
-    let emptyPhoto = 'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/member_photos%2Ficons8-person-80.png?alt=media&token=59864ce7-cf1c-4c5e-a07d-76c286a2171d';
-    let avatar = "";
-    return new Promise(async (resolve) => {
-        firebase.database().ref(".info/connected").on("value", function (snap) {
-            if (snap.val() === true) {
-                if (info.isPhotoChange == true) {
-
-                    let avatarlink = info.email + '.jpg';
-
-                    const ref = firebase.storage().ref("/member_photos/" + avatarlink);
-                    const unsubscribe = ref.putFile(info.avatarsource.uri.replace("file:/", "")).on(
-                        firebase.storage.TaskEvent.STATE_CHANGED,
-                        (snapshot) => {
-
-                        },
-                        (error) => {
-                            unsubscribe();
-                        },
-                        async (res) => {
-                            avatar = res.downloadURL;
-                            firebase.database().ref().child("users/" + userdetails.userid).update({
-                                firstname: info.firstname,
-                                middlename: info.middlename,
-                                lastname: info.lastname,
-                                mobileno: info.mobileno,
-                                avatar: avatar,
-                                dateupdated: Date.now(),
-                            });
-                            resolve("");
-                        });
-                } else {
-                    if (info.avatarsource.uri == "" || info.avatarsource.uri == undefined) {
-                        firebase.database().ref().child("users/" + userdetails.userid).update({
-                            firstname: info.firstname,
-                            middlename: info.middlename,
-                            lastname: info.lastname,
-                            mobileno: info.mobileno,
-                            avatar: emptyPhoto,
-                            dateupdated: Date.now(),
-                        });
-                    } else {
-                        firebase.database().ref().child("users/" + userdetails.userid).update({
-                            firstname: info.firstname,
-                            middlename: info.middlename,
-                            lastname: info.lastname,
-                            mobileno: info.mobileno,
-                            dateupdated: Date.now(),
-                        });
-                    }
-
-                    resolve("");
-                }
-            } else {
-                resolve("Network connection error");
-            }
-        })
-           
-    });
-
-};
 
 
 
@@ -169,8 +67,86 @@ export const userLogin = (email, password) => async dispatch => {
 //Update code
 
 
+export const updateProfile = (profile) => async dispatch => {
+    let emptyPhoto = 'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/member_photos%2Ficons8-person-80.png?alt=media&token=59864ce7-cf1c-4c5e-a07d-76c286a2171d';
+    let avatar = "";
+    return new Promise(async (resolve) => {
+        try {
 
-export const registerUser = (user) => async dispatch => {
+            await axios.post(settings.baseURL + 'member/updateprofile', {
+                email: profile.email,
+                uid: userdetails.userid,
+                firstname: profile.firstname,
+                lastname: profile.lastname,
+                middlename: profile.middlename,
+                mobileno: profile.mobileno,
+            }).then(function (res) {
+                if (res.data.status == "202") {
+                    resolve(true)
+                    ToastAndroid.showWithGravityAndOffset("Profile successfully updated.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                } else {
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                }
+            }).catch(function (error) {
+                resolve(false)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            });
+
+
+        } catch (e) {
+            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            resolve(false)
+        }
+
+    })
+
+
+};
+
+
+export const getProfile = () => async dispatch => {
+        return new Promise(async (resolve) => {
+            try {
+                await axios.get(settings.baseURL + 'member/getmemberinfo/' + userdetails.userid)
+                    .then(function (res) {
+                        if (res.data.status == "202") {
+                            dispatch({
+                                type: GET_PROFILE,
+                                payload: res.data.results
+                            });
+                            resolve(true)
+                        } else {
+                            dispatch({
+                                type: GET_PROFILE,
+                                payload: []
+                            });
+                            resolve(false)
+                            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        }
+                    }).catch(function (error) {
+                        dispatch({
+                            type: GET_PROFILE,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    });
+
+            } catch (e) {
+                dispatch({
+                    type: GET_PROFILE,
+                    payload: []
+                });
+                resolve(false)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            }
+        });
+
+};
+
+
+export const registerUser = (profile) => async dispatch => {
     
     return new Promise(async (resolve) => {
         try {
@@ -180,6 +156,7 @@ export const registerUser = (user) => async dispatch => {
             formData.append('uid', '1');
             formData.append('firstname', user.firstname);
             formData.append('lastname', user.lastname);
+            formData.append('mobileno', user.mobileno);
             formData.append('middlename', user.middlename);
 
             axios.post(settings.baseURL + 'member/register', {
@@ -194,40 +171,42 @@ export const registerUser = (user) => async dispatch => {
                 console.log(error);
             });*/
 
-            axios.post(settings.baseURL + 'member/register', {
-                email: user.email,
-                uid: '1',
-                firstname: user.firstname,
-                lastname: user.lastname,
-                middlename: user.middlename,
-            }).then(function (res) {
-                console.log(res)
-                if (res.data.status == "202") {
-                    ToastAndroid.showWithGravityAndOffset("Registration successfully completed. A message has been sent to your email with instructions to complete your registration", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-                } else {
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-                }
-                }).catch(function (error) {
-                    console.log(error)
-                 ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-             });
+           
 
-            /*await firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(user.email, user.password).then(async (res) => {
+            await firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(profile.email, profile.password).then(async (res) => {
 
                 let uid = res.user.uid;
-                res.user.sendEmailVerification();
-                resolve(true)
+                //res.user.sendEmailVerification();
+               await axios.post(settings.baseURL + 'member/register', {
+                    email: profile.email,
+                    uid: uid,
+                    firstname: profile.firstname,
+                    lastname: profile.lastname,
+                    middlename: profile.middlename,
+                    mobileno: profile.mobileno,
+                }).then(function (res) {
+                    if (res.data.status == "202") {
+                        resolve(true)
+                        ToastAndroid.showWithGravityAndOffset("Registration successfully completed. A message has been sent to your email with instructions to complete your registration", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    } else {
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                }).catch(function (error) {
+                    console.log(error)
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
 
 
             }).catch(function (e) {
-                console.log(e)
                 if (e.code === 'auth/email-already-in-use') {
                     ToastAndroid.showWithGravityAndOffset("Email aready used", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 } else {
                     ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
                 resolve(false)
-            })*/
+            })
         } catch (e) {
             ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)

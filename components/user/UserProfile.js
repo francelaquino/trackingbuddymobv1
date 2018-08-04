@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOpacity, ToastAndroid, Alert, Image, Picker } from 'react-native';
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right, List, ListItem, Content } from 'native-base';
 import { connect } from 'react-redux';
-import {  getProfile, updateProfile } from '../../actions/userActions' ;
+import {  getProfile, updateProfile } from '../../redux/actions/userActions' ;
 import { displayHomeMember  } from '../../actions/memberActions' ;
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NavigationActions } from 'react-navigation'
@@ -37,7 +37,7 @@ class UserProfile extends Component {
       
     componentWillMount() {
         this.props.getProfile().then((res) => {
-            if (res == "") {
+            if (res == true) {
                 this.setState({
                     firstname: this.props.profile.firstname,
                     email: this.props.profile.email,
@@ -46,8 +46,6 @@ class UserProfile extends Component {
                     lastname: this.props.profile.lastname,
                     avatarsource: { uri: this.props.profile.avatar },
                 })
-            } else {
-                ToastAndroid.showWithGravityAndOffset(res, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             }
         });
       
@@ -55,33 +53,32 @@ class UserProfile extends Component {
     }
 
      
-    onSubmit(){
-    if(this.state.firstname.trim()===""){
-        ToastAndroid.showWithGravityAndOffset("Please enter first name",ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
-        return false;
-    }
-    
-    if(this.state.middlename.trim()==""){
-        ToastAndroid.showWithGravityAndOffset("Please enter middle name",ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
-        return false;
-    }
+    onSubmit() {
+        if (this.state.firstname.trim() === "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter first name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
+        }
 
-    if(this.state.lastname.trim()==""){
-        ToastAndroid.showWithGravityAndOffset("Please enter last name",ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
-        return false;
-    }
-    
-    if(this.state.mobileno.trim()==""){
-        ToastAndroid.showWithGravityAndOffset("Please enter mobile no.",ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
-    	return false;
-    }
+        if (this.state.middlename.trim() == "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter middle name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
+        }
 
-	
+        if (this.state.lastname.trim() == "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter last name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
+        }
+
+        if (this.state.mobileno.trim() == "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter mobile no.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
+        }
 
 
-        this.setState({loading:true})
 
-        let info={
+
+
+        let profile = {
             email: this.state.email,
             firstname: this.state.firstname,
             mobileno: this.state.mobileno,
@@ -90,18 +87,9 @@ class UserProfile extends Component {
             avatarsource: this.state.avatarsource,
             isPhotoChange: this.state.isPhotoChange
         }
-
-        this.props.updateProfile(info).then(res=>{
-            this.setState({loading:false})
-            if (res == "") {
-                this.props.displayHomeMember();
-                ToastAndroid.showWithGravityAndOffset("Profile successfully updated", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-            } else {
-                ToastAndroid.showWithGravityAndOffset(res, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-            }
-        }).catch(function(err) {
+        this.setState({ loading: true })
+        this.props.updateProfile(profile).then(res => {
             this.setState({ loading: false })
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
         });
     }
 

@@ -10,7 +10,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MapView, { ProviderPropType, Marker, AnimatedRegion,Animated,Polyline } from 'react-native-maps';
 import { connect } from 'react-redux';
-import { createPlace,displayPlaces  } from '../../actions/locationActions' ;
+import { createPlace,displayPlaces  } from '../../redux/actions/locationActions' ;
 import Loading  from '../shared/Loading';
 import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
@@ -39,7 +39,6 @@ class CreatePlace extends Component {
                   longitudeDelta: 0.0421,
                 },
             isMapReady: false,
-            filteredMarkers: []
         };
 
       }
@@ -69,8 +68,12 @@ class CreatePlace extends Component {
 
     }
 
-    onSubmit(){
-        this.setState({loading:true})
+    onSubmit() {
+        if (this.state.placename == "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter place name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
+        }
+        this.setState({ loading: true })
         this.props.createPlace(this.state.placename,this.state.region).then(res=>{
             this.setState({placename:'',loading:false})
             if(res!==""){
@@ -104,7 +107,7 @@ class CreatePlace extends Component {
             },
             (error) => {
               },
-                { enableHighAccuracy: true, timeout: 10000 }
+                { enableHighAccuracy: false, timeout: 10000 }
 
           );
         } catch(e) {

@@ -37,7 +37,7 @@ class MemberHome extends Component {
                                 <Text style={{color: '#16a085',fontSize:16}}>Profile</Text>
                                 </TabHeading>}>
                                 <ScrollView showsVerticalScrollIndicator={false}>
-                                    <InfoMember navigate={this.props.navigation} memberid={this.props.navigation.state.params.id} memberfirstname={this.props.navigation.state.params.firstname}/>
+                                    <InfoMember navigate={this.props.navigation} memberuid={this.props.navigation.state.params.uid} memberfirstname={this.props.navigation.state.params.firstname}/>
                                 </ScrollView>
                                 
                                 
@@ -46,7 +46,7 @@ class MemberHome extends Component {
                                 <Text style={{color: '#16a085',fontSize:16}}>Locations</Text>
                                 </TabHeading>}>
                                 <ScrollView showsVerticalScrollIndicator={false}>
-                                <LocationPlaces memberid={this.props.navigation.state.params.id} navigate={this.props.navigation.navigate} />
+                                <LocationPlaces memberuid={this.props.navigation.state.params.uid} navigate={this.props.navigation.navigate} />
                                 </ScrollView>
                             </Tab>
                             </Tabs>

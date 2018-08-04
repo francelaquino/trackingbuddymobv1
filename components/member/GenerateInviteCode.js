@@ -6,7 +6,7 @@ import Loading  from '../shared/Loading';
 import { connect } from 'react-redux';
 import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
-import { generateInvitationCode, getInvitationCode  } from '../../actions/memberActions' ;
+import { generateInvitationCode, getInvitationCode  } from '../../redux/actions/memberActions' ;
 var globalStyle = require('../../assets/style/GlobalStyle');
 var userdetails = require('../shared/userDetails');
 
@@ -23,7 +23,6 @@ class GenerateInviteCode extends Component {
 
     componentWillMount() {
         this.props.getInvitationCode();
-        //this.onGenerate();
     }
             
     
@@ -86,7 +85,7 @@ class GenerateInviteCode extends Component {
                         { this.props.invitationcode.code !='' &&
                                     <View >
                                     <Text style={{justifyContent: 'center',alignItems: 'center', alignSelf: "center", flexDirection:'column',fontSize:40,marginBottom:2,color:'green'}}>{this.props.invitationcode.code}</Text>
-                                    <Text style={{justifyContent: 'center',alignItems: 'center', alignSelf: "center", flexDirection:'column',fontSize:12,marginBottom:10,color:'gray'}}>Expires on {this.props.invitationcode.expiration}</Text>
+                                    <Text style={{justifyContent: 'center',alignItems: 'center', alignSelf: "center", flexDirection:'column',fontSize:12,marginBottom:5,color:'gray'}}>Expires on {this.props.invitationcode.expiration}</Text>
                                     </View>
                         }
                         <Content padder>

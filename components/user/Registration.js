@@ -24,11 +24,11 @@ class Register extends Component {
           address: '',
           emptyPhoto: 'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/member_photos%2Ficons8-person-80.png?alt=media&token=59864ce7-cf1c-4c5e-a07d-76c286a2171d',
           isLoading: true,
-          email: 'francel_aquino@yahoo.com',
+          email: 'francel@rchsp.med.sa',
           password: '111111',
           retypepassword: '111111',
           mobileno: '0538191138',
-          firstname: 'Francel',
+          firstname: 'Yasmine',
           middlename: 'Dizon',
           lastname: 'Aquino',
           avatar: '',
@@ -65,13 +65,6 @@ class Register extends Component {
       }
     });
   }
-
-
-
-  async componentWillMount() {
-  }
-       
-  
 
 
 
@@ -125,9 +118,12 @@ class Register extends Component {
           password: this.state.password,
           firstname: this.state.firstname,
           lastname: this.state.lastname,
-          middlename: this.state.middlename
+          middlename: this.state.middlename,
+          mobileno: this.state.mobileno
       }
+      this.setState({ loading: true })
       this.props.registerUser(user).then((res) => {
+          this.setState({ loading: false })
       })
 
       /*firebase.database().ref(".info/connected").on("value", function (snap) {

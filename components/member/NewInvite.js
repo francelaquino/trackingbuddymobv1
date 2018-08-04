@@ -5,7 +5,7 @@ import { Content,Root, Container, Header, Body, Title, Item, Input, Label, Butto
 import { connect } from 'react-redux';
 import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
-import { sendInvite, displayMember, displayHomeMember } from '../../actions/memberActions' ;
+import { addMember, displayMember, displayHomeMember } from '../../redux/actions/memberActions' ;
 var globalStyle = require('../../assets/style/GlobalStyle');
 
 
@@ -36,14 +36,15 @@ class NewInvite extends Component {
             return false;
         }
         this.setState({loading:true})
-        this.props.sendInvite(this.state.invitationcode).then(async res=>{
-        	if(res==""){
-                ToastAndroid.showWithGravityAndOffset("Member successfully added",ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
+        this.props.addMember(this.state.invitationcode).then(async res=>{
+            if (res == true) {
                 await this.props.displayMember();
-                await this.props.displayHomeMember();
+               /* ToastAndroid.showWithGravityAndOffset("Member successfully added",ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
+                
+                await this.props.displayHomeMember();*/
                 this.setState({invitationcode:'',loading:false})
             }else{
-                ToastAndroid.showWithGravityAndOffset(res,ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
+               // ToastAndroid.showWithGravityAndOffset(res,ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
                 this.setState({invitationcode:'',loading:false})
             }
         });
@@ -118,4 +119,4 @@ const mapStateToProps = state => ({
     members: state.fetchMember.members,
 })
   
-export default connect(mapStateToProps,{displayMember,sendInvite,displayHomeMember})(NewInvite);
+export default connect(mapStateToProps,{displayMember,addMember,displayHomeMember})(NewInvite);

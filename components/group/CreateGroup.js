@@ -6,7 +6,7 @@ import ImagePicker from 'react-native-image-picker';
 import Loader  from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
 import { connect } from 'react-redux';
-import { createGroup,displayGroup  } from '../../actions/groupActions' ;
+import { createGroup,displayGroup  } from '../../redux/actions/groupActions' ;
 var globalStyle = require('../../assets/style/GlobalStyle');
 var registrationStyle = require('../../assets/style/Registration');
 
@@ -74,11 +74,10 @@ class CreateGroup extends Component {
         }
         this.setState({ loading: true })
         this.props.createGroup(this.state.groupname, this.state.avatarsource).then(res => {
-            if (res !== "") {
+            if (res ==true) {
                 this.setState({ loading: false })
-                ToastAndroid.showWithGravityAndOffset(res, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-                this.props.displayGroup();
-                this.props.navigation.goBack();
+                //this.props.displayGroup();
+                //this.props.navigation.goBack();
             } else {
                 this.setState({ loading: false })
             }
@@ -129,7 +128,7 @@ class CreateGroup extends Component {
                                     </TouchableOpacity>
                                 }
                                 <Item style={globalStyle.regularitem}>
-                                    <TextInput style={globalStyle.textinput}
+                                    <TextInput style={globalStyle.textinputCenter}
                                         underlineColorAndroid='transparent'
                                         placeholder="Group Name"
                                         name="groupname" autoCorrect={false}
