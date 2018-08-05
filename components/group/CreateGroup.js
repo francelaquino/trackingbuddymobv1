@@ -59,14 +59,7 @@ class CreateGroup extends Component {
             }
         });
     }
-    randomString(length) {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        for (var i = 0; i < length; i++) {
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
-        return text;
-    }
+
 
     onSubmit() {
         if (this.state.groupname == "") {
@@ -74,13 +67,18 @@ class CreateGroup extends Component {
         }
         this.setState({ loading: true })
         this.props.createGroup(this.state.groupname, this.state.avatarsource).then(res => {
-            if (res ==true) {
+           
+            if (res == true) {
+                this.removePhoto();
+                this.state.groupname = "";
                 this.setState({ loading: false })
                 //this.props.displayGroup();
                 //this.props.navigation.goBack();
+               
             } else {
                 this.setState({ loading: false })
             }
+            
         });
     }
 

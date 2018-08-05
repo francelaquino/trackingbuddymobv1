@@ -4,7 +4,7 @@ import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOp
 import { Content,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left } from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 import { connect } from 'react-redux';
-import { displayGroup,updateGroup, deleteGroup  } from '../../actions/groupActions' ;
+import { displayGroup,updateGroup, deleteGroup  } from '../../redux/actions/groupActions' ;
 import Loader  from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
 import { NavigationActions } from 'react-navigation'
@@ -17,8 +17,8 @@ class EditGroup extends Component {
         this.state = {
             isLoading: true,
             loading:false,
-            emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/group_photos%2Fgroup.png?alt=media&token=d1bade4b-6fee-43f7-829a-0b6f76005b40',
-            groupNameOld:'',
+            groupNameOld: '',
+            emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-5598a.appspot.com/o/group_photos%2Fgroup_empty.png?alt=media&token=2f84667f-b828-4303-b18d-8310279ac5a6',
             groupname:'',
             avatarsource:'',
             isPhotoChange:false,
@@ -31,7 +31,8 @@ class EditGroup extends Component {
         this.initialize();
     }
             
-    initialize(){
+    initialize() {
+        console.log(this.props.emptyphoto)
         this.setState({
             avatarsource:{uri :this.props.avatarsource},
             groupNameOld:this.props.groupname,
@@ -91,14 +92,11 @@ class EditGroup extends Component {
     onDelete(){
         this.setState({loading:true})
         this.props.deleteGroup(this.state.groupid).then(res=>{
-        	if(res!==""){
+        	if(res==true){
                 this.setState({loading:false})
-                ToastAndroid.showWithGravityAndOffset(res,ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
                 this.props.displayGroup();
                 this.props.navigation.goBack();
             }
-        }).catch(function(err) {
-            this.setState({loading:false})
         });
 
 
@@ -120,14 +118,11 @@ class EditGroup extends Component {
             isPhotoChange:this.state.isPhotoChange,
         }
 
-        this.props.updateGroup(group).then(res=>{
-            if(res!==""){
+        this.props.updateGroup(group).then(res => {
+            if(res===true){
                 this.setState({loading:false})
-                ToastAndroid.showWithGravityAndOffset(res,ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
                 this.props.displayGroup();
-               
             }
-        }).catch(function(err) {
         });
 
         
@@ -141,58 +136,58 @@ class EditGroup extends Component {
           <Loading/>
         )
     }
-    ready(){
+    ready() {
 
-        return(
+        return (
             <Root>
                 <Loader loading={this.state.loading} />
-                    
-                <OfflineNotice/>
-                <Content padder>
-                    <ScrollView contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"} showsVerticalScrollIndicator={false}>
-                        <View style={globalStyle.container}>
-                        <TouchableOpacity style={{marginTop:20}} onPress={this.selectPhoto.bind(this)}>
-                            <View style={globalStyle.avatarContainer}>
-                            { this.state.avatarsource === '' ? <Image style={globalStyle.avatarBig} source={{uri : this.state.emptyPhoto}} />  :
-                                <Image style={globalStyle.avatarBig} source={this.state.avatarsource} />
-                                }
-                            </View>
-                            </TouchableOpacity>
-                            { (this.state.avatarsource != '' && this.state.avatarsource.uri!=this.state.emptyPhoto) &&
-														<TouchableOpacity   onPress={this.removePhoto.bind(this)}>
-														<Text style={globalStyle.deleteButtonSmall} >Remove Photo</Text>
-														</TouchableOpacity>
-														}
-                            <Item   style={globalStyle.regularitem}>
-                                <TextInput style={globalStyle.textinput} 
-                                 underlineColorAndroid= 'transparent'
-                                 placeholder="Group Name"
-                                name="groupname" autoCorrect={false}
-                                value={this.state.groupname}  maxLength = {20}
-                                onChangeText={groupname=>this.setState({groupname})}/>
-                            </Item>
-                            
 
-                            <View style={{justifyContent: 'center',alignItems: 'center'}}>
+                <OfflineNotice />
+                <Content padder>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"} showsVerticalScrollIndicator={false}>
+                        <View style={globalStyle.container}>
+                            <TouchableOpacity style={{ marginTop: 20 }} onPress={this.selectPhoto.bind(this)}>
+                                <View style={globalStyle.avatarContainer}>
+                                    {this.state.avatarsource === '' ? <Image style={globalStyle.avatarBig} source={{ uri: this.state.emptyPhoto }} /> :
+                                        <Image style={globalStyle.avatarBig} source={this.state.avatarsource} />
+                                    }
+                                </View>
+                            </TouchableOpacity>
+                            {(this.props.emptyphoto != '1' && this.state.avatarsource.uri != this.state.emptyPhoto) &&
+                                <TouchableOpacity onPress={this.removePhoto.bind(this)}>
+                                    <Text style={globalStyle.deleteButtonSmall} >Remove Photo</Text>
+                                </TouchableOpacity>
+                            }
+                            <Item style={globalStyle.regularitem}>
+                                <TextInput style={globalStyle.textinputCenter}
+                                    underlineColorAndroid='transparent'
+                                    placeholder="Group Name"
+                                    name="groupname" autoCorrect={false}
+                                    value={this.state.groupname} maxLength={20}
+                                    onChangeText={groupname => this.setState({ groupname })} />
+                            </Item>
+
+
+                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                 <Button disabled={!this.state.groupname} style={this.state.groupname ? globalStyle.secondaryButton : globalStyle.secondaryButtonDisabled}
-                                    onPress={()=>this.onUpdate()}
+                                    onPress={() => this.onUpdate()}
                                     bordered light full  >
-                                    <Text style={{color:'white'}}>Update Group</Text>
+                                    <Text style={{ color: 'white' }}>Update Group</Text>
                                 </Button>
 
 
-                                
-                                <Button 
-                                    onPress={()=>this.confirmDelete()}
-                                    bordered light full  style={globalStyle.deleteButton}>
-                                    <Text style={{color:'white'}}>Delete Group</Text>
+
+                                <Button
+                                    onPress={() => this.confirmDelete()}
+                                    bordered light full style={globalStyle.deleteButton}>
+                                    <Text style={{ color: 'white' }}>Delete Group</Text>
                                 </Button>
                             </View>
 
                         </View>
                     </ScrollView>
-                    </Content>
-             </Root>
+                </Content>
+            </Root>
         )
     }
 

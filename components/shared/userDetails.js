@@ -7,8 +7,8 @@
     avatar:''  
 };*/
 module.exports = {
-    userid: 'mdoK79ytvyYYskUjf07uE6svYzH3',
-    email: 'francel_aquino@yahoo.com',
+    userid: 'xtglGuqjBSgelajUUFg2ePhUymC3',
+    email: 'aquinof@rchsp.med.sa',
     firstname: 'Francel',
     lastname: 'Aquino',
     group: '',

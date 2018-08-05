@@ -18,158 +18,77 @@ randomString=(length)=>{
 
 
 
-export const displayGroup=()=> dispatch=> {
-    let groups=[];
-    firebase.database().ref(".info/connected").on("value", function (snap) {
-        if (snap.val() === true) {
-            return new Promise((resolve) => {
 
-                firebase.database().ref().child('groups/' + userdetails.userid).orderByChild("groupname").on('value', (snapshot) => {
-                    resolve(snapshot);
-                });
-
-            }).then(function (snapshot) {
-                if (snapshot.exists) {
-                    snapshot.forEach(function (child) {
-                        groups.push({
-                            id: child.key,
-                            groupname: child.val().groupname,
-                            avatar: child.val().avatar
-                        })
-                    });
-                }
-                dispatch({
-                    type: DISPLAY_GROUP,
-                    payload: groups,
-                });
-            }).catch(function (error) {
-                console.log(error)
-            });
-        } else {
-            dispatch({
-                type: DISPLAY_GROUP,
-                payload: [],
-            });
-            ToastAndroid.showWithGravityAndOffset("Network connection error", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-        }
-    });
-
-};
-
-
-
-
-export const deleteGroup=(groupid)=> dispatch=> {
-    return new Promise((resolve) => {
-        let groupRef=firebase.database().ref().child("groups/"+userdetails.userid+"/"+groupid);
-        groupRef.remove()
-        .catch(function(err) {
-            resolve("")
-        });
-        
-        let avatarlink=groupid+".jpg";
-
-        let ref = firebase.storage().ref("/group_photos/"+avatarlink);
-        ref.delete().then(res => {
-        })
-        .catch(function(err) {
-              resolve("")
-        });
-        resolve("Group successfully deleted");
-    });
-};
-
-export const updateGroup=(group)=> dispatch=> {
-    let emptyPhoto='https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/group_photos%2Fgroup.png?alt=media&token=d1bade4b-6fee-43f7-829a-0b6f76005b40';
-    let avatar="";
-    return new Promise((resolve) => {
-        firebase.database().ref().child("groups/"+userdetails.userid).orderByChild("groupname").equalTo(group.groupname).once("value",snapshot => {
-            let key="";
-            snapshot.forEach(function(childSnapshot) {
-                key =childSnapshot.key;
-            });
-            if(key==group.groupid || key==""){
-                if(group.isPhotoChange==true){
-                    let avatarlink=group.groupid+".jpg";
-                    const ref = firebase.storage().ref("/group_photos/"+avatarlink);
-                    ref.putFile(group.avatarsource.uri.replace("file:/", "")).then(res => {
-                        avatar=res.downloadURL;
-                        setTimeout(() => {
-                            let groupRef = firebase.database().ref().child("groups/"+userdetails.userid+"/"+group.groupid);
-                                groupRef.update({ 
-                                        groupname : group.groupname,
-                                        avatar: avatar,
-                                        dateupdated: Date.now(),
-                                        
-                                })
-                                .catch(function(err) {
-                                    resolve("")
-                                });
-                                resolve("Group successfully updated");
-                        }, 0);
-                    })
-                    .catch(function(err) {
-                        resolve("")
-                      });
-                }else{
-                    
-                    if(group.avatarsource.uri=="" || group.avatarsource.uri==undefined){
-                        avatar=emptyPhoto;
-                    }else{
-                        avatar=group.avatarsource.uri;
-                    }
-                    
-                    setTimeout(() => {
-                        let groupRef = firebase.database().ref().child("groups/"+userdetails.userid+"/"+group.groupid);
-                                groupRef.update({ 
-                                        groupname : group.groupname,
-                                        avatar: avatar,
-                                        dateupdated: Date.now(),
-                                })
-                                .catch(function(err) {
-                                    resolve("")
-                                });
-                                resolve("Group successfully updated");
-                    }, 0);
-                }
-             }else{
-                resolve("Group already exist");
-             }
-           
-        }).catch(function(err) {
-            resolve("");
-            
-        });
-    });
-};
 
 //update code
-
+randomString = (length) => {
+    let text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    for (var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
 
 export const createGroup = (groupname, avatarsource) => dispatch => {
-    let emptyPhoto = 'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/group_photos%2Fgroup.png?alt=media&token=d1bade4b-6fee-43f7-829a-0b6f76005b40';
     let avatar = "";
-
+    let groupid = userdetails.userid +"_"+ randomString(5);
     return new Promise(async (resolve) => {
         try {
+            if (avatarsource != "") {
+                let avatarlink = groupid + ".jpg";
+                 firebase.storage().ref("/group_photos/" + avatarlink).putFile(avatarsource.uri.replace("file:/", "")).then(async res => {
+                    avatar = res.downloadURL;
+                    await axios.post(settings.baseURL + 'group/addgroup', {
+                        groupname: groupname,
+                        avatar: avatar,
+                        avatarfilename: avatarlink,
+                        owner: userdetails.userid,
+                    }).then(function (res) {
+                    console.log(res)
+                    if (res.data.status == "202") {
+                        if (res.data.isexist == "true") {
+                            resolve(false)
+                            ToastAndroid.showWithGravityAndOffset("Group name already exist", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        } else {
+                            resolve(true)
+                            ToastAndroid.showWithGravityAndOffset("Group successfully added", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        }
+                    } else {
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                    }).catch(function (error) {
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    });
+                })
 
-            await axios.post(settings.baseURL + 'group/addgroup', {
-                groupname: groupname,
-                owner: userdetails.userid,
-            }).then(function (res) {
-                console.log(res)
-                if (res.data.status == "202") {
-                    resolve(true)
-                    ToastAndroid.showWithGravityAndOffset("Group successfully added", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-                } else {
+            } else {
+                await axios.post(settings.baseURL + 'group/addgroup', {
+                    groupname: groupname,
+                    avatar: avatar,
+                    owner: userdetails.userid,
+                    avatarfilename:''
+                }).then(function (res) {
+                    console.log(res)
+                    if (res.data.status == "202") {
+                        if (res.data.isexist == "true") {
+                            resolve(false)
+                            ToastAndroid.showWithGravityAndOffset("Group name already exist", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        } else {
+                            resolve(true)
+                            ToastAndroid.showWithGravityAndOffset("Group successfully added", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        }
+                    } else {
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                }).catch(function (error) {
                     resolve(false)
                     ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-                }
-            }).catch(function (error) {
-                resolve(false)
-                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-            });
-
+                });
+            }
 
         } catch (e) {
             console.log(e)
@@ -244,4 +163,163 @@ export const createGroup = (groupname, avatarsource) => dispatch => {
             }
         });
     });
+};
+
+
+
+export const displayGroup = () => dispatch => {
+
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'group/getgroups/' + userdetails.userid)
+                .then(function (res) {
+                    if (res.data.status == "202") {
+                        dispatch({
+                            type: DISPLAY_GROUP,
+                            payload: res.data.results
+                        });
+                        resolve(true)
+                    } else {
+                        dispatch({
+                            type: DISPLAY_GROUP,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                }).catch(function (error) {
+                    dispatch({
+                        type: DISPLAY_GROUP,
+                        payload: []
+                    });
+                    resolve(false)
+                    console.log(error)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+            console.log(e)
+            dispatch({
+                type: DISPLAY_GROUP,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
+
+
+
+};
+
+
+
+export const updateGroup = (group) => dispatch => {
+
+
+        let avatar = "";
+        return new Promise(async (resolve) => {
+            try {
+                let avatar = "";
+                console.log(group)
+                if (group.isPhotoChange == true) {
+
+                    const ref = firebase.storage().ref("/group_photos/" + group.avatarfilename);
+                    const unsubscribe = ref.putFile(group.avatarsource.uri.replace("file:/", "")).on(
+                        firebase.storage.TaskEvent.STATE_CHANGED,
+                        (snapshot) => {
+
+                        },
+                        (error) => {
+                            unsubscribe();
+                        },
+                        async (resUrl) => {
+                            avatar = resUrl.downloadURL;
+                            await axios.post(settings.baseURL + 'group/updategroup', {
+                                groupname: group.groupname,
+                                owner: userdetails.userid,
+                                avatar: avatar,
+                                id: group.groupid,
+                            }).then(function (res) {
+                                if (res.data.status == "202") {
+                                    resolve(true)
+                                    ToastAndroid.showWithGravityAndOffset("Group successfully updated.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                                } else {
+
+                                    resolve(false)
+                                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                                }
+                                }).catch(function (error) {
+                                    console.log(error)
+                                resolve(false)
+                                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                            });
+                        })
+                } else {
+                    await axios.post(settings.baseURL + 'group/updategroup', {
+                        groupname: group.groupname,
+                        owner: userdetails.userid,
+                        avatar: group.avatarsource.uri,
+                        id: group.groupid,
+                    }).then(function (res) {
+                        if (res.data.status == "202") {
+                            resolve(true);
+                            ToastAndroid.showWithGravityAndOffset("Group successfully updated.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        } else {
+                            resolve(false)
+                            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        }
+                    }).catch(function (error) {
+                        resolve(false);
+                        console.log(error)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    });
+                }
+
+
+            } catch (e) {
+                console.log(e)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                resolve(false)
+            }
+
+        })
+
+
+};
+
+
+
+
+export const deleteGroup = (groupid) => dispatch => {
+
+
+    return new Promise(async (resolve) => {
+        try {
+
+            await axios.post(settings.baseURL + 'group/deletegroup', {
+                id: groupid,
+                owneruid: userdetails.userid,
+            }).then(function (res) {
+                if (res.data.status == "202") {
+                    ToastAndroid.showWithGravityAndOffset("Group successfully deleted", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    resolve(true)
+                } else {
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                }
+            }).catch(function (error) {
+                resolve(false)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            });
+
+
+        } catch (e) {
+            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            resolve(false)
+        }
+
+    })
+
+
 };

@@ -29,7 +29,8 @@ class GroupHome extends Component {
         this.setState({
             avatarsource:this.props.navigation.state.params.avatar,
             groupname:this.props.navigation.state.params.groupname,
-            groupid:this.props.navigation.state.params.id,
+            groupid: this.props.navigation.state.params.id,
+            emptyphoto: this.props.navigation.state.params.emptyphoto,
         })
     }
     render() {
@@ -52,8 +53,8 @@ class GroupHome extends Component {
                             <Tab  heading={<TabHeading style={{backgroundColor: 'white'}}>
                                 <Text style={{color: '#16a085',fontSize:16}}>Edit Group</Text>
                                 </TabHeading>}>
-                                <ScrollView showsVerticalScrollIndicator={false}>
-                                    <EditGroup avatarsource={this.state.avatarsource} groupname={this.state.groupname} groupid={this.state.groupid}/>
+                            <ScrollView showsVerticalScrollIndicator={false}>
+                                <EditGroup emptyphoto={this.state.emptyphoto} avatarsource={this.state.avatarsource} groupname={this.state.groupname} groupid={this.state.groupid} />
                                 </ScrollView>
                                 
                                 

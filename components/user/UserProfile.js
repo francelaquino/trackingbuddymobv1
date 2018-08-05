@@ -152,8 +152,8 @@ class UserProfile extends Component {
                                 <Image style={globalStyle.avatarBig} source={this.state.avatarsource} />
                                 }
                             </View>
-						</TouchableOpacity>
-                        { (this.state.avatarsource.uri != '' && this.state.avatarsource.uri!=this.state.emptyPhoto) &&
+                            </TouchableOpacity>
+                            {(this.props.profile.emptyphoto != '1' && this.state.avatarsource.uri != '') &&
                             <TouchableOpacity   onPress={this.removePhoto.bind(this)}>
                             <Text style={globalStyle.deleteButtonSmall} >Remove Photo</Text>
                             </TouchableOpacity>

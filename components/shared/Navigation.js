@@ -30,17 +30,26 @@ import  { createStackNavigator }  from 'react-navigation';
 
 export const Stack = createStackNavigator({
 
-
-    CreateGroup: {
-        screen: CreateGroup,
+    DisplayGroup: {
+        screen: DisplayGroup,
         headerMode: 'none',
         navigationOptions: {
             header: null
         }
     },
 
-    CreatePlace: {
-        screen: CreatePlace,
+
+    GroupHome: {
+        screen: GroupHome,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+    
+    CreateGroup: {
+        screen: CreateGroup,
         headerMode: 'none',
         navigationOptions: {
             header: null
@@ -54,13 +63,16 @@ export const Stack = createStackNavigator({
             header: null
         }
     },
-    NewInvite: {
-        screen: NewInvite,
+
+    ProfileHome: {
+        screen: ProfileHome,
         headerMode: 'none',
         navigationOptions: {
             header: null
         }
     },
+
+
     Register: {
         screen: Register,
         headerMode: 'none',
@@ -68,6 +80,26 @@ export const Stack = createStackNavigator({
             header: null
         }
     },
+
+   
+
+    CreatePlace: {
+        screen: CreatePlace,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+   
+    NewInvite: {
+        screen: NewInvite,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+   
     
 
 
@@ -81,14 +113,6 @@ export const Stack = createStackNavigator({
     },
 
     
-    ProfileHome: {
-        screen: ProfileHome,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        }
-    },
-
     Home: {
         screen: Home,
         headerMode: 'none',
@@ -191,21 +215,8 @@ export const Stack = createStackNavigator({
    
    
     
-    
-    DisplayGroup: { 
-        screen: DisplayGroup,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        } 
-    },
-    GroupHome: { 
-        screen: GroupHome,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        }
-    },
+   
+ 
    
     MemberHome: { 
         screen: MemberHome,

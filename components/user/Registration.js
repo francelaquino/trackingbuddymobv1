@@ -22,13 +22,12 @@ class Register extends Component {
           latitude: '',
           longitude: '',
           address: '',
-          emptyPhoto: 'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/member_photos%2Ficons8-person-80.png?alt=media&token=59864ce7-cf1c-4c5e-a07d-76c286a2171d',
           isLoading: true,
-          email: 'francel@rchsp.med.sa',
+          email: 'lazarak@rchsp.med.sa',
           password: '111111',
           retypepassword: '111111',
           mobileno: '0538191138',
-          firstname: 'Yasmine',
+          firstname: 'Kathleen',
           middlename: 'Dizon',
           lastname: 'Aquino',
           avatar: '',
@@ -76,135 +75,60 @@ class Register extends Component {
   }
   
   
-  async onSubmit(){
+    async onSubmit() {
 
-    
-    
-   
 
-      if (this.state.email == "") {
-          ToastAndroid.showWithGravityAndOffset("Please enter email address", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-          return false;
-      }
-    
-      if (this.state.password == "") {
-          ToastAndroid.showWithGravityAndOffset("Please enter password", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-          return false;
-      }
 
-    
-      if (this.state.mobileno == "") {
-          ToastAndroid.showWithGravityAndOffset("Please enter mobile no", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-          return false;
-      }
-    
-      if (this.state.firstname == "") {
-          ToastAndroid.showWithGravityAndOffset("Please enter first name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-          return false;
-      }
-    
-      if (this.state.lastname == "") {
-          ToastAndroid.showWithGravityAndOffset("Please enter last name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-          return false;
-      }
-    
 
-      if (this.state.password != this.state.retypepassword) {
-          ToastAndroid.showWithGravityAndOffset("Password mismatch", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-          return false;
-      }
-      let user = {
-          email: this.state.email,
-          password: this.state.password,
-          firstname: this.state.firstname,
-          lastname: this.state.lastname,
-          middlename: this.state.middlename,
-          mobileno: this.state.mobileno
-      }
-      this.setState({ loading: true })
-      this.props.registerUser(user).then((res) => {
-          this.setState({ loading: false })
-      })
 
-      /*firebase.database().ref(".info/connected").on("value", function (snap) {
-          if (snap.val() === true) {
-              this.setState({ loading: true })
-              if (this.state.avatarsource != "") {
-                  let avatarlink = this.state.email + '.jpg';
-
-                  const ref = firebase.storage().ref("/member_photos/" + avatarlink);
-                  const unsubscribe = ref.putFile(this.state.avatarsource.uri.replace("file:/", "")).on(
-                      firebase.storage.TaskEvent.STATE_CHANGED,
-                      (snapshot) => {
-
-                      },
-                      (error) => {
-                          unsubscribe();
-                      },
-                      (res) => {
-                          this.setState({ avatar: res.downloadURL })
-                          this.sendSubmit();
-                      });
-              } else {
-                  this.sendSubmit();
-              }
-          } else {
-              ToastAndroid.showWithGravityAndOffset("Network connection error", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-          }
-      })*/
-  }
-  async  generateCode(){
-    let code="";
-      let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      for(let i = 0; i < 7; i++) {
-        code += possible.charAt(Math.floor(Math.random() * possible.length));
-        if(i>=7){
-          return code;
+        if (this.state.email == "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter email address", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
         }
-      }
-      
-  }
-  async sendSubmit(){
-    let self=this;
-    let code = "";
-    await this.generateCode();
-    await firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(this.state.email,this.state.password).then(async (res)=>{
 
-      let uid=res.user.uid;
-      res.user.sendEmailVerification();
-      let userRef = firebase.database().ref().child("users/"+uid);
-                if(this.state.avatar==""){
-                  this.setState({avatar:this.state.emptyPhoto});
-                }
-                await userRef.set({ 
-                  email : this.state.email,
-                  firstname : this.state.firstname,
-                  middlename: this.state.middlename,
-                  lastname: this.state.lastname,
-                  mobileno: this.state.mobileno,
-                  avatar: this.state.avatar,
-                  datecreated: Date.now(),
-                  dateupdated: Date.now(),
-                  invitationcode:code,
-                  invitationcodeexpiration: Date.now()+5,
-                  latitude: this.state.latitude,
-                  longitude: this.state.longitude,
-                  address : this.state.address,
-              });
-
-              
-	  await this.resetState();
-	  ToastAndroid.showWithGravityAndOffset("Registration successfully completed. A message has been sent to your email with instructions to complete your registration",ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
-
-    }).catch(function(e){
-      self.setState({loading:false})
-        if(e.code==='auth/email-already-in-use'){
-          ToastAndroid.showWithGravityAndOffset("Email aready used",ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
-        }else{
-           
+        if (this.state.password == "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter password", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
         }
-    })
-  }
+
+
+        if (this.state.mobileno == "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter mobile no", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
+        }
+
+        if (this.state.firstname == "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter first name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
+        }
+
+        if (this.state.lastname == "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter last name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
+        }
+
+
+        if (this.state.password != this.state.retypepassword) {
+            ToastAndroid.showWithGravityAndOffset("Password mismatch", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
+        }
+        let user = {
+            email: this.state.email,
+            password: this.state.password,
+            firstname: this.state.firstname,
+            lastname: this.state.lastname,
+            middlename: this.state.middlename,
+            mobileno: this.state.mobileno,
+            avatarsource: this.state.avatarsource
+        }
+        this.setState({ loading: true })
+        this.props.registerUser(user).then((res) => {
+            this.setState({ loading: false })
+        })
+
+
+    }
+
 
   async resetState(){
       this.setState({

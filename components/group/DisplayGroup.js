@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { TouchableOpacity,Modal, Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, ToastAndroid, Image  } from 'react-native';
 import { Badge,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Switch,Thumbnail, Card,CardItem } from 'native-base';
 import { connect } from 'react-redux';
-import { displayGroup  } from '../../actions/groupActions' ;
+import { displayGroup  } from '../../redux/actions/groupActions' ;
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -22,7 +22,6 @@ class DisplayGroup extends Component {
             modalVisible: false,
             groupid:'',
             groupavatar:'',
-            emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/group_photos%2Fgroup.png?alt=media&token=d1bade4b-6fee-43f7-829a-0b6f76005b40',
             groupname:'',
 			avatarsource:'',
             avatar:'',
@@ -66,7 +65,7 @@ class DisplayGroup extends Component {
     ready(){
         const { navigate } = this.props.navigation;
         const groups =this.props.groups.map(group=>(
-            <ListItem key={group.id}  button avatar style={globalStyle.listItem}  onPress={() => {this.props.navigation.navigate("GroupHome",{id:group.id,groupname:group.groupname,avatar:group.avatar})}}>
+            <ListItem key={group.id} button avatar style={globalStyle.listItem} onPress={() => { this.props.navigation.navigate("GroupHome", { id: group.id, groupname: group.groupname, avatar: group.avatar, emptyphoto: group.emptyphoto})}}>
                             
                             <Left style={globalStyle.listLeft}>
                                 <View style={globalStyle.listAvatarContainer} >
