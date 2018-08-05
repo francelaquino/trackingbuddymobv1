@@ -129,84 +129,6 @@ export const displayHomeMember=()=> async dispatch=> {
 
 
 
-export const displayGroupMember=(groupid)=> dispatch=> {
-   
-    let members=[];
-    let key="";
-    let firstname="";
-    let avatar="";
-    let userid="";
-    let count=0;
-    let cnt=0;
-        return new Promise((resolve,reject)=>{
-            firebase.database().ref().child("users/"+userdetails.userid+'/members').once('value',function(snapshot){
-                resolve(snapshot);
-            });
-        }).then(function(snapshot){
-            if(snapshot.val()===null){
-                dispatch({ 
-                    type: DISPLAY_GROUP_MEMBER,
-                    payload: members
-                });
-            }else{
-                return new Promise((resolve,reject)=>{
-                    count=snapshot.numChildren();
-                    
-                    snapshot.forEach(snapshot1 => {
-                        
-                        userid=snapshot1.key;
-                       
-                        return new Promise((resolve,reject)=>{
-                            firebase.database().ref().child('users/'+userid).once("value",function(snapshot2){
-                                key=snapshot2.key;
-                                firstname=snapshot2.val().firstname;
-                                avatar= snapshot2.val().avatar;
-                                firebase.database().ref().child('groupmembers/'+groupid+"/"+key).once("value",function(snapshot3){
-                                    let selected=false;
-                                    if(snapshot3.val()===null){
-                                        selected=false;
-                                         members.push({
-                                            id:snapshot2.key,
-                                            firstname:snapshot2.val().firstname,
-                                            avatar: snapshot2.val().avatar,
-                                            selected:false,
-                                            });
-                                            resolve();
-                                    }else{
-                                        members.push({
-                                            id:snapshot2.key,
-                                            firstname:snapshot2.val().firstname,
-                                            avatar: snapshot2.val().avatar,
-                                            selected:true,
-                                            });
-                                            resolve();
-                                    }
-
-
-                            });
-                        });
-                        }).then(function(){
-                           
-                            cnt++;
-                                if(cnt>=count){
-                                    resolve();
-                                }
-                        });
-                    });
-                    
-                }).then(function(){
-                    dispatch({ 
-                        type: DISPLAY_GROUP_MEMBER,
-                        payload: members
-                    });
-                });
-            }
-        });
-
-};
-
-
-
 
 
 
@@ -398,6 +320,69 @@ export const addMember = (invitationcode) => async dispatch => {
 
 
 
+export const addGroupMember = (groupid,member) => async dispatch => {
+    return new Promise(async (resolve) => {
+        try {
+            await axios.post(settings.baseURL + 'member/addgroupmember', {
+                memberuid: member.uid,
+                groupid: groupid,
+                owner: userdetails.userid,
+            }).then(function (res) {
+                if (res.data.status == "202") {
+                        resolve(true)
+                } else {
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                }
+                }).catch(function (error) {
+                   
+                resolve(false)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            });
+
+
+        } catch (e) {
+            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            resolve(false)
+        }
+
+    })
+
+
+};
+
+
+
+export const removeGroupMember = (groupid,member) => async dispatch => {
+    return new Promise(async (resolve) => {
+        try {
+            await axios.post(settings.baseURL + 'member/removegroupmember', {
+                memberuid: member.uid,
+                groupid: groupid,
+                owner: userdetails.userid,
+            }).then(function (res) {
+                if (res.data.status == "202") {
+                        resolve(true)
+                } else {
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                }
+                }).catch(function (error) {
+                   
+                resolve(false)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            });
+
+
+        } catch (e) {
+            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            resolve(false)
+        }
+
+    })
+
+
+};
 
 
 export const displayMember = () => async dispatch => {
@@ -516,9 +501,52 @@ export const deleteMember=(memberuid)=> async dispatch=> {
         }
 
     })
-
-
-     
-
         
 };
+
+
+
+export const displayGroupMember=(groupid)=> dispatch=> {
+    groupid=10;
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'group/getmembers/' + groupid+"/"+ userdetails.userid)
+                .then(function (res) {
+                    if (res.data.status == "202") {
+                        dispatch({
+                            type: DISPLAY_GROUP_MEMBER,
+                            payload: res.data.results
+                        });
+                        resolve(true)
+                    } else {
+                        dispatch({
+                            type: DISPLAY_GROUP_MEMBER,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                }).catch(function (error) {
+                    dispatch({
+                        type: DISPLAY_GROUP_MEMBER,
+                        payload: []
+                    });
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+            dispatch({
+                type: DISPLAY_GROUP_MEMBER,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
+
+
+
+};
+
+

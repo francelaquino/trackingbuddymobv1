@@ -65,7 +65,7 @@ class DisplayGroup extends Component {
     ready(){
         const { navigate } = this.props.navigation;
         const groups =this.props.groups.map(group=>(
-            <ListItem key={group.id} button avatar style={globalStyle.listItem} onPress={() => { this.props.navigation.navigate("GroupHome", { id: group.id, groupname: group.groupname, avatar: group.avatar, emptyphoto: group.emptyphoto})}}>
+            <ListItem key={group.id} button avatar style={globalStyle.listItem} onPress={() => { this.props.navigation.navigate("AddMember", { group: group})}}>
                             
                             <Left style={globalStyle.listLeft}>
                                 <View style={globalStyle.listAvatarContainer} >

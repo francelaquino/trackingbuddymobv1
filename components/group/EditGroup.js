@@ -32,12 +32,11 @@ class EditGroup extends Component {
     }
             
     initialize() {
-        console.log(this.props.emptyphoto)
         this.setState({
-            avatarsource:{uri :this.props.avatarsource},
-            groupNameOld:this.props.groupname,
-            groupname:this.props.groupname,
-            groupid:this.props.groupid,
+            avatarsource:{uri :this.props.navigation.state.params.group.avatar},
+            groupNameOld:this.props.navigation.state.params.group.groupname,
+            groupname:this.props.navigation.state.params.group.groupname,
+            groupid:this.props.navigation.state.params.group.id,
             isLoading:false,
         })
     }
@@ -117,7 +116,7 @@ class EditGroup extends Component {
             avatarsource:this.state.avatarsource,
             isPhotoChange:this.state.isPhotoChange,
         }
-
+console.log(group)
         this.props.updateGroup(group).then(res => {
             if(res===true){
                 this.setState({loading:false})
@@ -140,9 +139,20 @@ class EditGroup extends Component {
 
         return (
             <Root>
+                <Container style={globalStyle.containerWrapper}>
                 <Loader loading={this.state.loading} />
 
                 <OfflineNotice />
+                <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
+                                <Icon size={30} name='arrow-back' />
+                            </Button> 
+                        </Left>
+                        <Body>
+                            <Title>{this.props.navigation.state.params.group.groupname}</Title>
+                        </Body>
+                    </Header>
                 <Content padder>
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"} showsVerticalScrollIndicator={false}>
                         <View style={globalStyle.container}>
@@ -187,6 +197,7 @@ class EditGroup extends Component {
                         </View>
                     </ScrollView>
                 </Content>
+                </Container>
             </Root>
         )
     }

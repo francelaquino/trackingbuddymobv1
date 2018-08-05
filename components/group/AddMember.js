@@ -4,9 +4,10 @@ import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOp
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,CheckBox, Thumbnail, CardItem, Card } from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import firebase from 'react-native-firebase';
+import Feather from 'react-native-vector-icons/Feather';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { connect } from 'react-redux';
-import { displayGroupMember,displayHomeMember  } from '../../actions/memberActions' ;
+import { displayGroupMember, addGroupMember, displayHomeMember, removeGroupMember  } from '../../redux/actions/memberActions' ;
 import { LeftHome } from '../shared/LeftHome';
 import OfflineNotice  from '../shared/OfflineNotice';
 import Loading  from '../shared/Loading';
@@ -19,17 +20,7 @@ class AddMember extends Component {
     constructor(props) {
         super(props)
         this.state={
-            isLoading:true,
-            emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/member_photos%2Ficons8-person-80.png?alt=media&token=59864ce7-cf1c-4c5e-a07d-76c286a2171d',
-            members:{
-                id:'',
-                firstname:'',
-                avatar:'',
-                selected:false,
-            },
-            groupname:'',
-            groupid:'',
-            membercount:'0 member'
+            refresh:true,
         }
       }
 
@@ -41,65 +32,32 @@ class AddMember extends Component {
    
     addSelectedMember(index){
         let mem = [...this.props.members];
-        mem[index].selected = !mem[index].selected;
-        this.setState({mem});
-        if(mem[index].selected){
-            
-
-            let groupRef = firebase.database().ref().child("groupmembers/"+this.state.groupid+"/"+mem[index].id);
-			groupRef.set({ 
-							member : mem[index].id,
-                            dateadded: Date.now(),
-                            
-			})
-			.catch(function(err) {
-					console.log('error', err);
-                });
-            }else{
-                let groupRef = firebase.database().ref().child("groupmembers/"+this.state.groupid+"/"+mem[index].id);
-                groupRef.remove({ 
-                                member : mem[index].id,
-                                dateadded: Date.now(),
+        if(mem[index].ismember==0){
+            this.props.members[index].ismember=1;
+            this.props.addGroupMember(this.state.groupid,mem[index]).then(res=>{
+                this.setState({ 
+                    refresh: !this.state.refresh
                 })
-                
-                .catch(function(err) {
-                        console.log('error', err);
-                    });
-            }
-
-            this.countMembers();
-            this.props.displayHomeMember();
+            })
+        }else{
+            this.props.members[index].ismember=0;
+            this.props.removeGroupMember(this.state.groupid,mem[index]).then(res=>{
+                this.setState({ 
+                    refresh: !this.state.refresh
+                })
+            })
+        }
+      
 
 
     }
 
-    countMembers(){
-        let self=this;
-        firebase.database().ref().child('groupmembers/'+this.state.groupid) .once("value",function(snapshot){
-            if(snapshot.numChildren()<=1){
-                self.setState({membercount : snapshot.numChildren()+' member'})
-            }else{
-                self.setState({membercount : snapshot.numChildren()+' members'})
-            }
-        });
-    }
+    
     
     initialize(){
-       
-        this.setState({
-            groupname:this.props.groupname,
-            groupid:this.props.groupid,
+        this.props.displayGroupMember(this.props.navigation.state.params.group.groupid).then(res=>{
         })
-            setTimeout(() => {
-                this.props.displayGroupMember(this.state.groupid).then(res=>{
-                    this.countMembers();
-                    this.setState({isLoading:false})
-
-                }).catch(function(err) {
-                });
-
-               
-            }, 1);
+       
     }
 
 
@@ -114,25 +72,26 @@ class AddMember extends Component {
         const data=this.props.members;
         return (
             <FlatList
+                extraData={this.state.refresh}
                 style={{flex:1}}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.uid}
                 data={data}
                 renderItem={({ item,index }) => (
-                    <ListItem  key={item.id} avatar button onPress={()=>this.addSelectedMember(index)} style={globalStyle.listItem}>
+                    <ListItem  key={item.uid} avatar button onPress={()=>this.addSelectedMember(index)} style={globalStyle.listItem}>
                     <Left >
-                        <View style={globalStyle.listAvatarContainer}> 
-                            { item.avatar==='' ?  <Thumbnail  style={globalStyle.avatar} source={{uri: this.state.emptyPhoto}} /> :
-                            <Thumbnail  style={globalStyle.listAvatar} source={{uri: item.avatar}} />
-                            }
-                            </View>
+                    { item.ismember ===1 &&
+                    <Feather  style={{color:'#009da3'}} size={20} name="check-circle" />
+                    }
+                    { item.ismember ===0 &&
+                    <Feather  style={{color:'#009da3'}} size={20} name="circle" />
+                    }
+                        
                     </Left>
                     <Body style={globalStyle.listBody} >
                             <Text style={globalStyle.heading1}>{item.firstname}</Text>
                         </Body>
                     <Right style={globalStyle.listRight}>
-                        { item.selected ===true &&
-                        <Icon  style={{color:'#009da3'}} size={30} name="md-checkmark-circle" />
-                        }
+                    <SimpleLineIcons  style={globalStyle.listRightOptionIcon}   name='arrow-right' />
                     </Right>
                   </ListItem>
                         ) }
@@ -143,21 +102,46 @@ class AddMember extends Component {
        
 
         return (
-                            <View  style={globalStyle.container}>
-                             <List>
-                            <ListItem itemDivider>
-                            <Text>{this.state.membercount}</Text>
-                            </ListItem>  
-                            </List>
-                                {this.renderMember()}
-                            </View>
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                <OfflineNotice/>
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
+                                <Icon size={30} name='arrow-back' />
+                            </Button> 
+                        </Left>
+                        <Body>
+                            <Title>{this.props.navigation.state.params.group.groupname}</Title>
+                        </Body>
+                        <Right  >
+                            <Button transparent onPress={() =>this.props.navigation.navigate('EditGroup',{group:this.props.navigation.state.params.group})}>
+                                <Text style={globalStyle.headerRightText}>Edit</Text>
+                            </Button> 
+                            
+                        </Right>
+                    </Header>
+                    <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
+                    <View style={globalStyle.container}>
+                        <List>
+                            {this.renderMember()}
+                        </List>
+
+                         
+                    </View>
+                    </ScrollView>
+                   
+                </Container>
+            </Root>
+
+                            
                             
         )
     }
 
 
     render() {
-        if(this.state.isLoading){
+        if(this.props.isLoading){
             return this.loading();
         }else{
             return this.ready();
@@ -176,7 +160,7 @@ const mapStateToProps = state => ({
   })
   
   
-  AddMember=connect(mapStateToProps,{displayGroupMember,displayHomeMember})(AddMember);
+  AddMember=connect(mapStateToProps,{displayGroupMember,displayHomeMember, addGroupMember, removeGroupMember})(AddMember);
   
   
   

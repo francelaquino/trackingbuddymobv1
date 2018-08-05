@@ -3,10 +3,12 @@ import Register from '../user/Registration';
 import Login from '../user/Login';
 import ForgotPassword from '../user/ForgotPassword';
 import CreateGroup from '../group/CreateGroup';
+import EditGroup from '../group/EditGroup';
 import DisplayGroup from '../group/DisplayGroup';
 import SelectGroup from '../group/SelectGroup';
 import DisplayHomeGroup from '../group/DisplayHomeGroup';
 import MembersGroup from '../group/MembersGroup';
+import AddMember from '../group/AddMember';
 import DisplayMember from '../member/DisplayMember';
 import GenerateInviteCode from '../member/GenerateInviteCode';
 import MemberHome from '../member/MemberHome';
@@ -29,7 +31,6 @@ import  { createStackNavigator }  from 'react-navigation';
 
 
 export const Stack = createStackNavigator({
-
     DisplayGroup: {
         screen: DisplayGroup,
         headerMode: 'none',
@@ -37,6 +38,16 @@ export const Stack = createStackNavigator({
             header: null
         }
     },
+
+    AddMember: {
+        screen: AddMember,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+   
 
 
     GroupHome: {
@@ -311,14 +322,13 @@ export const Stack = createStackNavigator({
    
     
     
-    /*
     EditGroup: { 
         screen: EditGroup,
         headerMode: 'none',
         navigationOptions: {
             header: null
         } 
-    },*/
+    },
     MembersGroup: { 
         screen: MembersGroup,
         headerMode: 'none',
