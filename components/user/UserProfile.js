@@ -10,7 +10,7 @@ import { NavigationActions } from 'react-navigation'
 import Loading  from '../shared/Loading';
 import ImagePicker from 'react-native-image-picker';
 import Loader from '../shared/Loader';
-import firebase from 'react-native-firebase';
+import OfflineNotice from '../shared/OfflineNotice';
 var globalStyle = require('../../assets/style/GlobalStyle');
 var registrationStyle = require('../../assets/style/Registration');
 
@@ -41,6 +41,7 @@ class UserProfile extends Component {
                 this.setState({
                     firstname: this.props.profile.firstname,
                     email: this.props.profile.email,
+                    fullname: this.props.profile.fullname,
                     mobileno: this.props.profile.mobileno,
                     middlename: this.props.profile.middlename,
                     lastname: this.props.profile.lastname,
@@ -140,84 +141,107 @@ class UserProfile extends Component {
             <Picker.Item key={country.id} label={country.country} value={country.id} />
               ));
         return (
-            <Content padder>
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <OfflineNotice />
             <View style={globalStyle.container}>
            <Loader loading={this.state.loading} />
-            
-            <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
-                <View  style={{marginTop:20,marginBottom:20}}>
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Icon size={30} name='arrow-back' />
+                            </Button>
+                        </Left>
+                        <Body>
+                            <Title>Profile</Title>
+                        </Body>
+                       
+                    </Header>
+                        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                            <Content padder>
+                <View  style={{marginTop:20,marginBottom:10}}>
 						<TouchableOpacity onPress={this.selectPhoto.bind(this)}>
                         <View style={globalStyle.avatarContainer}>
                             { this.state.avatarsource.uri === '' ? <Image style={globalStyle.avatarBig} source={{uri : this.state.emptyPhoto}} />  :
                                 <Image style={globalStyle.avatarBig} source={this.state.avatarsource} />
                                 }
-                            </View>
-                            </TouchableOpacity>
+                                        </View>
+                                        
+                                    </TouchableOpacity>
+                                    <Label style={{ width: '100%', textAlign: 'center', color: '#16a085',marginBottom:10 }}>{this.state.fullname}</Label>
                             {(this.props.profile.emptyphoto != '1' && this.state.avatarsource.uri != '') &&
                             <TouchableOpacity   onPress={this.removePhoto.bind(this)}>
                             <Text style={globalStyle.deleteButtonSmall} >Remove Photo</Text>
-                            </TouchableOpacity>
-                        }
+                                        </TouchableOpacity>
+                                    
+                                    }
+                                    
 				</View>
 
                     
 					
 
-						<Item   style={registrationStyle.regularitem}  >
-                                <TextInput  style={registrationStyle.textinput} 
-                                underlineColorAndroid= 'transparent'
-                                placeholder="Email address"
-								name="email" autoCorrect={false}
-								value={this.state.email}
-								editable={false}/>
-						</Item>
-					
-					
+						
 
-						<Item   style={registrationStyle.regularitem}>
-                                <TextInput  style={registrationStyle.textinput} 
-                                 underlineColorAndroid= 'transparent'
-                                 placeholder="First Name"
-								name="firstname" autoCorrect={false}
-								value={this.state.firstname} maxLength = {10}
-								onChangeText={firstname=>this.setState({firstname})}/>
-						</Item>
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Email</Label>
+                                    <Input style={[globalStyle.textinput, {color:'gray'}]} name="email" autoCorrect={false}
+                                        value={this.state.email} 
+                                        onChangeText={email => this.setState({ email })} editable={false}/>
+                                </Item>
+
 					
-						<Item   style={registrationStyle.regularitem}>
-                                <TextInput  style={registrationStyle.textinput} 
-                                 underlineColorAndroid= 'transparent'
-                                 placeholder="Middle Name"
-								name="middlename" autoCorrect={false}
-								value={this.state.middlename} maxLength = {10}
-								onChangeText={middlename=>this.setState({middlename})}/>
-						</Item>
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >First name</Label>
+                                    <Input style={globalStyle.textinput} name="firstname" autoCorrect={false}
+                                        value={this.state.firstname} maxLength={10}
+                                        onChangeText={firstname => this.setState({ firstname })} />
+                                </Item>
+
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Middle name</Label>
+                                    <Input style={globalStyle.textinput} name="middlename" autoCorrect={false}
+                                        value={this.state.middlename} maxLength={10}
+                                        onChangeText={middlename => this.setState({ middlename })} />
+                                </Item>
+
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Last name</Label>
+                                    <Input style={globalStyle.textinput} name="lastname" autoCorrect={false}
+                                        value={this.state.lastname} maxLength={10}
+                                        onChangeText={lastname => this.setState({ lastname })} />
+                                </Item>
+
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Last name</Label>
+                                    <Input style={globalStyle.textinput} name="lastname" autoCorrect={false}
+                                        value={this.state.lastname} maxLength={10}
+                                        onChangeText={lastname => this.setState({ lastname })} />
+                                </Item>
+
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Mobile No.</Label>
+                                    <Input style={globalStyle.textinput} name="mobileno" autoCorrect={false}
+                                        value={this.state.mobileno} maxLength={20}
+                                        onChangeText={v => this.setState({ mobileno })} />
+                                </Item>
+
+						
 					
-						<Item   style={registrationStyle.regularitem}>
-                                <TextInput  style={registrationStyle.textinput} 
-                                 underlineColorAndroid= 'transparent'
-                                 placeholder="Last Name"
-								name="lastname" autoCorrect={false}
-								value={this.state.lastname} maxLength = {10}
-								onChangeText={lastname=>this.setState({lastname})}/>
-					</Item>
-						<Item   style={registrationStyle.regularitem}>
-                                <TextInput  style={registrationStyle.textinput} 
-                                 underlineColorAndroid= 'transparent'
-                                 placeholder="Mobile No."
-								name="mobileno" autoCorrect={false}
-								value={this.state.mobileno} maxLength = {50}
-								onChangeText={mobileno=>this.setState({mobileno})}/>
-						</Item>
+						
+					
+						
 					
                         <Button  onPress={()=>this.onSubmit()}
                         bordered light full  style={globalStyle.secondaryButton}>
                         <Text style={{color:'white'}}>Update</Text>
                         </Button>
-					
+					</Content>
 				</ScrollView>
                    
                 </View>
-                </Content>
+                </Container>
+                </Root>
         )
     }
     render() {

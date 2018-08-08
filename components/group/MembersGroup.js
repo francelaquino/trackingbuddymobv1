@@ -56,7 +56,7 @@ class MembersGroup extends Component {
                             
                         </Right>
                     </Header>
-                    <Content>
+                    <Content >
                         <List>
                             <Separator bordered>
                                 <Text>{this.state.groupname}</Text>

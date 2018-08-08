@@ -1,4 +1,4 @@
-import { DISPLAY_MEMBER, INVITE_MEMBER, GET_INVITATIONCODE, GET_COUNTRIES, GENERATE_INVITATIONCODE, GET_MEMBER, DELETE_MEMBER, DISPLAY_HOME_MEMBER, DISPLAY_GROUP_MEMBER,CLEAR_HOME_MEMBERS } from './types';
+import { DISPLAY_MEMBER, INVITE_MEMBER, GET_MEMBERNOTIFICATION, GET_MEMBERGROUP, GET_INVITATIONCODE, GET_COUNTRIES, GENERATE_INVITATIONCODE, GET_MEMBER, DELETE_MEMBER, DISPLAY_HOME_MEMBER, DISPLAY_GROUP_MEMBER,CLEAR_HOME_MEMBERS } from './types';
 import firebase from 'react-native-firebase';
 import {  ToastAndroid } from 'react-native';
 import Moment from 'moment';
@@ -210,16 +210,16 @@ export const generateInvitationCode = () => async dispatch => {
                     resolve(true)
                 } else {
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
             }).catch(function (error) {
                 resolve(false)
-                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
 
@@ -252,7 +252,7 @@ export const getInvitationCode = () => async dispatch => {
                                 payload: []
                             });
                             resolve(false)
-                            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                         }
                     }).catch(function (error) {
                         console.log(error)
@@ -261,7 +261,7 @@ export const getInvitationCode = () => async dispatch => {
                             payload: []
                         });
                         resolve(false)
-                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     });
 
             } catch (e) {
@@ -271,7 +271,7 @@ export const getInvitationCode = () => async dispatch => {
                     payload: []
                 });
                 resolve(false)
-                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             }
         });
 
@@ -299,17 +299,17 @@ export const addMember = (invitationcode) => async dispatch => {
                    
                 } else {
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
                 }).catch(function (error) {
                    
                 resolve(false)
-                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
 
@@ -332,17 +332,19 @@ export const addGroupMember = (groupid,member) => async dispatch => {
                         resolve(true)
                 } else {
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    console.log(res)     
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
                 }).catch(function (error) {
-                   
+                    console.log(error)       
                 resolve(false)
-                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            console.log(e)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
 
@@ -365,17 +367,17 @@ export const removeGroupMember = (groupid,member) => async dispatch => {
                         resolve(true)
                 } else {
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
                 }).catch(function (error) {
                    
                 resolve(false)
-                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
 
@@ -403,7 +405,7 @@ export const displayMember = () => async dispatch => {
                             payload: []
                         });
                         resolve(false)
-                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     }
                 }).catch(function (error) {
                     dispatch({
@@ -411,7 +413,7 @@ export const displayMember = () => async dispatch => {
                         payload: []
                     });
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 });
 
         } catch (e) {
@@ -420,7 +422,7 @@ export const displayMember = () => async dispatch => {
                 payload: []
             });
             resolve(false)
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
         }
     });
 
@@ -429,14 +431,96 @@ export const displayMember = () => async dispatch => {
 
 
 
+export const getMemberGroup = (userid) => async dispatch => {
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'group/getmembergroup/' + userid)
+                .then(function (res) {
+                    if (res.data.status == "202") {
+                        dispatch({
+                            type: GET_MEMBERGROUP,
+                            payload: res.data.results
+                        });
+                        resolve(true)
+                    } else {
+                        dispatch({
+                            type: GET_MEMBERGROUP,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                }).catch(function (error) {
+                    dispatch({
+                        type: GET_MEMBERGROUP,
+                        payload: []
+                    });
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+            dispatch({
+                type: GET_MEMBERGROUP,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
+
+};
+
+
+
+export const getMemberNotification = (userid) => async dispatch => {
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'member/getmembernotification/' + userid)
+                .then(function (res) {
+                    if (res.data.status == "202") {
+                        dispatch({
+                            type: GET_MEMBERNOTIFICATION,
+                            payload: res.data.results
+                        });
+                        resolve(true)
+                    } else {
+                        dispatch({
+                            type: GET_MEMBERNOTIFICATION,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                }).catch(function (error) {
+                    console.log(error)
+                    dispatch({
+                        type: GET_MEMBERNOTIFICATION,
+                        payload: []
+                    });
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+            console.log(e)
+            dispatch({
+                type: GET_MEMBERNOTIFICATION,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
+
+};
+
 export const getMember = (userid) => async dispatch => {
-    console.log(userid)
     return new Promise(async (resolve) => {
         try {
             await axios.get(settings.baseURL + 'member/getmemberinfo/' + userid)
                 .then(function (res) {
                     if (res.data.status == "202") {
-                        console.log(res.data.results)
                         dispatch({
                             type: GET_MEMBER,
                             payload: res.data.results
@@ -448,7 +532,7 @@ export const getMember = (userid) => async dispatch => {
                             payload: []
                         });
                         resolve(false)
-                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     }
                 }).catch(function (error) {
                     dispatch({
@@ -456,7 +540,7 @@ export const getMember = (userid) => async dispatch => {
                         payload: []
                     });
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 });
 
         } catch (e) {
@@ -465,7 +549,7 @@ export const getMember = (userid) => async dispatch => {
                 payload: []
             });
             resolve(false)
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
         }
     });
 
@@ -487,16 +571,16 @@ export const deleteMember=(memberuid)=> async dispatch=> {
                     resolve(true)
                 } else {
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
             }).catch(function (error) {
                 resolve(false)
-                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
 
@@ -507,7 +591,6 @@ export const deleteMember=(memberuid)=> async dispatch=> {
 
 
 export const displayGroupMember=(groupid)=> dispatch=> {
-    groupid=10;
     return new Promise(async (resolve) => {
         try {
             await axios.get(settings.baseURL + 'group/getmembers/' + groupid+"/"+ userdetails.userid)
@@ -524,7 +607,7 @@ export const displayGroupMember=(groupid)=> dispatch=> {
                             payload: []
                         });
                         resolve(false)
-                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     }
                 }).catch(function (error) {
                     dispatch({
@@ -532,7 +615,7 @@ export const displayGroupMember=(groupid)=> dispatch=> {
                         payload: []
                     });
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 });
 
         } catch (e) {
@@ -541,7 +624,7 @@ export const displayGroupMember=(groupid)=> dispatch=> {
                 payload: []
             });
             resolve(false)
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
         }
     });
 

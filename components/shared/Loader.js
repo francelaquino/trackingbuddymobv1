@@ -21,9 +21,9 @@ class Loader extends Component {
                 visible={this.props.loading}>
                 <View style={styles.modalBackground}>
                     <View style={styles.activityIndicatorWrapper}>
-                        <ActivityIndicator color="white"
+                        <ActivityIndicator color="gray"
                             animating={this.props.loading} />
-                        <Text style={{ color: 'white' }}>Please wait</Text>
+                        <Text style={{ color: 'gray' }}>Please wait</Text>
                     </View>
                 </View>
             </Modal>
@@ -34,24 +34,25 @@ class Loader extends Component {
 const styles = StyleSheet.create({
     modalWrapper: {
         flex: 1,
-        height: Dimensions.get('window').height + 100,
+        height: Dimensions.get('window').height + 200,
     },
     modalBackground: {
-        height: Dimensions.get('window').height + 100,
+        height: Dimensions.get('window').height + 200,
         flex: 1,
         alignItems: 'center',
         flexDirection: 'column',
         justifyContent: 'space-around',
-        backgroundColor: 'transparent'
+        backgroundColor: '#00000040'
     },
     activityIndicatorWrapper: {
-        backgroundColor: '#00000040',
-        height: 50,
+        backgroundColor: 'white',
+        height: 70,
         width: 250,
         borderRadius: 10,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-around'
+        justifyContent: 'center',
+
     }
 })
 export default Loader;

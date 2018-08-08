@@ -47,7 +47,7 @@ class LeftDrawer extends Component<Props> {
     this.props.closeDrawer();
   }
   displayProfile(){
-    this.props.navigation.navigate('ProfileHome',{id:userdetails.userid});
+    this.props.navigation.navigate('UserProfile');
     this.props.closeDrawer();
   }
   displaySettings(){

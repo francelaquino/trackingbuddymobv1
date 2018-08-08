@@ -1,9 +1,11 @@
-import {  GET_INVITATIONCODE, CLEAR_HOME_MEMBERS, GENERATE_INVITATIONCODE, GET_COUNTRIES, DISPLAY_MEMBER,INVITE_MEMBER, GET_MEMBER, DELETE_MEMBER,DISPLAY_HOME_MARKER, DISPLAY_HOME_MEMBER, DISPLAY_GROUP_MEMBER } from '../actions/types';
+import { GET_INVITATIONCODE, GET_MEMBERNOTIFICATION,  GET_MEMBERGROUP, CLEAR_HOME_MEMBERS, GENERATE_INVITATIONCODE, GET_COUNTRIES, DISPLAY_MEMBER,INVITE_MEMBER, GET_MEMBER, DELETE_MEMBER,DISPLAY_HOME_MARKER, DISPLAY_HOME_MEMBER, DISPLAY_GROUP_MEMBER } from '../redux/actions/types';
 
 const initialState = {
     members:[],
     countries:[],
-    member:[],
+    member: [],
+    placenotification: [],
+    membergroups: [],
     home_members:[],
     home_markers:[],
     invitationcode:[],
@@ -11,15 +13,29 @@ const initialState = {
     success:true,
 }
 
-export default function(state=initialState,action){
-    switch(action.type){
+export default function (state = initialState, action) {
+    switch (action.type) {
+        
+       
+        case GET_MEMBERNOTIFICATION:
+            return {
+                ...state,
+                placenotification: action.payload,
+                isLoading:false,
+            };
         case DISPLAY_MEMBER:
             return {
                 ...state,
                 members: action.payload,
-                isLoading:false,
+                isLoading: false,
             };
-            case CLEAR_HOME_MEMBERS:
+        case GET_MEMBERGROUP:
+            return {
+                ...state,
+                membergroups: action.payload,
+                isLoading: false,
+            };
+       case CLEAR_HOME_MEMBERS:
             return {
                 ...state,
                 home_members: action.payload,

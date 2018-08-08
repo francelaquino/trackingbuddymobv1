@@ -94,7 +94,7 @@ class EditGroup extends Component {
         	if(res==true){
                 this.setState({loading:false})
                 this.props.displayGroup();
-                this.props.navigation.goBack();
+                this.props.navigation.pop(2);
             }
         });
 
@@ -116,11 +116,11 @@ class EditGroup extends Component {
             avatarsource:this.state.avatarsource,
             isPhotoChange:this.state.isPhotoChange,
         }
-console.log(group)
         this.props.updateGroup(group).then(res => {
             if(res===true){
                 this.setState({loading:false})
                 this.props.displayGroup();
+                this.props.navigation.pop(2)
             }
         });
 
@@ -167,15 +167,14 @@ console.log(group)
                                 <TouchableOpacity onPress={this.removePhoto.bind(this)}>
                                     <Text style={globalStyle.deleteButtonSmall} >Remove Photo</Text>
                                 </TouchableOpacity>
-                            }
-                            <Item style={globalStyle.regularitem}>
-                                <TextInput style={globalStyle.textinputCenter}
-                                    underlineColorAndroid='transparent'
-                                    placeholder="Group Name"
-                                    name="groupname" autoCorrect={false}
-                                    value={this.state.groupname} maxLength={20}
-                                    onChangeText={groupname => this.setState({ groupname })} />
-                            </Item>
+                                }
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Group Name</Label>
+                                    <Input style={globalStyle.textinput} value={this.state.groupname} maxLength={20}
+                                        onChangeText={groupname => this.setState({ groupname })} />
+                                </Item>
+
+                           
 
 
                             <View style={{ justifyContent: 'center', alignItems: 'center' }}>

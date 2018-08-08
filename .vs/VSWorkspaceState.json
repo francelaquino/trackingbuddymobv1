@@ -7,12 +7,11 @@
     "\\assets",
     "\\assets\\style",
     "\\components",
-    "\\components\\group",
-    "\\components\\member",
-    "\\components\\places",
+    "\\components\\shared",
+    "\\components\\user",
     "\\redux",
     "\\redux\\actions"
   ],
-  "SelectedNode": "\\assets\\style\\GlobalStyle.js",
+  "SelectedNode": "\\components\\places\\CreatePlace.js",
   "PreviewInSolutionExplorer": false
 }

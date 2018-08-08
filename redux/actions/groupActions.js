@@ -56,11 +56,11 @@ export const createGroup = (groupname, avatarsource) => dispatch => {
                         }
                     } else {
                         resolve(false)
-                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     }
                     }).catch(function (error) {
                         resolve(false)
-                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     });
                 })
 
@@ -75,24 +75,24 @@ export const createGroup = (groupname, avatarsource) => dispatch => {
                     if (res.data.status == "202") {
                         if (res.data.isexist == "true") {
                             resolve(false)
-                            ToastAndroid.showWithGravityAndOffset("Group name already exist", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                            ToastAndroid.showWithGravityAndOffset("Group already exist", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                         } else {
                             resolve(true)
                             ToastAndroid.showWithGravityAndOffset("Group successfully added", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                         }
                     } else {
                         resolve(false)
-                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     }
                 }).catch(function (error) {
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 });
             }
 
         } catch (e) {
             console.log(e)
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
 
@@ -185,7 +185,7 @@ export const displayGroup = () => dispatch => {
                             payload: []
                         });
                         resolve(false)
-                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     }
                 }).catch(function (error) {
                     dispatch({
@@ -194,7 +194,7 @@ export const displayGroup = () => dispatch => {
                     });
                     resolve(false)
                     console.log(error)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 });
 
         } catch (e) {
@@ -204,7 +204,7 @@ export const displayGroup = () => dispatch => {
                 payload: []
             });
             resolve(false)
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
         }
     });
 
@@ -247,12 +247,12 @@ export const updateGroup = (group) => dispatch => {
                                 } else {
 
                                     resolve(false)
-                                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                                 }
                                 }).catch(function (error) {
                                     console.log(error)
                                 resolve(false)
-                                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                             });
                         })
                 } else {
@@ -267,19 +267,19 @@ export const updateGroup = (group) => dispatch => {
                             ToastAndroid.showWithGravityAndOffset("Group successfully updated.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                         } else {
                             resolve(false)
-                            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                         }
                     }).catch(function (error) {
                         resolve(false);
                         console.log(error)
-                        ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     });
                 }
 
 
             } catch (e) {
                 console.log(e)
-                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 resolve(false)
             }
 
@@ -306,16 +306,16 @@ export const deleteGroup = (groupid) => dispatch => {
                     resolve(true)
                 } else {
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
             }).catch(function (error) {
                 resolve(false)
-                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
 

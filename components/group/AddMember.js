@@ -34,14 +34,14 @@ class AddMember extends Component {
         let mem = [...this.props.members];
         if(mem[index].ismember==0){
             this.props.members[index].ismember=1;
-            this.props.addGroupMember(this.state.groupid,mem[index]).then(res=>{
+            this.props.addGroupMember(this.props.navigation.state.params.group.id,mem[index]).then(res=>{
                 this.setState({ 
                     refresh: !this.state.refresh
                 })
             })
         }else{
             this.props.members[index].ismember=0;
-            this.props.removeGroupMember(this.state.groupid,mem[index]).then(res=>{
+            this.props.removeGroupMember(this.props.navigation.state.params.group.id,mem[index]).then(res=>{
                 this.setState({ 
                     refresh: !this.state.refresh
                 })
@@ -54,8 +54,8 @@ class AddMember extends Component {
 
     
     
-    initialize(){
-        this.props.displayGroupMember(this.props.navigation.state.params.group.groupid).then(res=>{
+    initialize() {
+        this.props.displayGroupMember(this.props.navigation.state.params.group.id).then(res=>{
         })
        
     }
@@ -77,21 +77,25 @@ class AddMember extends Component {
                 keyExtractor={item => item.uid}
                 data={data}
                 renderItem={({ item,index }) => (
-                    <ListItem  key={item.uid} avatar button onPress={()=>this.addSelectedMember(index)} style={globalStyle.listItem}>
-                    <Left >
-                    { item.ismember ===1 &&
-                    <Feather  style={{color:'#009da3'}} size={20} name="check-circle" />
-                    }
-                    { item.ismember ===0 &&
-                    <Feather  style={{color:'#009da3'}} size={20} name="circle" />
-                    }
+                    <ListItem key={item.uid} avatar style={globalStyle.listItem} >
+                        <Left>
+                            <TouchableOpacity onPress={() => this.addSelectedMember(index)}>
+                                { item.ismember ===1 &&
+                                <Feather  style={{color:'#009da3'}} size={20} name="check-circle" />
+                                }
+                                { item.ismember ===0 &&
+                                <Feather  style={{color:'#009da3'}} size={20} name="circle" />
+                                }
+                                </TouchableOpacity>
                         
                     </Left>
                     <Body style={globalStyle.listBody} >
                             <Text style={globalStyle.heading1}>{item.firstname}</Text>
                         </Body>
-                    <Right style={globalStyle.listRight}>
-                    <SimpleLineIcons  style={globalStyle.listRightOptionIcon}   name='arrow-right' />
+                        <Right style={globalStyle.listRight}>
+                            <TouchableOpacity onPress={() => { this.props.navigation.navigate("InfoMember", { memberuid: item.uid, firstname: item.firstname }) }}>
+                                <SimpleLineIcons style={globalStyle.listRightOptionIcon} name='arrow-right' />
+                            </TouchableOpacity>
                     </Right>
                   </ListItem>
                         ) }
@@ -121,6 +125,7 @@ class AddMember extends Component {
                             
                         </Right>
                     </Header>
+                    <Content padder>
                     <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
                     <View style={globalStyle.container}>
                         <List>
@@ -129,8 +134,8 @@ class AddMember extends Component {
 
                          
                     </View>
-                    </ScrollView>
-                   
+                        </ScrollView>
+                    </Content>
                 </Container>
             </Root>
 

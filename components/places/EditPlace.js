@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import {  TouchableOpacity,Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, ToastAndroid, Image,Dimensions,Alert } from 'react-native';
+import { TouchableOpacity, Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, Dimensions, Alert, KeyboardAvoidingView } from 'react-native';
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Form } from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -10,7 +10,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MapView, { ProviderPropType, Marker, AnimatedRegion,Animated,Polyline } from 'react-native-maps';
 import { connect } from 'react-redux';
-import { updatePlace, displayPlaces,deletePlace  } from '../../actions/locationActions' ;
+import { updatePlace, displayPlaces,deletePlace  } from '../../redux/actions/locationActions' ;
 import Loading  from '../shared/Loading';
 import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
@@ -31,7 +31,8 @@ class EditPlace extends Component {
         this.state = {
             id:'',
             loading:true,
-            placename:'',
+            place: '',
+            address:'',
             region: {
                   latitude: -37.78825,
                   longitude: -122.4324,
@@ -66,13 +67,14 @@ class EditPlace extends Component {
     initialize(){
         this.setState({
             id:this.props.navigation.state.params.place.id,
-            placename:this.props.navigation.state.params.place.placename,
+            place: this.props.navigation.state.params.place.place,
+            address: this.props.navigation.state.params.place.address,
             loading:false,
             region:{
                 latitude: this.props.navigation.state.params.place.latitude,
                 longitude: this.props.navigation.state.params.place.longitude,
-                latitudeDelta: this.props.navigation.state.params.place.latitudeDelta,
-                longitudeDelta: this.props.navigation.state.params.place.longitudeDelta,
+                latitudeDelta: LATITUDE_DELTA,
+                longitudeDelta: LONGITUDE_DELTA
             }
         })
     }
@@ -83,7 +85,7 @@ class EditPlace extends Component {
       confirmDelete(){
         Alert.alert(
             'Comfirm Delete',
-            'Are you sure you want to delete the place?',
+            "This will also delete all member's notification.\nAre you sure you want to delete the place?",
             [
               
               {text: 'Yes', onPress: () => this.onDelete()},
@@ -95,9 +97,8 @@ class EditPlace extends Component {
     onDelete(){
         this.setState({loading:true})
         this.props.deletePlace(this.state.id).then(res=>{
-        	if(res!==""){
+        	if(res==true){
                 this.setState({loading:false})
-                ToastAndroid.showWithGravityAndOffset(res,ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
                 this.props.displayPlaces();
                 this.props.navigation.pop(2)
             }
@@ -109,12 +110,11 @@ class EditPlace extends Component {
         
     }
     onSubmit(){
-        this.setState({loading:true})
-        this.props.updatePlace(this.state.id,this.state.placename,this.state.region).then(res=>{
+        this.setState({ loading: true })
+        this.props.updatePlace(this.state.id, this.state.place, this.state.address,this.state.region).then(res => {
             this.setState({loading:false})
-            if(res!==""){
+            if(res==true){
                 this.props.displayPlaces();
-                ToastAndroid.showWithGravityAndOffset(res,ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
             }
             
         }).catch(function(err) {
@@ -145,8 +145,7 @@ class EditPlace extends Component {
                 <Container style={globalStyle.containerWrapper}>
                 <Loader loading={this.state.loading} />
                 <OfflineNotice/>
-                <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
-                    
+               
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
                                 <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
@@ -154,49 +153,78 @@ class EditPlace extends Component {
                                 </Button> 
                             </Left>
                             <Body>
-                                <Title>{this.state.placename}</Title>
+                                <Title>{this.state.place}</Title>
                             </Body>
-                        </Header>
+                    </Header>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                        <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column' }}
+                            behavior="position"
+                        >
                         <View style={styles.mainContainer}>
                             <View style={styles.mapContainer}>
-                            
-                                <MapView ref={map => {this.map = map}}
-                                    onLayout = {() => this.fitToMap()}
-                                    onRegionChangeComplete={this.onRegionChangeComplete}
-                                    zoomEnabled = {true}
+
+                                <MapView ref={map => { this.map = map }}
+                                    zoomEnabled={true}
+                                    onLayout={() => this.fitToMap()}
                                     style={StyleSheet.absoluteFill}
                                     textStyle={{ color: '#bc8b00' }}
                                     loadingEnabled={true}
                                     showsMyLocationButton={false}>
 
+                                    <MapView.Marker coordinate={this.state.region} >
+                                        <Image style={globalStyle.marker}
+                                            source={require('../../images/placemarker.png')} />
+                                    </MapView.Marker>
 
-                                    </MapView>
-                                    <View style={{width:100,height:100,borderWidth:1,borderColor:'#1eaec5',borderRadius:50, backgroundColor: 'rgba(30, 174, 197, 0.5)', justifyContent: 'center',alignItems: 'center'}}>
-                                    <View style={{width:10,height:10, borderRadius:5,backgroundColor: 'rgba(0, 113, 189, 0.5)'}}></View>
-                                    </View>
-                                    
-                            </View>
-                            <View  style={styles.footerContainer}>
-                            
-                            <Item   style={globalStyle.regularitem}>
-                            <Input style={globalStyle.textinput} value={this.state.placename} maxLength={50} placeholder="Place Name" autoCorrect={false} onChangeText={placename=>this.setState({placename})} name="placename"/>
-                            </Item>
-                            <Button disabled={!this.state.placename} style={this.state.placename ? globalStyle.secondaryButton : globalStyle.secondaryButtonDisabled}
-                                        onPress={()=>this.onSubmit()}
-                                        bordered light full  >
-                                        <Text style={{color:'white'}}>Update Place</Text>
-                                    </Button>
 
-                                <Button 
-                                    onPress={()=>this.confirmDelete()}
-                                    bordered light full  style={globalStyle.deleteButton}>
-                                    <Text style={{color:'white'}}>Delete Place</Text>
-                                </Button>
-                            
+                                </MapView>
+
                             </View>
+                            <Content padder>
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Latitude</Label>
+                                    <Input numberOfLines={1} style={globalStyle.textinput} value={this.state.region.latitude.toString()} editable={false} />
+                                </Item>
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Longitude</Label>
+                                    <Input numberOfLines={1} style={globalStyle.textinput} value={this.state.region.longitude.toString()} editable={false} />
+                                </Item>
+                                <Item stackedLabel >
+                                    <Label style={globalStyle.label} >Address</Label>
+                                    <Input numberOfLines={1} style={globalStyle.textinput} value={this.state.address} editable={false} />
+                                </Item>
+                                <Item stackedLabel >
+                                    <Label style={globalStyle.label} >Place</Label>
+                                    <Input numberOfLines={1} style={globalStyle.textinput} value={this.state.place}
+                                        value={this.state.place} maxLength={50} placeholder="Enter place name"
+                                        onChangeText={place => this.setState({ place })} />
+
+                                </Item>
+
+                                <Item style={{ borderBottomWidth: 0 }}>
+                                    <Button
+                                        onPress={() => this.onSubmit()}
+                                        bordered light full style={globalStyle.secondaryButton}>
+                                        <Text style={{ color: 'white' }}>Save </Text>
+                                        </Button>
+
+                                       
+                                    </Item>
+                                    <Item style={{ borderBottomWidth: 0 }}>
+                                       
+
+                                        <Button
+                                            onPress={() => this.confirmDelete()}
+                                            bordered light full style={globalStyle.deleteButton}>
+                                            <Text style={{ color: 'white' }}>Delete </Text>
+                                        </Button>
+                                    </Item>
+                                    </Content>
+
+
                         </View>
 
-
+                        </KeyboardAvoidingView>
                         </ScrollView  >
 
                 </Container>
@@ -222,24 +250,17 @@ class EditPlace extends Component {
 
 const styles = StyleSheet.create({
     mainContainer: {
-      display: 'flex',
-      flex: 1,
-      flexDirection: 'column',
-    },
-    
-    mapContainer: {
         flex: 1,
-        borderBottomColor:'silver',
-        borderBottomWidth:.5,
+        flexDirection: 'column'
+    },
+    mapContainer: {
+        height: 200,
+        borderBottomColor: 'silver',
+        borderBottomWidth: .5,
         justifyContent: 'center',
         alignItems: 'center'
-      
+
     },
-    footerContainer: {
-        height:250,
-        padding:5,
-        
-      },
   });
 
   

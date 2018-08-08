@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Register from '../user/Registration';
+import UserProfile from '../user/UserProfile';
 import Login from '../user/Login';
 import ForgotPassword from '../user/ForgotPassword';
 import CreateGroup from '../group/CreateGroup';
@@ -12,6 +13,8 @@ import AddMember from '../group/AddMember';
 import DisplayMember from '../member/DisplayMember';
 import GenerateInviteCode from '../member/GenerateInviteCode';
 import MemberHome from '../member/MemberHome';
+import InfoMember from '../member/InfoMember';
+import SavePlace from '../places/SavePlace';
 import GroupHome from '../group/GroupHome';
 import ProfileHome from '../user/ProfileHome';
 import NewInvite from '../member/NewInvite';
@@ -31,6 +34,74 @@ import  { createStackNavigator }  from 'react-navigation';
 
 
 export const Stack = createStackNavigator({
+
+
+
+    CreatePlace: {
+        screen: CreatePlace,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+    Home: {
+        screen: Home,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+    DisplayMember: {
+        screen: DisplayMember,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+    InfoMember: {
+        screen: InfoMember,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+    
+
+  
+
+    PlaceList: {
+        screen: PlaceList,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+
+    SavePlace: {
+        screen: SavePlace,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+    UserProfile: {
+        screen: UserProfile,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+   
+
+
+
     DisplayGroup: {
         screen: DisplayGroup,
         headerMode: 'none',
@@ -38,6 +109,11 @@ export const Stack = createStackNavigator({
             header: null
         }
     },
+
+   
+
+   
+
 
     AddMember: {
         screen: AddMember,
@@ -67,13 +143,7 @@ export const Stack = createStackNavigator({
         }
     },
 
-    DisplayMember: {
-        screen: DisplayMember,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        }
-    },
+    
 
     ProfileHome: {
         screen: ProfileHome,
@@ -94,15 +164,6 @@ export const Stack = createStackNavigator({
 
    
 
-    CreatePlace: {
-        screen: CreatePlace,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        }
-    },
-
-   
     NewInvite: {
         screen: NewInvite,
         headerMode: 'none',
@@ -124,13 +185,6 @@ export const Stack = createStackNavigator({
     },
 
     
-    Home: {
-        screen: Home,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        }
-    },
 
     
 
@@ -181,13 +235,7 @@ export const Stack = createStackNavigator({
     
    
    
-    PlaceList: { 
-        screen: PlaceList,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        }
-    },
+ 
     LocationView: { 
         screen: LocationView,
         headerMode: 'none',

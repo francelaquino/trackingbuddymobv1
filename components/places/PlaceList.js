@@ -4,7 +4,7 @@ import { TouchableOpacity,Modal, Platform,  StyleSheet,  Text,  View, ScrollView
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Switch,Thumbnail, Card,CardItem } from 'native-base';
 import { connect } from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { displayPlaces  } from '../../actions/locationActions' ;
+import { displayPlaces  } from '../../redux/actions/locationActions' ;
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -40,13 +40,12 @@ class PlaceList extends Component {
         )
     }
 
-    renderPlaces(){
-        const data=this.props.places;
+    renderPlaces() {
         return (
             <FlatList
             style={{flex:1}}
-                keyExtractor={item => item.id}
-                data={data}
+                keyExtractor={item => item.id.toString()}
+                data={this.props.places}
                 renderItem={({ item }) => (
                     <ListItem icon key={item.id} button avatar style={globalStyle.listItem}  onPress={() => {this.props.navigation.navigate("PlaceView",{place:item})}}>
                     <Left >
@@ -54,7 +53,7 @@ class PlaceList extends Component {
                             <Entypo style={{ fontSize: 30, color:'#16a085'}} name="location"/>
                 </Left>
                         <Body style={globalStyle.listBody} >
-                            <Text numberOfLines={1} style={globalStyle.listHeading}>{item.placename}</Text>
+                            <Text numberOfLines={1} style={globalStyle.listHeading}>{item.place}</Text>
                             <Text  numberOfLines={1} note style={{fontSize:12}}>{item.address}</Text>
                         </Body>
                     
@@ -83,12 +82,12 @@ class PlaceList extends Component {
                         </Body>
                         <Right  >
                             <Button transparent onPress={() =>this.props.navigation.navigate('CreatePlace')}>
-                                <Text style={globalStyle.headerRightText}>Add Place</Text>
+                                <Text style={globalStyle.headerRightText}>Add</Text>
                             </Button> 
                             
                         </Right>
                     </Header>
-                    <Content >
+                    <Content padder >
                     <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"} showsVerticalScrollIndicator={false}>
                     <View style={globalStyle.container}>
                     

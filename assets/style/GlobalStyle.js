@@ -25,7 +25,7 @@ module.exports = StyleSheet.create({
     },
     headerRightText:{
         color:'white',
-        fontSize:17,
+        fontSize:20,
     },
     headerLeftMenuIcon:{
         color:'white',
@@ -66,30 +66,48 @@ module.exports = StyleSheet.create({
         backgroundColor:theme.primaryButtonColor,
         marginTop:10,
         marginBottom:10,
-        width: '100%',
+        width: '90%',
         alignSelf: "center",
         borderRadius:15,
+    },
+    cancelButton: {
+        backgroundColor: 'gray',
+        marginTop: 10,
+        marginBottom: 10,
+        width: '90%',
+        alignSelf: "center",
+        borderRadius: 15,
     },
     secondaryButtonDisabled:{
         backgroundColor: theme.primaryButtonColor,
         marginBottom:10,
         marginTop:10,
-        width:'100%',
+        width: '90%',
         alignSelf: "center",
         borderRadius: 15,
     },
     deleteButton:{
         backgroundColor:theme.deleteColor,
         marginBottom:10,
-        width: '100%',
+        width: '90%',
         alignSelf: "center",
         borderRadius: 15,
+    },
+
+    textinputreadonly: {
+        flex: 1,
+        padding: 5,
+        height: 50,
+        fontSize: 15,
+        color: 'gray',
+        textAlign: 'left',
     },
     textinput:{
         flex: 1,
         padding:5,
         height: 50,
-        fontSize:15,
+        fontSize: 15,
+        textAlign: 'left',
     },
     textinputCenter: {
         flex: 1,
@@ -315,21 +333,35 @@ module.exports = StyleSheet.create({
         height:20,
         width:80,
         alignSelf: "center", 
-        flexDirection:'column'
+        flexDirection: 'column',
+
+    },
+    marker: {
+        alignSelf: 'center',
+        width: 55,
+        height: 65,
+        margin: 0, padding: 0
     },
     /*Modal Design Start*/
     modalWrapper:{
         backgroundColor: 'rgba(0,0,0,0.5)',
-        height:'100%',
+        height: '100%',
+        
         zIndex: 1000,
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      
     },
-    modalContainer:{
-        borderRadius:6, 
+    modalContainer: {
+        borderRadius: 6, 
         marginTop: 50,
         backgroundColor:'white',
-        width:300,
+        width:340,
         alignSelf: "center",
-        flexDirection:'column',
+        paddingLeft: 5,
+        paddingRight: 5,
     },
     modalAvatar:{
         marginLeft:0,
@@ -349,6 +381,45 @@ module.exports = StyleSheet.create({
         color:'#009da3',
         padding:15,
         fontSize:17
+    },
+    callOut: {
+        width: 200,
+        height:50,
+        alignItems: 'center',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom:5,
+        backgroundColor: 'white',
+        borderColor: '#2c3e50',
+        borderWidth: 1,
+        borderRadius:8,
+       
+    },
+    callOutContainer: {
+        width: 170,
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        
+    },
+    callOutText: {
+        flex: 1,
+        width: 170,
+        fontSize: 12,
+        textAlign: 'center',
+        color: 'black',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlignVertical: 'center'
+        
+    },
+    callOutArrow: {
+        height: 50,
+        width: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 
     /*Model Design End*/

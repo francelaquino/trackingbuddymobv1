@@ -46,7 +46,7 @@ class DisplayMember extends Component {
                 data={data}
                 renderItem={({ item }) => (
 
-                        <ListItem key={item.uid}  button avatar style={globalStyle.listItem}  onPress={() => {this.props.navigation.navigate("MemberHome",{uid:item.uid,firstname:item.firstname})}}>
+                        <ListItem key={item.uid}  button avatar style={globalStyle.listItem}  onPress={() => {this.props.navigation.navigate("InfoMember",{memberuid:item.uid,firstname:item.firstname})}}>
                             <Left style={globalStyle.listLeft}>
                                 <View style={globalStyle.listAvatarContainer} >
                                 { item.avatar==='' ?  <Thumbnail  style={globalStyle.listAvatar} source={{uri: this.state.emptyPhoto}} /> :
@@ -93,13 +93,13 @@ class DisplayMember extends Component {
                         </Body>
                         <Right  >
                             <Button transparent onPress={() => this.props.navigation.navigate("NewInvite",{onReload : this.onReload})}>
-                                <Text style={globalStyle.headerRightText}>Add Member</Text>
+                                <Text style={globalStyle.headerRightText}>Add</Text>
                             </Button> 
                             
                         </Right>
                     </Header>
-                        <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}
-                          >
+                    <Content padder>
+                        <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
                             <View style={globalStyle.container}>
                             <List>
                                 {this.renderMember()}
@@ -107,6 +107,7 @@ class DisplayMember extends Component {
                             
                             </View>
                         </ScrollView>
+                        </Content>
                 </Container>
             </Root>
         )

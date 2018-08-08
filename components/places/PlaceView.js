@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
-import {  TouchableOpacity,Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, ToastAndroid, Image,Dimensions,Alert } from 'react-native';
-import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Thumbnail,Switch } from 'native-base';
+import { TouchableOpacity, Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, Dimensions, Alert } from 'react-native';
+import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem, Left, Right, Thumbnail, Switch, Separator } from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -10,8 +10,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MapView, { ProviderPropType, Marker, AnimatedRegion,Animated,Polyline } from 'react-native-maps';
 import { connect } from 'react-redux';
-import { updatePlace, displayPlaces  } from '../../actions/locationActions' ;
-import { displayMember  } from '../../actions/memberActions' ;
+import { updatePlace, displayPlaces  } from '../../redux/actions/locationActions' ;
+import { displayMember  } from '../../redux/actions/memberActions' ;
 import Loading  from '../shared/Loading';
 import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
@@ -32,7 +32,7 @@ class PlaceView extends Component {
         this.state = {
             id:'',
             loading:true,
-            placename:'',
+            place:'',
             region: {
                   latitude: -37.78825,
                   longitude: -122.4324,
@@ -56,9 +56,6 @@ class PlaceView extends Component {
                 latitudeDelta: 0.005,
                 longitudeDelta: 0.005
               })
-              setTimeout(() => {
-                  this.takeSnapshot();
-              }, 1000);
 
     }
 
@@ -67,15 +64,16 @@ class PlaceView extends Component {
         this.setState({loading:false})
     }
             
-    async initialize(){
+    async initialize() {
+       
         await this.setState({
             id:this.props.navigation.state.params.place.id,
-            placename:this.props.navigation.state.params.place.placename,
+            place:this.props.navigation.state.params.place.place,
             region:{
                 latitude: this.props.navigation.state.params.place.latitude,
                 longitude: this.props.navigation.state.params.place.longitude,
-                latitudeDelta: this.props.navigation.state.params.place.latitudeDelta,
-                longitudeDelta: this.props.navigation.state.params.place.longitudeDelta,
+                latitudeDelta: LATITUDE_DELTA,
+                longitudeDelta: LONGITUDE_DELTA,
             },
            
         })
@@ -84,18 +82,7 @@ class PlaceView extends Component {
     }
 
 
-    takeSnapshot () {
-        const snapshot = this.map.takeSnapshot({
-          format: 'png',  
-          result: 'base64'  
-        });
-        snapshot.then((uri) => {
-          this.setState({ mapSnapshot:{uri:'data:image/png;base64,'+uri}});
-       
-          
-        });
-       
-      }
+ 
    
     loading(){
         return (
@@ -110,7 +97,7 @@ class PlaceView extends Component {
     
     ready(){
         const members =this.props.members.map(member=>(
-            <ListItem key={member.id}  avatar button style={globalStyle.listItem}  onPress={() => {this.props.navigation.navigate("PlaceAlert",{placename: this.state.placename,placeid:this.state.id,userid:member.id,firstname:member.firstname,region:this.state.region})}}>
+            <ListItem key={member.id}  avatar button style={globalStyle.listItem}  onPress={() => {this.props.navigation.navigate("PlaceAlert",{place: this.state.place,placeid:this.state.id,userid:member.uid,firstname:member.firstname,region:this.state.region})}}>
             <Left style={globalStyle.listLeft}>
                
                 <View style={globalStyle.listAvatarContainer} >
@@ -133,7 +120,7 @@ class PlaceView extends Component {
             <Root>
                 <Container style={globalStyle.containerWrapper}>
                 <OfflineNotice/>
-                <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
+               
                     <Loader loading={this.state.loading} />
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
@@ -142,7 +129,7 @@ class PlaceView extends Component {
                                 </Button> 
                             </Left>
                             <Body>
-                                <Title>{this.state.placename}</Title>
+                                <Title>{this.state.place}</Title>
                             </Body>
                             <Right  >
                             <Button transparent onPress={() => this.props.navigation.navigate("EditPlace",{place: this.props.navigation.state.params.place})}>
@@ -150,41 +137,57 @@ class PlaceView extends Component {
                             </Button> 
                             
                         </Right>
-                        </Header>
-                        
+                    </Header>
+                   
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
                         <View style={styles.mainContainer}>
-                        <MapView ref={map => {this.map = map}}
-                                    onLayout = {() => this.fitToMap()}
-                                    zoomEnabled = {true}
-                                    style={styles.map}
-                                    textStyle={{ color: '#bc8b00' }}>
-
-                                    </MapView>
                             <View style={styles.mapContainer}>
-                            <Image style={{width:'100%',height:200,position:'absolute'}} source={{ uri: this.state.mapSnapshot.uri }} />
-                            
-                                    <View style={{width:100,height:100,borderWidth:1,borderColor:'#1eaec5',borderRadius:50, backgroundColor: 'rgba(30, 174, 197, 0.5)', justifyContent: 'center',alignItems: 'center'}}>
-                                    <View style={{width:10,height:10, borderRadius:5,backgroundColor: 'rgba(0, 113, 189, 0.5)'}}></View>
-                                    </View>
-                                    
+                                <Image style={globalStyle.marker}
+                                    source={require('../../images/placemarker.png')} />
+                                <MapView ref={map => { this.map = map }}
+                                    zoomEnabled={true}
+                                    onLayout={() => this.fitToMap()}
+                                    style={StyleSheet.absoluteFill}
+                                    textStyle={{ color: '#bc8b00' }}
+                                    loadingEnabled={true}
+                                    showsMyLocationButton={false}>
+
+                                    <MapView.Marker coordinate={this.state.region} >
+                                        <Image style={globalStyle.marker}
+                                            source={require('../../images/placemarker.png')} />
+                                    </MapView.Marker>
+
+
+                                </MapView>
+
                             </View>
+
+
+                       
+                            
                             <List>
-                            <ListItem itemDivider>
-                            <Text>{this.state.placename} Alerts</Text>
-                            </ListItem>  
+                                <Separator bordered>
+                                    <Text>Notification</Text>
+                                </Separator>
+                            
+
                             </List>
-                            <View  style={styles.footerContainer}>
+                           
+                            <View style={styles.footerContainer}>
+                                <Content padder>
                             <List>
                             {members}
                             </List>
                             
-                                
+                                </Content>
                             
-                            </View>
+                                </View>
+                          
                         </View>
 
 
-                        </ScrollView  >
+                    </ScrollView  >
+                   
 
                 </Container>
         </Root>
@@ -195,11 +198,7 @@ class PlaceView extends Component {
 
 
     render() {
-            if(this.props.isLoading){
-                return this.loading();
-            }else{
                 return this.ready();
-            }
         
 
   }
@@ -215,7 +214,6 @@ const styles = StyleSheet.create({
     },
     map: {
         ...StyleSheet.absoluteFillObject,
-        opacity:0,
         borderBottomColor:'silver',
         borderBottomWidth:.5,
       },
@@ -229,10 +227,7 @@ const styles = StyleSheet.create({
     },
 
     footerContainer: {
-        borderTopColor:'silver',
-        borderTopWidth:.5,
         flex: 1,
-        padding:5,
         
       },
   });

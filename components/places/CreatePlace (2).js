@@ -9,6 +9,8 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MapView, { ProviderPropType, Marker, AnimatedRegion,Animated,Polyline } from 'react-native-maps';
+import { connect } from 'react-redux';
+import { createPlace,displayPlaces  } from '../../redux/actions/locationActions' ;
 import Loading  from '../shared/Loading';
 import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
@@ -22,13 +24,13 @@ var globalStyle = require('../../assets/style/GlobalStyle');
 var userdetails = require('../../components/shared/userDetails');
 
 
-class LocationView extends Component {
+class CreatePlace extends Component {
     constructor(props) {
         super(props)
         this.map = null;
 
         this.state = {
-            loading:true,
+            loading:false,
             placename:'',
             region: {
                   latitude: -37.78825,
@@ -36,6 +38,7 @@ class LocationView extends Component {
                   latitudeDelta: 0.0922,
                   longitudeDelta: 0.0421,
                 },
+            isMapReady: false,
         };
 
       }
@@ -52,23 +55,64 @@ class LocationView extends Component {
                 latitudeDelta: 0.005,
                 longitudeDelta: 0.005
               })
+
     }
 
+    onRegionChangeComplete = region => {
+        this.setState({ region });
+        
+      }
    
     componentDidMount(){
-        this.setState({
-            region:{
-                longitude:this.props.navigation.state.params.location.coordinates.longitude,
-                latitude:this.props.navigation.state.params.location.coordinates.latitude
-            },
-            placename: this.props.navigation.state.params.location.address,
-            dateadded: this.props.navigation.state.params.location.dateadded,
-            loading:false
-        })
+        this.getCurrentPosition();
+
     }
 
-    
- 
+    onSubmit() {
+        if (this.state.placename == "") {
+            ToastAndroid.showWithGravityAndOffset("Please enter place name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            return false;
+        }
+        this.setState({ loading: true })
+        this.props.createPlace(this.state.placename,this.state.region).then(res=>{
+            this.setState({placename:'',loading:false})
+            if(res!==""){
+                this.props.displayPlaces();
+                ToastAndroid.showWithGravityAndOffset(res,ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
+            }
+            
+        }).catch(function(err) {
+            this.setState({loading:false})
+        });
+    }
+
+
+    getCurrentPosition() {
+        try {
+          navigator.geolocation.getCurrentPosition(
+              (position) => {
+              const region = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                latitudeDelta: LATITUDE_DELTA,
+                longitudeDelta: LONGITUDE_DELTA,
+              };
+              this.setState({region:{
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    latitudeDelta: LATITUDE_DELTA,
+                    longitudeDelta: LONGITUDE_DELTA
+                }
+            })
+            },
+            (error) => {
+              },
+                { enableHighAccuracy: false, timeout: 10000 }
+
+          );
+        } catch(e) {
+        }
+    }
 
    
     loading(){
@@ -85,9 +129,6 @@ class LocationView extends Component {
     ready(){
 
         const { region } = this.state;
-        
-
-
 
         return (
             <Root>
@@ -95,7 +136,7 @@ class LocationView extends Component {
                 <Loader loading={this.state.loading} />
                 <OfflineNotice/>
                 <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
-                   
+                    
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
                                 <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
@@ -103,38 +144,39 @@ class LocationView extends Component {
                                 </Button> 
                             </Left>
                             <Body>
-                                <Title>Location Details</Title>
+                                <Title>Add Place</Title>
                             </Body>
                         </Header>
                         <View style={styles.mainContainer}>
                             <View style={styles.mapContainer}>
                             
                                 <MapView ref={map => {this.map = map}}
+                                    onLayout = {() => this.fitToMap()}
                                     zoomEnabled = {true}
-                                    onLayout = {() => this.fitToMap()} 
+                                    onRegionChangeComplete={this.onRegionChangeComplete}
                                     style={StyleSheet.absoluteFill}
                                     textStyle={{ color: '#bc8b00' }}
                                     loadingEnabled={true}
                                     showsMyLocationButton={false}>
 
-                                    <MapView.Marker  coordinate={this.state.region}/>                                        
-
 
                                     </MapView>
+                                    <View style={{width:100,height:100,borderWidth:1,borderColor:'#1eaec5',borderRadius:50, backgroundColor: 'rgba(30, 174, 197, 0.5)', justifyContent: 'center',alignItems: 'center'}}>
+                                    <View style={{width:10,height:10, borderRadius:5,backgroundColor: 'rgba(0, 113, 189, 0.5)'}}></View>
+                                    </View>
                                     
                             </View>
-
-                             <View  style={styles.footerContainer}>
-                             <Item stackedLabel>
-                                <Label style={globalStyle.label} >Date/Time</Label>
-                                <Input numberOfLines={1}  style={globalStyle.textinput} value={this.state.dateadded} editable={false}/>
+                            <View  style={styles.footerContainer}>
+                            <Item   style={globalStyle.regularitem}>
+                            <Input style={globalStyle.textinput} placeholder="Place Name"  maxLength={50} value={this.state.placename}  autoCorrect={false} onChangeText={placename=>this.setState({placename})} name="placename"/>
                             </Item>
-                            <Item stackedLabel style={{borderBottomWidth:0}}>
-                                <Label style={globalStyle.label} >Address</Label>
-                                <Input numberOfLines={1} style={globalStyle.textinput} value={this.state.placename} editable={false}/>
-                            </Item>
-                            </View>
+                            <Button disabled={!this.state.placename} style={this.state.placename ? globalStyle.secondaryButton : globalStyle.secondaryButtonDisabled}
+                                        onPress={()=>this.onSubmit()}
+                                        bordered light full  >
+                                        <Text style={{color:'white'}}>Save</Text>
+                                    </Button>
                             
+                            </View>
                         </View>
 
 
@@ -149,7 +191,7 @@ class LocationView extends Component {
 
 
     render() {
-            if(this.state.loading){
+            if(this.state.isMapReady){
                 return this.loading();
             }else{
                 return this.ready();
@@ -186,5 +228,10 @@ const styles = StyleSheet.create({
   
   
 
-export default LocationView;
+const mapStateToProps = state => ({
+  })
+  
+CreatePlace=connect(mapStateToProps,{displayPlaces,createPlace})(CreatePlace);
+  
+export default CreatePlace;
 

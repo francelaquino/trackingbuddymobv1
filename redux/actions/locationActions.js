@@ -3,8 +3,8 @@ import firebase from 'react-native-firebase';
 import Moment from 'moment';
 import Geocoder from 'react-native-geocoder';
 import { ToastAndroid,AsyncStorage } from 'react-native';
-
-
+import axios from 'axios';
+var settings = require('../../components/shared/Settings');
 var userdetails = require('../../components/shared/userDetails');
 
 
@@ -219,208 +219,274 @@ export const saveLocationOnLogin=()=> async dispatch=> {
 
 
 
-export const updatePlace=(id,placename,coordinate)=> dispatch=> {
-    let coords = {
-        lat: coordinate.latitude,
-        lng:  coordinate.longitude,
-    };
-    return new Promise((resolve) => {
-        Geocoder.geocodePosition(coords).then(res => {
-            let address=res[1].formattedAddress;
-            firebase.database().ref().child("places/"+userdetails.userid).orderByChild("placename").equalTo(placename).once("value",snapshot => {
-                let key="";
-                snapshot.forEach(function(childSnapshot) {
-                    key =childSnapshot.key;
-                });
-                if(key==id || key==""){
-                    firebase.database().ref().child("places/"+userdetails.userid+"/"+id).update({ 
-                            placename : placename,
-                            latitude: coordinate.latitude,
-                            longitude: coordinate.longitude,
-                            address: address,
-                            latitudeDelta: coordinate.latitudeDelta,
-                            longitudeDelta: coordinate.longitudeDelta,
-                            dateupdated: Date.now(),
-                    })
-                    .catch(function(err) {
-                        resolve("")
-                    });
-                    resolve("Place successfully updated");
-                }else{
-                    resolve("Place already exist");
-                }
-            }).catch(function(err) {
-                resolve("");
-                
-            });
-        }).catch(err => {
-            resolve("");
-        })
-    });
-};
 
 
 
-export const savePlaceAlert=(alert)=> async dispatch=> {
-    try{
-        await firebase.database().ref().child("placealert/"+alert.userid+"/"+alert.placeid).set({ 
-            placeid: alert.placeid,
-            latitude: alert.latitude,
-            longitude: alert.longitude,
-            userid:alert.userid,
-            placeowner:userdetails.userid,
-            arrives:alert.arrives,
-            leaves:alert.leaves,
-            dateupdated: Date.now(),
-        });
-        return "Alert successfully saved";
-    }catch (e) {
-        return "";
-    }
-    
-        
-         
-};
-
-export const getPlaceAlert=(placeid,userid)=> async dispatch=> {
-    let alert={
-        arrives:false,
-        leaves:false
-    }
-
-    try{
-        await firebase.database().ref().child("placealert/"+userid+"/"+placeid).once("value",snapshot => {
-                if(snapshot.val()!==null){
-                    alert={
-                        arrives:snapshot.val().arrives,
-                        leaves:snapshot.val().leaves
-                    }
-                }
-                    
-            });
-
-            dispatch({ 
-                type: GET_PLACE_ALERT,
-                payload: alert,
-            });
-
-    }catch (e) {
-        dispatch({ 
-            type: GET_PLACE_ALERT,
-            payload: alert,
-        });
-    }
-
-};
 
 
-
-export const deletePlace=(id)=> dispatch=> {
-    return new Promise((resolve) => {
-
-        firebase.database().ref().child("placealert/"+id).remove()
-        .catch(function(err) {
-            resolve("")
-        });
-
-        firebase.database().ref().child("places/"+userdetails.userid+"/"+id).remove()
-        .catch(function(err) {
-            resolve("")
-        });
-        resolve("Place successfully deleted");
-    });
-};
-
-
-export const displayPlaces=()=>async dispatch=> {
-    let places=[];
-    try {
-        firebase.database().ref(".info/connected").on("value", function (snap) {
-            if (snap.val() === true) {
-                firebase.database().ref().child('places/' + userdetails.userid).orderByKey().once("value", async function (snapshot) {
-                    await snapshot.forEach(childSnapshot => {
-                        let dateadded = Moment(new Date(parseInt(childSnapshot.val().dateadded))).format("ddd DD-MMM-YYYY hh:mm A");
-                        places.push({
-                            id: childSnapshot.key,
-                            address: childSnapshot.val().address,
-                            placename: childSnapshot.val().placename,
-                            dateadded: dateadded,
-                            longitude: Number(childSnapshot.val().longitude),
-                            latitude: Number(childSnapshot.val().latitude)
-
-                        });
-                    })
-                    dispatch({
-                        type: DISPLAY_PLACES,
-                        payload: places,
-                    });
-                });
-            } else {
-                dispatch({
-                    type: DISPLAY_PLACES,
-                    payload: places,
-                });
-
-                ToastAndroid.showWithGravityAndOffset("Network connection error", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-            }
-        });
-        
-    }catch (e) {
-        dispatch({ 
-            type: DISPLAY_PLACES,
-            payload: places,
-        });
-    }
-
-  
-    
-};
 
 
 
 //update code
 
 
-export const createPlace = (place, coordinate) => dispatch => {
-    let coords = {
-        lat: coordinate.latitude,
-        lng: coordinate.longitude,
-    };
-
-
+export const deletePlace = (id) => dispatch => {
     return new Promise(async (resolve) => {
         try {
-            Geocoder.geocodePosition(coords).then(res => {
-                let address = res[1].formattedAddress;
-            })
-            await axios.post(settings.baseURL + 'place/addplace', {
-                place: place,
-                latitude: coordinate.latitude,
-                longitude: coordinate.longitude,
-                latitudeDelta: coordinate.latitudeDelta,
-                longitudeDelta: coordinate.longitudeDelta,
-                address: address,
-                owner: userdetails.userid,
+
+            await axios.post(settings.baseURL + 'place/deleteplace', {
+                placeid: id,
+                owneruid: userdetails.userid,
             }).then(function (res) {
                 if (res.data.status == "202") {
-                    ToastAndroid.showWithGravityAndOffset("Place successfully added", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Place successfully deleted", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     resolve(true)
                 } else {
                     resolve(false)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
             }).catch(function (error) {
                 resolve(false)
-                ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            ToastAndroid.showWithGravityAndOffset("Something went wrong...", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            resolve(false)
+        }
+
+    })
+   
+};
+
+
+export const displayPlaces = () => async dispatch => {
+
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'place/getplaces/' + userdetails.userid)
+                .then(function (res) {
+                    if (res.data.status == "202") {
+                        dispatch({
+                            type: DISPLAY_PLACES,
+                            payload: res.data.results
+                        });
+                        resolve(true)
+                    } else {
+                        dispatch({
+                            type: DISPLAY_PLACES,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                }).catch(function (error) {
+                   
+                    dispatch({
+                        type: DISPLAY_PLACES,
+                        payload: []
+                    });
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+           
+            dispatch({
+                type: DISPLAY_PLACES,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
+
+
+
+
+};
+
+
+export const savePlace = (place, address, coordinate) => dispatch => {
+
+    return new Promise(async (resolve) => {
+        try {
+            await axios.post(settings.baseURL + 'place/saveplace', {
+                place: place,
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+                address: address,
+                owner: userdetails.userid,
+            }).then(function (res) {
+                if (res.data.status == "202") {
+                    if (res.data.isexist == "true") {
+                        ToastAndroid.showWithGravityAndOffset("Place already exist", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        resolve(false)
+                    } else {
+                        ToastAndroid.showWithGravityAndOffset("Place successfully added", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        resolve(true)
+                    }
+                } else {
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                }
+            }).catch(function (error) {
+                resolve(false)
+                console.log(error)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            });
+
+
+        } catch (e) {
+            console.log(e)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
 
     })
 
+
+};
+
+
+export const updatePlace = (id, place,address, coordinate) => dispatch => {
+
+
+    return new Promise(async (resolve) => {
+        try {
+            await axios.post(settings.baseURL + 'place/updateplace', {
+                id: id,
+                place: place,
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+                address: address,
+                owner: userdetails.userid,
+            }).then(function (res) {
+                console.log(res);
+                if (res.data.status == "202") {
+                    if (res.data.isexist == "true") {
+                        ToastAndroid.showWithGravityAndOffset("Place already exist", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        resolve(false)
+                    } else {
+                        ToastAndroid.showWithGravityAndOffset("Place successfully updated", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        resolve(true)
+                    }
+                } else {
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                }
+            }).catch(function (error) {
+                resolve(false)
+                console.log(error)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            });
+
+
+        } catch (e) {
+            console.log(e)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            resolve(false)
+        }
+
+    })
+
+};
+
+
+export const savePlaceNotification = (data) => async dispatch => {
+
+    return new Promise(async (resolve) => {
+        try {
+            await axios.post(settings.baseURL + 'place/savenotification', {
+                useruid: data.useruid,
+                placeid: data.placeid,
+                arrives: data.arrives,
+                leaves: data.leaves,
+                owner: userdetails.userid,
+            }).then(function (res) {
+                console.log(res);
+                if (res.data.status == "202") {
+                        ToastAndroid.showWithGravityAndOffset("Notification successfully saved.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        resolve(true)
+                } else {
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                }
+            }).catch(function (error) {
+                resolve(false)
+                console.log(error)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            });
+
+
+        } catch (e) {
+            console.log(e)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            resolve(false)
+        }
+
+    })
+
+
+};
+
+
+
+
+
+export const getPlaceNotification = (placeid, userid) => async dispatch => {
+    let arrives = false;
+    let leaves = false;
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'place/getPlaceNotification/' + userdetails.userid + '/' + placeid + '/' + userid)
+                .then(function (res) {
+                    console.log(res)
+                    if (res.data.status == "202") {
+                        if (res.data.results.length > 0) {
+                            if (res.data.results[0].arrives == '1') {
+                                arrives = true;
+                            }
+                            if (res.data.results[0].leaves == '1') {
+                                leaves= true;
+                            }
+                        }
+                        dispatch({
+                            type: GET_PLACE_ALERT,
+                            payload: {
+                                arrives: arrives,
+                                leaves: leaves
+                                }
+                        });
+                        resolve(true)
+                    } else {
+                        dispatch({
+                            type: GET_PLACE_ALERT,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                }).catch(function (error) {
+
+                    dispatch({
+                        type: GET_PLACE_ALERT,
+                        payload: []
+                    });
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+
+            dispatch({
+                type: DISPLAY_PLACES,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
 
 };

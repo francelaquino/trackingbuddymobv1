@@ -107,16 +107,19 @@ class DisplayGroup extends Component {
                             
                         </Right>
                     </Header>
-                    <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
+                    <Content padder>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                        
                     <View style={globalStyle.container}>
                         <List>
                             {groups}
                         </List>
 
                          
-                    </View>
-                    </ScrollView>
-                   
+                            </View>
+                             
+                        </ScrollView>
+                        </Content>
                 </Container>
             </Root>
         )

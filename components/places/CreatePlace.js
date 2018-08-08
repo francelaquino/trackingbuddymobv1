@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { NetInfo , TouchableOpacity,Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, ToastAndroid, Image,Dimensions } from 'react-native';
+import { NetInfo, TouchableOpacity, Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, Dimensions, Modal, TouchableHighlight } from 'react-native';
 import { Drawer,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Switch, Thumbnail,Card,Form } from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -8,14 +8,14 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
-import MapView, { ProviderPropType, Marker, AnimatedRegion,Animated,Polyline } from 'react-native-maps';
-import { connect } from 'react-redux';
-import { createPlace,displayPlaces  } from '../../redux/actions/locationActions' ;
+import MapView, { ProviderPropType, Marker, AnimatedRegion, Animated, Polyline } from 'react-native-maps';
+import Geocoder from 'react-native-geocoder';
 import Loading  from '../shared/Loading';
 import Loader from '../shared/Loader';
-import OfflineNotice  from '../shared/OfflineNotice';
-const LATITUDE_DELTA = 0.01;
-const LONGITUDE_DELTA = 0.01;
+import OfflineNotice from '../shared/OfflineNotice';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+const LATITUDE_DELTA = 0.00522;
+const LONGITUDE_DELTA = Dimensions.get("window").width / Dimensions.get("window").height * LATITUDE_DELTA;
 
 
 
@@ -23,20 +23,22 @@ const LONGITUDE_DELTA = 0.01;
 var globalStyle = require('../../assets/style/GlobalStyle');
 var userdetails = require('../../components/shared/userDetails');
 
+var self;
 
 class CreatePlace extends Component {
     constructor(props) {
         super(props)
         this.map = null;
-
         this.state = {
-            loading:false,
-            placename:'',
+            loading: false,
+            modalVisible:false,
+            placename: '',
+            address:'',
             region: {
                   latitude: -37.78825,
-                  longitude: -122.4324,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
+                longitude: -122.4324,
+                latitudeDelta: LATITUDE_DELTA,
+                  longitudeDelta: LONGITUDE_DELTA
                 },
             isMapReady: false,
         };
@@ -46,44 +48,61 @@ class CreatePlace extends Component {
 
     
 
-      
+    setMarkerLocation(location) {
+        let coords = {
+            lat: location.coordinate.latitude,
+            lng: location.coordinate.longitude,
+        };
+        Geocoder.geocodePosition(coords).then(res => {
+            let address = res[1].formattedAddress;
+            this.setState({
+                address:address,
+                region: {
+                    latitude: location.coordinate.latitude,
+                    longitude: location.coordinate.longitude,
+                }
+            })
+        })
 
-    fitToMap(){
+       
+
+        this.fitToMap();
+
+    }
+
+    fitToMap() {
+
+        setTimeout(() => {
             this.map.animateToRegion({
                 latitude: this.state.region.latitude,
                 longitude: this.state.region.longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005
-              })
+                latitudeDelta: LATITUDE_DELTA,
+                longitudeDelta: LONGITUDE_DELTA
+            })
+            setTimeout(() => {
+                this.refs['mapMarker'].showCallout()
+            }, 500);
+        }, 0);
+           
 
     }
 
-    onRegionChangeComplete = region => {
-        this.setState({ region });
-        
-      }
+ 
    
-    componentDidMount(){
-        this.getCurrentPosition();
+    async componentDidMount(){
+        await this.getCurrentPosition();
+
+        self = this;
 
     }
 
-    onSubmit() {
-        if (this.state.placename == "") {
-            ToastAndroid.showWithGravityAndOffset("Please enter place name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-            return false;
-        }
-        this.setState({ loading: true })
-        this.props.createPlace(this.state.placename,this.state.region).then(res=>{
-            this.setState({placename:'',loading:false})
-            if(res!==""){
-                this.props.displayPlaces();
-                ToastAndroid.showWithGravityAndOffset(res,ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
-            }
-            
-        }).catch(function(err) {
-            this.setState({loading:false})
-        });
+
+
+    setModalVisible(visible) {
+        this.setState({ modalVisible: visible });
+    }
+    showModal() {
+        this.setState({ modalVisible: true });
     }
 
 
@@ -102,8 +121,23 @@ class CreatePlace extends Component {
                     longitude: position.coords.longitude,
                     latitudeDelta: LATITUDE_DELTA,
                     longitudeDelta: LONGITUDE_DELTA
-                }
-            })
+              }
+
+                 
+                  })
+                  let coords = {
+                      lat: position.coords.latitude,
+                      lng: position.coords.longitude,
+                  };
+
+                  Geocoder.geocodePosition(coords).then(res => {
+                      this.setState({
+                          address: res[1].formattedAddress
+
+                      })
+                      
+                  })
+
             },
             (error) => {
               },
@@ -124,8 +158,22 @@ class CreatePlace extends Component {
           </Root>
         )
     }
+  
+    updateLocation(details) {
+            this.setState({
+                address: details.formatted_address,
+                region: {
+                    latitude: details.geometry.location.lat,
+                    longitude: details.geometry.location.lng,
+                    latitudeDelta: LATITUDE_DELTA,
+                    longitudeDelta: LONGITUDE_DELTA
+                }
+            });
 
-    
+            this.fitToMap();
+        
+         
+    }
     ready(){
 
         const { region } = this.state;
@@ -135,7 +183,7 @@ class CreatePlace extends Component {
                 <Container style={globalStyle.containerWrapper}>
                 <Loader loading={this.state.loading} />
                 <OfflineNotice/>
-                <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
+               
                     
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
@@ -146,41 +194,113 @@ class CreatePlace extends Component {
                             <Body>
                                 <Title>Add Place</Title>
                             </Body>
-                        </Header>
+                    </Header>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
                         <View style={styles.mainContainer}>
+                            <View style={styles.searchContainer}>
+                                <GooglePlacesAutocomplete
+                                    ref={c => this.googlePlacesAutocomplete = c}
+                                    placeholder='Search Location'
+                                    minLength={2} // minimum length of text to search
+                                    autoFocus={false}
+                                    returnKeyType={'search'} // Can be left out for default return key https://facebook.github.io/react-native/docs/textinput.html#returnkeytype
+                                    listViewDisplayed='auto'    // true/false/undefined
+                                    fetchDetails={true}
+                                    renderDescription={row => row.description} // custom description render
+                                    onPress={(data, details = null) => { // 'details' is provided when fetchDetails = true
+                                       
+                                        this.updateLocation(details);
+                                        this.googlePlacesAutocomplete._handleChangeText('')
+                                       
+                                    }}
+                                   
+
+                                    getDefaultValue={() => ''}
+
+                                    query={{
+                                        // available options: https://developers.google.com/places/web-service/autocomplete
+                                        key: 'AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q',
+                                        language: 'en', // language of the results
+                                    }}
+
+                                    styles={{
+                                        textInputContainer: {
+                                            width: '100%',
+                                            height: 56,
+                                            
+                                        },
+                                        textInput: {
+                                            height:40,
+                                        },
+                                        description: {
+                                            color:'black'
+                                        },
+                                    }}
+                                    
+                                    currentLocation={false} 
+                                    nearbyPlacesAPI='GooglePlacesSearch' // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+                                    GoogleReverseGeocodingQuery={{
+                                        // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+                                    }}
+                                    GooglePlacesSearchQuery={{
+                                        // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
+                                        rankby: 'distance',
+                                        types: 'food'
+                                    }}
+
+                                    filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
+
+                                    debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+                                />
+                                
+                            </View>
                             <View style={styles.mapContainer}>
-                            
-                                <MapView ref={map => {this.map = map}}
-                                    onLayout = {() => this.fitToMap()}
-                                    zoomEnabled = {true}
-                                    onRegionChangeComplete={this.onRegionChangeComplete}
+                                <Image style={globalStyle.marker}
+                                    source={require('../../images/placemarker.png')} />
+                                <MapView ref={map => { this.map = map }}
+                                    zoomEnabled={true}
+                                    onLayout={() => this.fitToMap()}
+                                    scrollEnabled={true}
                                     style={StyleSheet.absoluteFill}
                                     textStyle={{ color: '#bc8b00' }}
                                     loadingEnabled={true}
-                                    showsMyLocationButton={false}>
+                                    showsMyLocationButton={false}
+                                    onPress={(e) => this.setMarkerLocation(e.nativeEvent)}>
+
+                                    <MapView.Marker  coordinate={this.state.region} ref='mapMarker'>
+                                        <Image style={globalStyle.marker}
+                                            source={require('../../images/placemarker.png')} />
+
+                                        <MapView.Callout tooltip onPress={() => this.props.navigation.navigate("SavePlace", { latitude: this.state.region.latitude, longitude: this.state.region.longitude, address: this.state.address })}>
+                                            <View style={globalStyle.callOut} >
+                                                <View style={globalStyle.callOutContainer}>
+                                                    <Text numberOfLines={2} style={globalStyle.callOutText}>{this.state.address}</Text>
+                                                </View>
+                                                <View style={globalStyle.callOutArrow}>
+                                                    <SimpleLineIcons style={{ fontSize: 13, color:'#1abc9c' }} name='arrow-right' />
+                                                </View>
+                                                
+                                            </View>
+
+                                        </MapView.Callout>
+
+
+                                    </MapView.Marker>
 
 
                                     </MapView>
-                                    <View style={{width:100,height:100,borderWidth:1,borderColor:'#1eaec5',borderRadius:50, backgroundColor: 'rgba(30, 174, 197, 0.5)', justifyContent: 'center',alignItems: 'center'}}>
-                                    <View style={{width:10,height:10, borderRadius:5,backgroundColor: 'rgba(0, 113, 189, 0.5)'}}></View>
-                                    </View>
+                                    
                                     
                             </View>
-                            <View  style={styles.footerContainer}>
-                            <Item   style={globalStyle.regularitem}>
-                            <Input style={globalStyle.textinput} placeholder="Place Name"  maxLength={50} value={this.state.placename}  autoCorrect={false} onChangeText={placename=>this.setState({placename})} name="placename"/>
-                            </Item>
-                            <Button disabled={!this.state.placename} style={this.state.placename ? globalStyle.secondaryButton : globalStyle.secondaryButtonDisabled}
-                                        onPress={()=>this.onSubmit()}
-                                        bordered light full  >
-                                        <Text style={{color:'white'}}>Save</Text>
-                                    </Button>
-                            
-                            </View>
+                           
                         </View>
 
 
-                        </ScrollView  >
+                    </ScrollView  >
+                    
+                    
+                       
+
 
                 </Container>
         </Root>
@@ -212,26 +332,23 @@ const styles = StyleSheet.create({
     
     mapContainer: {
         flex: 1,
-        borderBottomColor:'silver',
-        borderBottomWidth:.5,
         justifyContent: 'center',
         alignItems: 'center'
       
     },
-    footerContainer: {
-        height:150,
-        padding:5,
-        
-      },
+    searchContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor:'white',
+        position: 'absolute',
+        zIndex: 9999,
+        borderRadius:5,
+
+    },
   });
 
   
-  
 
-const mapStateToProps = state => ({
-  })
-  
-CreatePlace=connect(mapStateToProps,{displayPlaces,createPlace})(CreatePlace);
   
 export default CreatePlace;
 

@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import {  TouchableOpacity,Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, ToastAndroid, Image,Dimensions,Alert } from 'react-native';
-import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Thumbnail,Switch } from 'native-base';
+import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem, Left, Right, Thumbnail, Switch, Separator } from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -11,7 +11,7 @@ import Loader  from '../shared/Loader';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MapView, { ProviderPropType, Marker, AnimatedRegion,Animated,Polyline } from 'react-native-maps';
 import { connect } from 'react-redux';
-import { savePlaceAlert,getPlaceAlert  } from '../../actions/locationActions' ;
+import { savePlaceNotification,getPlaceNotification  } from '../../redux/actions/locationActions' ;
 import Loading  from '../shared/Loading';
 import OfflineNotice  from '../shared/OfflineNotice';
 
@@ -32,7 +32,7 @@ class PlaceAlert extends Component {
             userid:'',
             loading:true,
             firstname:'',
-            placename:'',
+            place:'',
             longitude:'',
             latitude:'',
             arrives:false,
@@ -58,13 +58,13 @@ class PlaceAlert extends Component {
             placeid:this.props.navigation.state.params.placeid,
             userid:this.props.navigation.state.params.userid,
             firstname:this.props.navigation.state.params.firstname,
-            placename:this.props.navigation.state.params.placename,
+            place:this.props.navigation.state.params.place,
             latitude:this.props.navigation.state.params.region.latitude,
             longitude:this.props.navigation.state.params.region.longitude
            
         })
 
-        await this.props.getPlaceAlert(this.state.placeid,this.state.userid);
+        await this.props.getPlaceNotification(this.state.placeid,this.state.userid);
         this.setState({leaves:this.props.alerts.leaves,arrives:this.props.alerts.arrives})
         this.setState({loading:false})
         
@@ -75,22 +75,19 @@ class PlaceAlert extends Component {
         this.setState({busy:true})
         let alert={
             placeid:this.state.placeid,
-            userid:this.state.userid,
-            latitude:this.state.latitude,
-            longitude:this.state.longitude,
+            useruid:this.state.userid,
             arrives:this.state.arrives,
             leaves:this.state.leaves,
         }
-        try{
-            let response= await this.props.savePlaceAlert(alert);
-            this.setState({busy:false})
-            if(response!==""){
-                ToastAndroid.showWithGravityAndOffset(response,ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
-            }
+        this.props.savePlaceNotification(alert).then(res => {
+            this.setState({ busy: false })
 
-        }catch (e) {
-            this.setState({busy:false})
-         }
+        }).catch(function (err) {
+            this.setState({ busy: false })
+            });
+
+
+      
       
     }
    
@@ -120,17 +117,17 @@ class PlaceAlert extends Component {
                                 </Button> 
                             </Left>
                             <Body>
-                                <Title>{this.state.firstname}</Title>
+                            <Title>{this.state.place}</Title>
                             </Body>
                            
                         </Header>
                         
                         <View style={globalStyle.container}>
-                        
+                       
                         <List>
-                        <ListItem itemDivider>
-                        <Text>{this.state.placename} Alerts</Text>
-                        </ListItem>  
+                            <Separator bordered>
+                                <Text>{this.state.firstname}'s notification</Text>
+                            </Separator>
                             <ListItem >
                             <Body>
                                 <Text>Arrives</Text>
@@ -149,10 +146,10 @@ class PlaceAlert extends Component {
                             </ListItem>
                         </List>
                         <Content padder>
-                        <Button disabled={!this.state.placename} style={this.state.placename ? globalStyle.secondaryButton : globalStyle.secondaryButtonDisabled}
+                        <Button disabled={!this.state.place} style={this.state.place ? globalStyle.secondaryButton : globalStyle.secondaryButtonDisabled}
                                         onPress={()=>this.onSubmit()}
                                         bordered light full  >
-                                        <Text style={{color:'white'}}>Save Alert</Text>
+                                        <Text style={{color:'white'}}>Save</Text>
                                     </Button>
                                     </Content>
                         </View>
@@ -215,7 +212,7 @@ const mapStateToProps = state => ({
     alerts:state.fetchLocation.alerts,
   })
   
-  PlaceAlert=connect(mapStateToProps,{savePlaceAlert,getPlaceAlert})(PlaceAlert);
+  PlaceAlert=connect(mapStateToProps,{savePlaceNotification,getPlaceNotification})(PlaceAlert);
   
 export default PlaceAlert;
 

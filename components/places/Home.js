@@ -252,7 +252,7 @@ class HomePlaces extends Component {
 
 
     componentWillMount() {
-        this.initialize();
+        //this.initialize();
     }
 
     async centerToMarker(latitude, longitude) {
@@ -517,14 +517,7 @@ const styles = StyleSheet.create({
 
 
     },
-    callOut: {
-        width: 100,
-        alignItems:'center',
-    },
-    callOutText:{
-        fontSize: 10,
-        textAlign: 'center',
-    }
+    
   });
 
 
