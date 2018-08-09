@@ -15,8 +15,16 @@ module.exports = StyleSheet.create({
         flex:0,
     },
     headerLeft: {
+        flex:1,
         width:40,
-        flex:0,
+    },
+    headerBody: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerRight: {
+        flex: 1,
     },
     headerRightIcon: {
         width:40,
@@ -68,7 +76,8 @@ module.exports = StyleSheet.create({
         marginBottom:10,
         width: '90%',
         alignSelf: "center",
-        borderRadius:15,
+        borderRadius: 15,
+        marginLeft: '5%',
     },
     cancelButton: {
         backgroundColor: 'gray',
@@ -77,6 +86,7 @@ module.exports = StyleSheet.create({
         width: '90%',
         alignSelf: "center",
         borderRadius: 15,
+        marginLeft: '5%',
     },
     secondaryButtonDisabled:{
         backgroundColor: theme.primaryButtonColor,
@@ -85,12 +95,14 @@ module.exports = StyleSheet.create({
         width: '90%',
         alignSelf: "center",
         borderRadius: 15,
+        marginLeft: '5%',
     },
     deleteButton:{
         backgroundColor:theme.deleteColor,
         marginBottom:10,
         width: '90%',
         alignSelf: "center",
+        marginLeft:'5%',
         borderRadius: 15,
     },
 
@@ -396,12 +408,31 @@ module.exports = StyleSheet.create({
         borderRadius:8,
        
     },
+    callOutFix: {
+        width: 200,
+        height: 50,
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom: 5,
+        backgroundColor: 'white',
+        borderColor: '#2c3e50',
+        borderWidth: 1,
+        borderRadius: 8,
+
+    },
     callOutContainer: {
         width: 170,
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
         
+    },
+    callOutContainerFix: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor:'white',
+
     },
     callOutText: {
         flex: 1,

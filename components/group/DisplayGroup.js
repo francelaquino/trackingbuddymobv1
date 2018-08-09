@@ -97,10 +97,10 @@ class DisplayGroup extends Component {
                                 <Icon size={30} name='arrow-back' />
                             </Button> 
                         </Left>
-                        <Body>
-                            <Title>Group</Title>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>GROUP</Title>
                         </Body>
-                        <Right  >
+                        <Right style={globalStyle.headerRight}>
                             <Button transparent onPress={() =>navigate('CreateGroup')}>
                                 <Text style={globalStyle.headerRightText}>Add</Text>
                             </Button> 

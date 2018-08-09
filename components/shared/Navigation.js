@@ -28,6 +28,7 @@ import PlaceAlert from '../places/PlaceAlert';
 import GroupPlaces from '../places/GroupPlaces';
 import HomeSettings from '../settings/HomeSettings';
 import ChangePassword from '../user/ChangePassword';
+import Menu from '../shared/Menu';
 import Splash from './Splash';
 
 import  { createStackNavigator }  from 'react-navigation';
@@ -35,7 +36,29 @@ import  { createStackNavigator }  from 'react-navigation';
 
 export const Stack = createStackNavigator({
 
+    Home: {
+        screen: Home,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+    Menu: {
+        screen: Menu,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+   
 
+    PlaceList: {
+        screen: PlaceList,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
 
     CreatePlace: {
         screen: CreatePlace,
@@ -45,13 +68,7 @@ export const Stack = createStackNavigator({
         }
     },
 
-    Home: {
-        screen: Home,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        }
-    },
+   
 
     DisplayMember: {
         screen: DisplayMember,
@@ -73,13 +90,6 @@ export const Stack = createStackNavigator({
 
   
 
-    PlaceList: {
-        screen: PlaceList,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        }
-    },
 
 
     SavePlace: {

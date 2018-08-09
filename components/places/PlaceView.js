@@ -72,8 +72,8 @@ class PlaceView extends Component {
             region:{
                 latitude: this.props.navigation.state.params.place.latitude,
                 longitude: this.props.navigation.state.params.place.longitude,
-                latitudeDelta: LATITUDE_DELTA,
-                longitudeDelta: LONGITUDE_DELTA,
+                latitudeDelta: this.props.navigation.state.params.place.latitudedelta,
+                longitudeDelta: this.props.navigation.state.params.place.longitudedelta,
             },
            
         })
@@ -165,15 +165,15 @@ class PlaceView extends Component {
 
                        
                             
-                            <List>
-                                <Separator bordered>
-                                    <Text>Notification</Text>
-                                </Separator>
-                            
-
-                            </List>
+                           
                            
                             <View style={styles.footerContainer}>
+                                <List style={{ height: 35 }}>
+                                    <Separator bordered>
+                                        <Text style={{ height: 35, textAlignVertical: 'center' }}>Notification</Text>
+                                    </Separator>
+                                </List>
+                               
                                 <Content padder>
                             <List>
                             {members}

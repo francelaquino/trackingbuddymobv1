@@ -308,17 +308,20 @@ export const displayPlaces = () => async dispatch => {
 };
 
 
-export const savePlace = (place, address, coordinate) => dispatch => {
-
+export const savePlace = (place, address, region) => dispatch => {
     return new Promise(async (resolve) => {
         try {
             await axios.post(settings.baseURL + 'place/saveplace', {
                 place: place,
-                latitude: coordinate.latitude,
-                longitude: coordinate.longitude,
+                latitude: region.latitude,
+                longitude: region.longitude,
+                latitudedelta: region.latitudeDelta,
+                longitudedelta: region.longitudeDelta,
+
                 address: address,
                 owner: userdetails.userid,
             }).then(function (res) {
+                console.log(res)
                 if (res.data.status == "202") {
                     if (res.data.isexist == "true") {
                         ToastAndroid.showWithGravityAndOffset("Place already exist", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
@@ -442,7 +445,6 @@ export const getPlaceNotification = (placeid, userid) => async dispatch => {
         try {
             await axios.get(settings.baseURL + 'place/getPlaceNotification/' + userdetails.userid + '/' + placeid + '/' + userid)
                 .then(function (res) {
-                    console.log(res)
                     if (res.data.status == "202") {
                         if (res.data.results.length > 0) {
                             if (res.data.results[0].arrives == '1') {

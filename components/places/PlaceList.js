@@ -77,10 +77,10 @@ class PlaceList extends Component {
                                 <Icon size={30} name='arrow-back' />
                             </Button> 
                         </Left>
-                        <Body>
-                            <Title>Places</Title>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>PLACES</Title>
                         </Body>
-                        <Right  >
+                        <Right style={globalStyle.headerRight} >
                             <Button transparent onPress={() =>this.props.navigation.navigate('CreatePlace')}>
                                 <Text style={globalStyle.headerRightText}>Add</Text>
                             </Button> 

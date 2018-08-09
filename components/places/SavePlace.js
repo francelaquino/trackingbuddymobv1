@@ -46,23 +46,34 @@ class SavePlace extends Component {
     
 
       
+    fitToMap() {
 
-    fitToMap(){
+        setTimeout(() => {
             this.map.animateToRegion({
                 latitude: this.state.region.latitude,
                 longitude: this.state.region.longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005
-              })
-    }
+                latitudeDelta: this.state.region.latitudeDelta,
+                longitudeDelta: this.state.region.longitudeDelta
+            })
+        }, 0);
 
+
+    }
     onSubmit() {
+        
         if (this.state.placename == "") {
             ToastAndroid.showWithGravityAndOffset("Please enter place name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             return false;
         }
+        
         this.setState({ loading: true })
-        this.props.savePlace(this.state.placename, this.state.address, this.state.region).then(res => {
+        let region = {
+                latitude: this.state.region.latitude,
+                longitude: this.state.region.longitude,
+                latitudeDelta: this.state.region.latitudeDelta,
+                longitudeDelta: this.state.region.longitudeDelta
+        }
+        this.props.savePlace(this.state.placename, this.state.address, region).then(res => {
             this.setState({ loading: false })
             if (res == true) {
                 this.setState({ placename: ''})
@@ -73,11 +84,13 @@ class SavePlace extends Component {
         });
     }
    
-    componentDidMount(){
+    componentDidMount() {
         this.setState({
-            region:{
-                longitude:this.props.navigation.state.params.longitude,
-                latitude:this.props.navigation.state.params.latitude
+            region: {
+                latitude: this.props.navigation.state.params.region.latitude,
+                longitude: this.props.navigation.state.params.region.longitude,
+                latitudeDelta: this.props.navigation.state.params.region.latitudeDelta,
+                longitudeDelta: this.props.navigation.state.params.region.longitudeDelta
             },
             address: this.props.navigation.state.params.address,
             loading:false

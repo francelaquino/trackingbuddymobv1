@@ -390,18 +390,20 @@ class HomePlaces extends Component {
 
 
                         <Header style={globalStyle.header}>
-                            <Left style={globalStyle.headerLeft} >
+                            <Left style={globalStyle.headerMenu} >
                                 <Button transparent onPress={() => this.openDrawer()} >
                                     <Icon size={30} name='menu' style={globalStyle.headerLeftMenuIcon} />
                                 </Button>
                             </Left>
-                            <Body style={globalStyle.headerBody}>
-                                <Title style={globalStyle.headerTitle}></Title>
+                            <Body>
+                                <Title style={globalStyle.headerTitle}>Home</Title>
                             </Body>
                             <Right style={globalStyle.headerRight} >
-                               
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('Menu')}>
-                                    <SimpleLineIcons size={20} style={{ color: 'white' }} name="options-vertical" />
+                                <TouchableOpacity style={{ marginRight: 15 }} onPress={() => this.fitToMap()}>
+                                    <MaterialIcons size={25} style={{ color: 'white' }} name="my-location" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('SelectGroup', { changeGroup: this.changeGroup })}>
+                                    <Ionicons size={25} style={{ color: 'white' }} name="md-swap" />
                                 </TouchableOpacity>
 
 

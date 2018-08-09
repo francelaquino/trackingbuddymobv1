@@ -64,9 +64,13 @@ class PlaceAlert extends Component {
            
         })
 
-        await this.props.getPlaceNotification(this.state.placeid,this.state.userid);
-        this.setState({leaves:this.props.alerts.leaves,arrives:this.props.alerts.arrives})
-        this.setState({loading:false})
+        await this.props.getPlaceNotification(this.state.placeid, this.state.userid).then(res => {
+            this.setState({ leaves: this.props.alerts.leaves, arrives: this.props.alerts.arrives, loading: false })
+        });
+
+
+        
+        
         
        
     }
@@ -123,11 +127,13 @@ class PlaceAlert extends Component {
                         </Header>
                         
                         <View style={globalStyle.container}>
-                       
-                        <List>
-                            <Separator bordered>
-                                <Text>{this.state.firstname}'s notification</Text>
+                        <List style={{ height: 35 }}>
+                            <Separator  bordered>
+                                <Text style={{ height: 35, textAlignVertical: 'center' }}>{this.state.firstname}'s notification</Text>
                             </Separator>
+                        </List>
+                        <List>
+                            
                             <ListItem >
                             <Body>
                                 <Text>Arrives</Text>

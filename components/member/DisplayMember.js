@@ -88,10 +88,10 @@ class DisplayMember extends Component {
                                 <Icon size={30} name='arrow-back' />
                             </Button> 
                         </Left>
-                        <Body >
+                        <Body style={globalStyle.headerBody} >
                             <Title>Members</Title>
                         </Body>
-                        <Right  >
+                        <Right style={globalStyle.headerRight}>
                             <Button transparent onPress={() => this.props.navigation.navigate("NewInvite",{onReload : this.onReload})}>
                                 <Text style={globalStyle.headerRightText}>Add</Text>
                             </Button> 

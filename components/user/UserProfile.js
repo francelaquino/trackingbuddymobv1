@@ -152,9 +152,11 @@ class UserProfile extends Component {
                                 <Icon size={30} name='arrow-back' />
                             </Button>
                         </Left>
-                        <Body>
-                            <Title>Profile</Title>
-                        </Body>
+                            <Body style={globalStyle.headerBody}>
+                            <Title>PROFILE</Title>
+                            </Body>
+                            <Right style={globalStyle.headerRight}>
+                            </Right>
                        
                     </Header>
                         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>

@@ -33,7 +33,7 @@ class CreatePlace extends Component {
             loading: false,
             modalVisible:false,
             placename: '',
-            address:'',
+            address: '',
             region: {
                   latitude: -37.78825,
                 longitude: -122.4324,
@@ -47,28 +47,35 @@ class CreatePlace extends Component {
     
 
     
-
+    /*onPress = {(e) => this.setMarkerLocation(e.nativeEvent)}
     setMarkerLocation(location) {
-        let coords = {
-            lat: location.coordinate.latitude,
-            lng: location.coordinate.longitude,
-        };
-        Geocoder.geocodePosition(coords).then(res => {
-            let address = res[1].formattedAddress;
-            this.setState({
-                address:address,
-                region: {
-                    latitude: location.coordinate.latitude,
-                    longitude: location.coordinate.longitude,
-                }
+        setTimeout(() => {
+            let coords = {
+                lat: location.coordinate.latitude,
+                lng: location.coordinate.longitude,
+            };
+            Geocoder.geocodePosition(coords).then(res => {
+                let address = res[1].formattedAddress;
+                this.setState({
+                    address: address,
+                    region: {
+                        latitude: location.coordinate.latitude,
+                        longitude: location.coordinate.longitude,
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA
+                    }
+                })
             })
-        })
+            this.fitToMap()
+
+        },0)
+        
 
        
 
-        this.fitToMap();
+       
 
-    }
+    }*/
 
     fitToMap() {
 
@@ -76,12 +83,9 @@ class CreatePlace extends Component {
             this.map.animateToRegion({
                 latitude: this.state.region.latitude,
                 longitude: this.state.region.longitude,
-                latitudeDelta: LATITUDE_DELTA,
-                longitudeDelta: LONGITUDE_DELTA
+                latitudeDelta: this.state.region.latitudeDelta,
+                longitudeDelta: this.state.region.longitudeDelta
             })
-            setTimeout(() => {
-                this.refs['mapMarker'].showCallout()
-            }, 500);
         }, 0);
            
 
@@ -170,9 +174,31 @@ class CreatePlace extends Component {
                 }
             });
 
-            this.fitToMap();
+            
         
          
+    }
+    onRegionChangeComplete = region => {
+        let coords = {
+            lat: region.latitude,
+            lng: region.longitude,
+        };
+        Geocoder.geocodePosition(coords).then(res => {
+            let address = res[1].formattedAddress;
+            this.setState({
+                address: address,
+                region: {
+                    latitude: region.latitude,
+                    longitude: region.longitude,
+                    latitudeDelta: region.latitudeDelta,
+                    longitudeDelta: region.longitudeDelta
+                }
+            });
+        })
+       
+      
+        
+
     }
     ready(){
 
@@ -200,6 +226,7 @@ class CreatePlace extends Component {
                             <View style={styles.searchContainer}>
                                 <GooglePlacesAutocomplete
                                     ref={c => this.googlePlacesAutocomplete = c}
+
                                     placeholder='Search Location'
                                     minLength={2} // minimum length of text to search
                                     autoFocus={false}
@@ -227,6 +254,8 @@ class CreatePlace extends Component {
                                         textInputContainer: {
                                             width: '100%',
                                             height: 56,
+                                            backgroundColor: '#16a085',
+                                            borderBottomWidth:0,
                                             
                                         },
                                         textInput: {
@@ -260,35 +289,32 @@ class CreatePlace extends Component {
                                 <MapView ref={map => { this.map = map }}
                                     zoomEnabled={true}
                                     onLayout={() => this.fitToMap()}
+                                    onRegionChangeComplete={this.onRegionChangeComplete}
                                     scrollEnabled={true}
                                     style={StyleSheet.absoluteFill}
                                     textStyle={{ color: '#bc8b00' }}
                                     loadingEnabled={true}
-                                    showsMyLocationButton={false}
-                                    onPress={(e) => this.setMarkerLocation(e.nativeEvent)}>
+                                    showsMyLocationButton={true}
+                                   >
 
-                                    <MapView.Marker  coordinate={this.state.region} ref='mapMarker'>
-                                        <Image style={globalStyle.marker}
-                                            source={require('../../images/placemarker.png')} />
+                                </MapView>
+                                
+                               
+                                <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: -150 }}>
+                                    <TouchableOpacity onPress={() => this.props.navigation.navigate("SavePlace", { region: this.state.region, address: this.state.address })}>
+                                    <View style={globalStyle.callOutFix} >
+                                        <View style={globalStyle.callOutContainerFix} >
+                                            <Text numberOfLines={2} style={globalStyle.callOutText}>{this.state.address}</Text>
+                                        </View>
+                                        <View style={globalStyle.callOutArrow}>
+                                            <SimpleLineIcons style={{ fontSize: 13, color: '#1abc9c' }} name='arrow-right' />
+                                        </View>
 
-                                        <MapView.Callout tooltip onPress={() => this.props.navigation.navigate("SavePlace", { latitude: this.state.region.latitude, longitude: this.state.region.longitude, address: this.state.address })}>
-                                            <View style={globalStyle.callOut} >
-                                                <View style={globalStyle.callOutContainer}>
-                                                    <Text numberOfLines={2} style={globalStyle.callOutText}>{this.state.address}</Text>
-                                                </View>
-                                                <View style={globalStyle.callOutArrow}>
-                                                    <SimpleLineIcons style={{ fontSize: 13, color:'#1abc9c' }} name='arrow-right' />
-                                                </View>
-                                                
-                                            </View>
-
-                                        </MapView.Callout>
-
-
-                                    </MapView.Marker>
-
-
-                                    </MapView>
+                                        </View>
+                                    </TouchableOpacity>
+                                    <Image style={globalStyle.marker}
+                                        source={require('../../images/placemarker.png')} />
+                                </View>
                                     
                                     
                             </View>
