@@ -5,13 +5,14 @@
     "\\android",
     "\\android\\app",
     "\\assets",
-    "\\assets\\style",
     "\\components",
-    "\\components\\shared",
-    "\\components\\user",
+    "\\components\\group",
+    "\\components\\member",
+    "\\components\\places",
+    "\\components\\settings",
     "\\redux",
     "\\redux\\actions"
   ],
-  "SelectedNode": "\\components\\places\\CreatePlace.js",
+  "SelectedNode": "\\assets\\style\\GlobalStyle.js",
   "PreviewInSolutionExplorer": false
 }

@@ -149,12 +149,15 @@ class EditPlace extends Component {
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
                                 <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                    <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                                 </Button> 
                             </Left>
-                            <Body>
+                            <Body style={globalStyle.headerBody}>
                                 <Title>{this.state.place}</Title>
                             </Body>
+                            <Right style={globalStyle.headerRight}>
+
+                        </Right>
                     </Header>
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
                         <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column' }}

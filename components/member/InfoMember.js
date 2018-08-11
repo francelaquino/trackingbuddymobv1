@@ -4,6 +4,7 @@ import { Platform, StyleSheet, Text, View, ScrollView, TextInput, TouchableOpaci
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right, List, ListItem, Tab, Badge, Tabs , TabHeading, FooterTab, Footer, Content, Thumbnail } from 'native-base';
 import { connect } from 'react-redux';
 import { NavigationActions } from 'react-navigation'
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { getMember, displayMember, deleteMember, displayHomeMember, getMemberGroup, getMemberNotification } from '../../redux/actions/memberActions' ;
@@ -88,27 +89,27 @@ class InfoMember extends Component {
                         </ListItem>
                         <ListItem style={[globalStyle.listItem, { height: 20, borderBottomWidth: 0 }]}>
                             <Body>
-                                <Text style={{ color: '#e67e22' }}>Arrives</Text>
+                                <Text style={{ color: '#e67e22' }}>ARRIVES</Text>
                             </Body>
                             <Right>
                                 {item.arrives === '1' &&
-                                    <FontAwesome style={{ color: '#e67e22' }} size={20} name="toggle-on" />
+                                    <FontAwesome style={{ color: '#e67e22' }} size={25} name="toggle-on" />
                                 }
                                 {item.arrives === '0' &&
-                                    <FontAwesome style={{ color: '#e67e22' }} size={20} name="toggle-off" />
+                                    <FontAwesome style={{ color: '#e67e22' }} size={25} name="toggle-off" />
                                 }
                             </Right>
                         </ListItem>
                         <ListItem style={[globalStyle.listItem, { height: 20, borderBottomWidth: 1 }]}>
                             <Body>
-                                <Text style={{ color: '#e67e22'}}>Leaves</Text>
+                                <Text style={{ color: '#e67e22'}}>LEAVES</Text>
                             </Body>
                             <Right>
                                 {item.leaves === '1' &&
-                                    <FontAwesome style={{ color: '#e67e22' }} size={20} name="toggle-on" />
+                                    <FontAwesome style={{ color: '#e67e22' }} size={25} name="toggle-on" />
                                 }
                                 {item.leaves === '0' &&
-                                    <FontAwesome style={{ color: '#e67e22' }} size={20} name="toggle-off" />
+                                    <FontAwesome style={{ color: '#e67e22' }} size={25} name="toggle-off" />
                                 }
                             </Right>
                         </ListItem>
@@ -155,12 +156,14 @@ class InfoMember extends Component {
                         <Header hasTabs style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
                                 <Button transparent onPress={() => { this.props.navigation.goBack() }} >
-                                    <Icon size={30} name='arrow-back' />
+                                    <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                                 </Button>
                             </Left>
-                            <Body>
+                            <Body style={globalStyle.headerBody}>
                                 <Title>{this.props.navigation.state.params.firstname}</Title>
                             </Body>
+                            <Right style={globalStyle.headerRight}>
+                            </Right>
                            
                         </Header>
                        
@@ -177,12 +180,12 @@ class InfoMember extends Component {
                                 <View style={{ marginTop: 10 }}>
                                     <Button
                                         onPress={() => this.confirmDelete()}
-                                        bordered light full style={globalStyle.deleteButton}>
+                                        bordered light full style={[globalStyle.deleteButton, {width:'90%'}]}>
                                         <Text style={{ color: 'white' }}>Delete </Text>
                                     </Button>
                                 </View>
                             </View>
-                            <Tabs tabBarUnderlineStyle={{ borderBottomWidth: 1, borderBottomColor: '#16a085'  }}  tabContainerStyle={{ elevation: 0}} >
+                            <Tabs tabBarUnderlineStyle={{ borderBottomWidth: 2, borderBottomColor: '#16a085'  }}  tabContainerStyle={{ elevation: 0}} >
                                 <Tab heading="Group" tabStyle={{ backgroundColor: '#16a085' }} textStyle={{ color: 'white' }} activeTextStyle={{ color: 'white', fontWeight: 'normal' }} activeTabStyle={{ backgroundColor: '#16a085' }} >
                                     <Content padder>
                                         <List>

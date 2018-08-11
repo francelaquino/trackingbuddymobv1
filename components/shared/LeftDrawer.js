@@ -30,30 +30,6 @@ class LeftDrawer extends Component<Props> {
                 });
         }
     }
-  displayMember(){
-    this.props.navigation.navigate('DisplayMember',{closeDrawer:this.props.closeDrawer()});
-    this.props.closeDrawer();
-  }
-  displayGroup(){
-    this.props.navigation.navigate('DisplayGroup');
-    this.props.closeDrawer();
-  }
-  displayHome(){
-    this.props.navigation.navigate('HomePlaces');
-    this.props.closeDrawer();
-  }
-  displayPlaces(){
-    this.props.navigation.navigate('PlaceList');
-    this.props.closeDrawer();
-  }
-  displayProfile(){
-    this.props.navigation.navigate('UserProfile');
-    this.props.closeDrawer();
-  }
-  displaySettings(){
-    this.props.navigation.navigate('HomeSettings');
-    this.props.closeDrawer();
-  }
     displayLogout() {
         //firebase.auth().signOut();
         refreshToken();
@@ -101,7 +77,18 @@ class LeftDrawer extends Component<Props> {
                                 <Text style={{ fontSize: 19, color: '#454444', marginLeft: 5}}>ABOUT</Text>
                                 </TouchableOpacity>
                             </Body>
-                            </ListItem>
+                    </ListItem>
+                    <ListItem icon style={{ marginBottom: 5, padding: 10 }}>
+                        <Left>
+                            <SimpleLineIcons style={{ fontSize: 30, width: 30, color: '#454444' }} name="question" />
+                        </Left>
+                        <Body style={{ width: '100%', borderBottomWidth: 0 }} >
+
+                            <TouchableOpacity>
+                                <Text style={{ fontSize: 19, color: '#454444', marginLeft: 5 }}>FAQs</Text>
+                            </TouchableOpacity>
+                        </Body>
+                    </ListItem>
                            <ListItem icon style={{ marginBottom: 5,padding:10}}>
                             <Left>
                             <SimpleLineIcons style={{ fontSize: 30, width: 25, color:'#454444'}} name="logout" />

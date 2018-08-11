@@ -101,40 +101,37 @@ class ChangePassword extends Component {
                                 <Icon size={30} name='arrow-back' />
                             </Button> 
                         </Left>
-                        <Body>
-                            <Title>Change Password</Title>
+                        <Body style={[globalStyle.headerBody, {flex:3}]} >
+                            <Title>CHANGE PASSWORD</Title>
                         </Body>
+                        <Right  >
+                        </Right>
                     </Header>
                     <Content padder>
                     <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
                     <View style={globalStyle.container}>
-                        
-                        
-                        <Item  style={globalStyle.regularitem}>
-                            <TextInput style={globalStyle.textinput} 
-                             underlineColorAndroid= 'transparent'
-                             placeholder="Current Password"
-                            name="password" autoCorrect={false} secureTextEntry
-                            value={this.state.currentpasswordpassword}  maxLength = {50}
-                            onChangeText={currentpassword=>this.setState({currentpassword})}/>
-                        </Item>
 
-                        <Item  style={globalStyle.regularitem}>
-                            <TextInput style={globalStyle.textinput} 
-                             underlineColorAndroid= 'transparent'
-                             placeholder="New Password"
-                            name="password" autoCorrect={false} secureTextEntry
-                            value={this.state.newpassword}  maxLength = {50}
-                            onChangeText={newpassword=>this.setState({newpassword})}/>
-                        </Item>
-                        <Item   style={globalStyle.regularitem}>
-                            <TextInput style={globalStyle.textinput} 
-                             underlineColorAndroid= 'transparent'
-                             placeholder="Re-type Password"
-                            name="password" autoCorrect={false} secureTextEntry
-                            value={this.state.retypepassword}  maxLength = {50}
-                            onChangeText={retypepassword=>this.setState({retypepassword})}/>
-                        </Item>
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Current Password</Label>
+                                    <Input style={globalStyle.textinput} value={this.state.currentpassword} maxLength={50} secureTextEntry
+                                        onChangeText={currentpassword => this.setState({ currentpassword })} />
+                                </Item>
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >New Password</Label>
+                                    <Input style={globalStyle.textinput} value={this.state.newpassword} maxLength={50} secureTextEntry
+                                        onChangeText={newpassword => this.setState({ newpassword })} />
+                                </Item>
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Re-type Password</Label>
+                                    <Input style={globalStyle.textinput} value={this.state.retypepassword} maxLength={50} secureTextEntry
+                                        onChangeText={retypepassword => this.setState({ retypepassword })} />
+                                </Item>
+
+                        
+                        
+
+                        
+                       
 
                         <View style={{justifyContent: 'center',alignItems: 'center'}}>
                         

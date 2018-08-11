@@ -74,7 +74,7 @@ class PlaceList extends Component {
                     <Header style={globalStyle.header}>
                     <Left style={globalStyle.headerLeft} >
                             <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                             </Button> 
                         </Left>
                         <Body style={globalStyle.headerBody}>
@@ -82,7 +82,7 @@ class PlaceList extends Component {
                         </Body>
                         <Right style={globalStyle.headerRight} >
                             <Button transparent onPress={() =>this.props.navigation.navigate('CreatePlace')}>
-                                <Text style={globalStyle.headerRightText}>Add</Text>
+                                <MaterialIcons size={28} style={{ color: 'white' }} name='add-circle' />
                             </Button> 
                             
                         </Right>

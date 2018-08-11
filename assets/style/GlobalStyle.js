@@ -9,6 +9,8 @@ module.exports = StyleSheet.create({
     },
     header: {
         backgroundColor: theme.primaryColor,
+            elevation: 0,
+            shadowOpacity: 0,
     },
     headerMenu: {
         width:40,
@@ -19,7 +21,7 @@ module.exports = StyleSheet.create({
         width:40,
     },
     headerBody: {
-        flex: 1,
+        flex: 3,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -74,10 +76,9 @@ module.exports = StyleSheet.create({
         backgroundColor:theme.primaryButtonColor,
         marginTop:10,
         marginBottom:10,
-        width: '90%',
+        width: '100%',
         alignSelf: "center",
         borderRadius: 15,
-        marginLeft: '5%',
     },
     cancelButton: {
         backgroundColor: 'gray',
@@ -88,21 +89,19 @@ module.exports = StyleSheet.create({
         borderRadius: 15,
         marginLeft: '5%',
     },
-    secondaryButtonDisabled:{
-        backgroundColor: theme.primaryButtonColor,
+    secondaryButtonDisabled: {
+        backgroundColor: theme.lightColor,
         marginBottom:10,
         marginTop:10,
-        width: '90%',
+        width: '100%',
         alignSelf: "center",
         borderRadius: 15,
-        marginLeft: '5%',
     },
     deleteButton:{
         backgroundColor:theme.deleteColor,
         marginBottom:10,
-        width: '90%',
+        width: '100%',
         alignSelf: "center",
-        marginLeft:'5%',
         borderRadius: 15,
     },
 
@@ -229,16 +228,17 @@ module.exports = StyleSheet.create({
         color:'black',
         fontSize:10,
     },
-    listAvatarContainerSmall:{
-        borderRadius: 50,
-        backgroundColor:'#1abc9c',
+    listAvatarContainerSmall: {
+        marginTop:5,
+        borderRadius: 25,
+        backgroundColor:'white',
         padding:2,
-        width:40,
-        height:40,
+        width:50,
+        height: 50,
     },
     listAvatarSmall:{
-        width:36,
-        height:36,
+        width:46,
+        height:46,
     },
     /* List Design End */
 
@@ -451,9 +451,28 @@ module.exports = StyleSheet.create({
         width: 20,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
 
     /*Model Design End*/
+    mapMenu: {
+        position: 'absolute',
+        width: 50,
+        height: 200,
+        top: 10,
+        padding: 5,
+        marginLeft:5,
+    },
+    mapMenuCircle: {
+        width: 40,
+        height: 40,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: '#2c3e50',
+        borderWidth: 1,
+        marginTop:5,
+    },
   
 
 });

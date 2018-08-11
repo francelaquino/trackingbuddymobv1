@@ -112,15 +112,16 @@ class AddMember extends Component {
                     <Header style={globalStyle.header}>
                         <Left style={globalStyle.headerLeft} >
                             <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+
                             </Button> 
                         </Left>
-                        <Body>
+                        <Body style={globalStyle.headerBody}>
                             <Title>{this.props.navigation.state.params.group.groupname}</Title>
                         </Body>
-                        <Right  >
+                        <Right style={globalStyle.headerRight}>
                             <Button transparent onPress={() =>this.props.navigation.navigate('EditGroup',{group:this.props.navigation.state.params.group})}>
-                                <Text style={globalStyle.headerRightText}>Edit</Text>
+                                <MaterialIcons size={28} style={{ color: 'white' }} name='mode-edit' />
                             </Button> 
                             
                         </Right>

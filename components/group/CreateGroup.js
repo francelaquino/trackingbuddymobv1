@@ -1,11 +1,13 @@
 
 import React, { Component } from 'react';
 import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOpacity, ToastAndroid, Image } from 'react-native';
-import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Content } from 'native-base';
+import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right, Content } from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 import Loader  from '../shared/Loader';
-import OfflineNotice  from '../shared/OfflineNotice';
+import OfflineNotice from '../shared/OfflineNotice';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { connect } from 'react-redux';
+import Loading from '../shared/Loading';
 import { createGroup,displayGroup  } from '../../redux/actions/groupActions' ;
 var globalStyle = require('../../assets/style/GlobalStyle');
 var registrationStyle = require('../../assets/style/Registration');
@@ -16,6 +18,7 @@ class CreateGroup extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            busy:true,
             loading: false,
             emptyPhoto: 'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/group_photos%2Fgroup.png?alt=media&token=d1bade4b-6fee-43f7-829a-0b6f76005b40',
             groupname: '',
@@ -60,7 +63,12 @@ class CreateGroup extends Component {
         });
     }
 
-
+    componentWillMount() {
+        setTimeout(() => {
+            this.setState({busy:false})
+        }, 500);
+        
+    } 
     onSubmit() {
         if (this.state.groupname == "") {
             return false;
@@ -82,16 +90,15 @@ class CreateGroup extends Component {
         });
     }
 
-	loading(){
-	  return (
-		<Root>
-		<Container style={registrationStyle.containerWrapper}>
-		<View>
-			<Text>Loading</Text>
-		</View>
-		</Container>
-		</Root>
-	  )
+
+    loading() {
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <Loading />
+                </Container>
+            </Root>
+        )
   }
     ready() {
         return (
@@ -102,12 +109,14 @@ class CreateGroup extends Component {
                     <Header style={globalStyle.header}>
                         <Left style={globalStyle.headerLeft} >
                             <Button transparent onPress={() => { this.props.navigation.goBack() }} >
-                                <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                             </Button>
                         </Left>
-                        <Body>
-                            <Title>Add Group</Title>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>ADD GROUP</Title>
                         </Body>
+                        <Right style={globalStyle.headerRight}>
+                        </Right>
                     </Header>
                     <Content padder>
                         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
@@ -153,9 +162,13 @@ class CreateGroup extends Component {
     }
 
 
-		render() {
-				return this.ready();
-		}
+    render() {
+        if (this.state.busy) {
+            return this.loading();
+        } else {
+            return this.ready();
+        }
+    }
 }
 
 const mapStateToProps = state => ({

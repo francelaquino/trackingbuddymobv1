@@ -8,127 +8,6 @@ var userdetails = require('../../components/shared/userDetails');
 
 
 
-export const displayHomeMember=()=> async dispatch=> {
-    dispatch({ 
-        type: DISPLAY_HOME_MEMBER,
-        payload: [],
-    });
-    let members=[];
-    let count=0;
-    let cnt=0;
-
-    if(userdetails.group==""){
-        await firebase.database().ref().child('users/'+userdetails.userid).once("value",function(snapshot){
-            if(snapshot.val() !== null){
-                members.push({
-                    id:snapshot.key,
-                    firstname:snapshot.val().firstname,
-                    avatar: snapshot.val().avatar,
-                    address : snapshot.val().address,
-                    coordinates:{
-                        longitude: Number(snapshot.val().longitude),
-                        latitude: Number(snapshot.val().latitude)
-                    }
-                });
-               
-            }
-        })
-
-        await firebase.database().ref().child('users/'+userdetails.userid+"/members").once('value',async function(snapshot){
-            if(snapshot.val()===null){
-                dispatch({ 
-                    type: DISPLAY_HOME_MEMBER,
-                    payload: members,
-                });
-
-            }else{
-                count=snapshot.numChildren();
-                await snapshot.forEach(async childSnapshot  => {
-                    let userid=childSnapshot.key;
-                        await firebase.database().ref().child('users/'+userid).once("value",function(dataSnapshot){
-                            if(dataSnapshot.val() !== null){
-                                members.push({
-                                    id:dataSnapshot.key,
-                                    firstname:dataSnapshot.val().firstname,
-                                    avatar: dataSnapshot.val().avatar,
-                                    address : dataSnapshot.val().address,
-                                    coordinates:{
-                                        longitude: Number(dataSnapshot.val().longitude),
-                                        latitude: Number(dataSnapshot.val().latitude),
-                                    }
-                                });
-                             
-                                
-                            }
-                            cnt++;
-                            if(cnt>=count){
-                                dispatch({ 
-                                    type: DISPLAY_HOME_MEMBER,
-                                    payload: members,
-                                });
-                              
-                            }
-                        })
-                })
-
-            }
-        })
-
-       
-           
-    }else{
-
-        return parentPromise= new Promise((resolve,reject)=>{
-            let memberRef = firebase.database().ref().child("groupmembers/"+userdetails.group).once('value',function(snapshot){
-                resolve(snapshot)
-            })
-            }).then(function(snapshot){
-                if(snapshot.val()===null){
-                    dispatch({ 
-                        type: DISPLAY_HOME_MEMBER,
-                        payload: members,
-                    });
-                }else{
-                    count=snapshot.numChildren();
-                    snapshot.forEach(childSnapshot => {
-                        let userid=childSnapshot.key;
-                        return childPromise= new Promise((resolve,reject)=>{
-                            let childRef= firebase.database().ref().child('users/'+userid).once("value",function(snapshot){
-                                if(snapshot.val() !== null){
-                                    members.push({
-                                        id:snapshot.key,
-                                        firstname:snapshot.val().firstname,
-                                        avatar: snapshot.val().avatar,
-                                        coordinates:{
-                                            longitude: Number(snapshot.val().longitude),
-                                            latitude: Number(snapshot.val().latitude)
-                                        },
-                                        address : snapshot.val().address,
-                                    });
-                                }
-                                cnt++;
-                                if(cnt>=count){
-                                    resolve();
-                                }
-                                
-                            })
-                        }).then(function(snapshot){
-                            dispatch({ 
-                                type: DISPLAY_HOME_MEMBER,
-                                payload: members,
-                            });
-                        })
-                    })
-                }
-            
-        })
-    }
-
-};
-
-
-
-
 
 
 
@@ -235,7 +114,6 @@ export const getInvitationCode = () => async dispatch => {
             try {
                 await axios.get(settings.baseURL + 'member/getmemberinfo/' + userdetails.userid)
                     .then(function (res) {
-                        console.log(res)
                         if (res.data.status == "202") {
                             let invitationcode = {
                                 code: res.data.results.invitationcode,
@@ -255,7 +133,7 @@ export const getInvitationCode = () => async dispatch => {
                             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                         }
                     }).catch(function (error) {
-                        console.log(error)
+                        
                         dispatch({
                             type: GET_INVITATIONCODE,
                             payload: []
@@ -265,7 +143,7 @@ export const getInvitationCode = () => async dispatch => {
                     });
 
             } catch (e) {
-                console.log(e)
+                
                 dispatch({
                     type: GET_INVITATIONCODE,
                     payload: []
@@ -332,18 +210,18 @@ export const addGroupMember = (groupid,member) => async dispatch => {
                         resolve(true)
                 } else {
                     resolve(false)
-                    console.log(res)     
+                         
                     ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
                 }).catch(function (error) {
-                    console.log(error)       
+                           
                 resolve(false)
                 ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            console.log(e)
+            
             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
@@ -493,7 +371,7 @@ export const getMemberNotification = (userid) => async dispatch => {
                         ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     }
                 }).catch(function (error) {
-                    console.log(error)
+                    
                     dispatch({
                         type: GET_MEMBERNOTIFICATION,
                         payload: []
@@ -503,7 +381,7 @@ export const getMemberNotification = (userid) => async dispatch => {
                 });
 
         } catch (e) {
-            console.log(e)
+            
             dispatch({
                 type: GET_MEMBERNOTIFICATION,
                 payload: []
@@ -631,5 +509,151 @@ export const displayGroupMember=(groupid)=> dispatch=> {
 
 
 };
+
+
+
+
+export const displayHomeMember = () => async dispatch => {
+    let members = [];
+    
+    let count = 0;
+    let cnt = 0;
+    if (userdetails.group == "") {
+        return new Promise(async (resolve) => {
+            try {
+                await axios.get(settings.baseURL + 'member/gethomemembers/' + userdetails.userid)
+                    .then(function (res) {
+                        
+                        if (res.data.status == "202") {
+                            count = res.data.results.length;
+                            res.data.results.forEach(data => {
+                                members.push({
+                                    uid: data.uid,
+                                    firstname: data.firstname,
+                                    avatar: data.avatar,
+                                    coordinates: {
+                                        longitude: data.longitude,
+                                        latitude: data.latitude
+                                    },
+                                    address: data.address,
+                                });
+
+                                cnt++;
+                                if (cnt >= count) {
+                                    dispatch({
+                                        type: DISPLAY_HOME_MEMBER,
+                                        payload: members
+                                    });
+                                    resolve(true)
+                                }
+                            })
+                        } else {
+                            dispatch({
+                                type: DISPLAY_HOME_MEMBER,
+                                payload: []
+                            });
+                            resolve(false)
+                            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        }
+                    }).catch(function (error) {
+                        dispatch({
+                            type: DISPLAY_HOME_MEMBER,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    });
+
+            } catch (e) {
+                
+                dispatch({
+                    type: DISPLAY_HOME_MEMBER,
+                    payload: []
+                });
+                resolve(false)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            }
+        });
+
+
+       
+
+
+
+
+    } else {
+
+        return new Promise(async (resolve) => {
+            try {
+                await axios.get(settings.baseURL + 'group/gethomemembers/' + userdetails.group + "/" + userdetails.userid)
+                    .then(function (res) {
+                      
+                        if (res.data.status == "202") {
+                            console.log(res.data.results)
+                            count = res.data.results.length;
+                            if (count > 0) {
+                                res.data.results.forEach(data => {
+                                    members.push({
+                                        uid: data.uid,
+                                        firstname: data.firstname,
+                                        avatar: data.avatar,
+                                        coordinates: {
+                                            longitude: data.longitude,
+                                            latitude: data.latitude
+                                        },
+                                        address: data.address,
+                                    });
+
+                                    cnt++;
+                                    if (cnt >= count) {
+                                        dispatch({
+                                            type: DISPLAY_HOME_MEMBER,
+                                            payload: members
+                                        });
+                                        resolve(true)
+                                    }
+                                })
+                            } else {
+                                dispatch({
+                                    type: DISPLAY_HOME_MEMBER,
+                                    payload: []
+                                });
+                                resolve(true)
+                            }
+                        } else {
+                            dispatch({
+                                type: DISPLAY_HOME_MEMBER,
+                                payload: []
+                            });
+                            resolve(false)
+                            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                        }
+                    }).catch(function (error) {
+                        dispatch({
+                            type: DISPLAY_HOME_MEMBER,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    });
+
+            } catch (e) {
+
+                dispatch({
+                    type: DISPLAY_HOME_MEMBER,
+                    payload: []
+                });
+                resolve(false)
+                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            }
+        });
+
+        
+
+    }
+
+};
+
+
 
 

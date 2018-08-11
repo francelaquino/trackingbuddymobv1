@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import {  getProfile, updateProfile } from '../../redux/actions/userActions' ;
 import { displayHomeMember  } from '../../actions/memberActions' ;
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationActions } from 'react-navigation'
 import Loading  from '../shared/Loading';
 import ImagePicker from 'react-native-image-picker';
@@ -20,11 +21,13 @@ class UserProfile extends Component {
         super(props)
         this.state = {
             loading: false,
+            isbusy:true,
             firstname:'',
             email:'',
             mobileno:'',
             middlename:'',
-            lastname:'',
+            lastname: '',
+            emptyphoto:'',
             avatarsource:{
                 uri:''
             },
@@ -39,14 +42,17 @@ class UserProfile extends Component {
         this.props.getProfile().then((res) => {
             if (res == true) {
                 this.setState({
+                    isbusy:false,
                     firstname: this.props.profile.firstname,
                     email: this.props.profile.email,
                     fullname: this.props.profile.fullname,
                     mobileno: this.props.profile.mobileno,
                     middlename: this.props.profile.middlename,
                     lastname: this.props.profile.lastname,
+                    emptyphoto: this.props.profile.emptyphoto,
                     avatarsource: { uri: this.props.profile.avatar },
                 })
+                
             }
         });
       
@@ -86,11 +92,13 @@ class UserProfile extends Component {
             middlename: this.state.middlename,
             lastname: this.state.lastname,
             avatarsource: this.state.avatarsource,
-            isPhotoChange: this.state.isPhotoChange
+            isPhotoChange: this.state.isPhotoChange,
+            emptyphoto: this.state.emptyphoto
         }
         this.setState({ loading: true })
         this.props.updateProfile(profile).then(res => {
             this.setState({ loading: false })
+            this.componentWillMount();
         });
     }
 
@@ -103,7 +111,7 @@ class UserProfile extends Component {
     removePhoto(){
 		this.setState({
             avatarsource:{uri:''},
-            isPhotoChange:false,
+            emptyphoto:'1',
         });
     }
 
@@ -129,7 +137,8 @@ class UserProfile extends Component {
                 
         this.setState({
           avatarsource: source,
-          isPhotoChange : true
+          isPhotoChange: true,
+          emptyphoto: '0',
         });
       }
     });
@@ -137,9 +146,7 @@ class UserProfile extends Component {
 
 
     ready(){
-        const countries =this.props.countries.map(country=>(
-            <Picker.Item key={country.id} label={country.country} value={country.id} />
-              ));
+       
         return (
             <Root>
                 <Container style={globalStyle.containerWrapper}>
@@ -149,7 +156,7 @@ class UserProfile extends Component {
                     <Header style={globalStyle.header}>
                         <Left style={globalStyle.headerLeft} >
                             <Button transparent onPress={() => { this.props.navigation.goBack() }} >
-                                <Icon size={30} name='arrow-back' />
+                                    <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                             </Button>
                         </Left>
                             <Body style={globalStyle.headerBody}>
@@ -171,7 +178,7 @@ class UserProfile extends Component {
                                         
                                     </TouchableOpacity>
                                     <Label style={{ width: '100%', textAlign: 'center', color: '#16a085',marginBottom:10 }}>{this.state.fullname}</Label>
-                            {(this.props.profile.emptyphoto != '1' && this.state.avatarsource.uri != '') &&
+                            {(this.state.emptyphoto != '1') &&
                             <TouchableOpacity   onPress={this.removePhoto.bind(this)}>
                             <Text style={globalStyle.deleteButtonSmall} >Remove Photo</Text>
                                         </TouchableOpacity>
@@ -247,7 +254,7 @@ class UserProfile extends Component {
         )
     }
     render() {
-        if(this.props.isLoading){
+        if (this.state.isbusy) {
             return this.loading();
         }else{
             return this.ready();
@@ -258,9 +265,7 @@ class UserProfile extends Component {
 
 
 const mapStateToProps = state => ({
-    countries: state.fetchMember.countries,
     profile: state.fetchUser.profile,
-    isLoading:state.fetchUser.isLoading,
   })
   
   

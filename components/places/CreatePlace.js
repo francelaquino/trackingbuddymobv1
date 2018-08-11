@@ -4,7 +4,7 @@ import { NetInfo, TouchableOpacity, Platform, StyleSheet, Text, View, ScrollView
 import { Drawer,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Switch, Thumbnail,Card,Form } from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -78,15 +78,20 @@ class CreatePlace extends Component {
     }*/
 
     fitToMap() {
-
+       
         setTimeout(() => {
-            this.map.animateToRegion({
-                latitude: this.state.region.latitude,
-                longitude: this.state.region.longitude,
-                latitudeDelta: this.state.region.latitudeDelta,
-                longitudeDelta: this.state.region.longitudeDelta
-            })
-        }, 0);
+            try {
+                this.map.animateToRegion({
+                    latitude: this.state.region.latitude,
+                    longitude: this.state.region.longitude,
+                    latitudeDelta: this.state.region.latitudeDelta,
+                    longitudeDelta: this.state.region.longitudeDelta
+                })
+            } catch(e) {
+
+            }
+            }, 0);
+        
            
 
     }
@@ -124,8 +129,9 @@ class CreatePlace extends Component {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     latitudeDelta: LATITUDE_DELTA,
-                    longitudeDelta: LONGITUDE_DELTA
-              }
+                    longitudeDelta: LONGITUDE_DELTA,
+              },
+                  
 
                  
                   })
@@ -136,7 +142,8 @@ class CreatePlace extends Component {
 
                   Geocoder.geocodePosition(coords).then(res => {
                       this.setState({
-                          address: res[1].formattedAddress
+                          address: res[1].formattedAddress,
+                          isMapReady: true,
 
                       })
                       
@@ -214,12 +221,14 @@ class CreatePlace extends Component {
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
                                 <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                    <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                                 </Button> 
                             </Left>
-                            <Body>
-                                <Title>Add Place</Title>
+                            <Body style={globalStyle.headerBody}>
+                                <Title>ADD PLACE</Title>
                             </Body>
+                            <Right style={globalStyle.headerRight}>
+                        </Right>
                     </Header>
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
                         <View style={styles.mainContainer}>
@@ -241,7 +250,6 @@ class CreatePlace extends Component {
                                        
                                     }}
                                    
-
                                     getDefaultValue={() => ''}
 
                                     query={{
@@ -279,7 +287,8 @@ class CreatePlace extends Component {
 
                                     filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
 
-                                    debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
+                                    debounce={200}
+                                    renderRightButton={() => <Feather onPress={() => { this.googlePlacesAutocomplete._handleChangeText('') }} size={25} style={{ color: 'white', height: 30, marginTop: 13, marginRight: 15 }} name='delete' />}
                                 />
                                 
                             </View>
@@ -337,7 +346,7 @@ class CreatePlace extends Component {
 
 
     render() {
-            if(this.state.isMapReady){
+            if(!this.state.isMapReady){
                 return this.loading();
             }else{
                 return this.ready();
@@ -368,7 +377,9 @@ const styles = StyleSheet.create({
         backgroundColor:'white',
         position: 'absolute',
         zIndex: 9999,
-        borderRadius:5,
+        borderRadius: 5,
+        borderWidth: 0,
+
 
     },
   });

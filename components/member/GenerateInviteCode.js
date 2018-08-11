@@ -5,6 +5,8 @@ import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon,
 import Loading  from '../shared/Loading';
 import { connect } from 'react-redux';
 import Loader from '../shared/Loader';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import OfflineNotice  from '../shared/OfflineNotice';
 import { generateInvitationCode, getInvitationCode  } from '../../redux/actions/memberActions' ;
 var globalStyle = require('../../assets/style/GlobalStyle');
@@ -66,15 +68,15 @@ class GenerateInviteCode extends Component {
                     <Header style={globalStyle.header}>
                         <Left style={globalStyle.headerLeft} >
                             <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                             </Button> 
                         </Left>
-                        <Body>
-                            <Title>Invitation Code</Title>
+                        <Body style={globalStyle.headerBody} >
+                            <Title>INVITATION CODE</Title>
                         </Body>
-                        <Right  >
+                        <Right style={globalStyle.headerRight}  >
                             <Button transparent onPress={() => this.onShare()}>
-                                <Text style={globalStyle.headerRightText}>Share</Text>
+                                <MaterialIcons size={28} style={{color:'white'}} name='share' />
                             </Button>
 
                         </Right>

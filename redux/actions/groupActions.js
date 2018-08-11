@@ -167,50 +167,6 @@ export const createGroup = (groupname, avatarsource) => dispatch => {
 
 
 
-export const displayGroup = () => dispatch => {
-
-    return new Promise(async (resolve) => {
-        try {
-            await axios.get(settings.baseURL + 'group/getgroups/' + userdetails.userid)
-                .then(function (res) {
-                    if (res.data.status == "202") {
-                        dispatch({
-                            type: DISPLAY_GROUP,
-                            payload: res.data.results
-                        });
-                        resolve(true)
-                    } else {
-                        dispatch({
-                            type: DISPLAY_GROUP,
-                            payload: []
-                        });
-                        resolve(false)
-                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-                    }
-                }).catch(function (error) {
-                    dispatch({
-                        type: DISPLAY_GROUP,
-                        payload: []
-                    });
-                    resolve(false)
-                    console.log(error)
-                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-                });
-
-        } catch (e) {
-            console.log(e)
-            dispatch({
-                type: DISPLAY_GROUP,
-                payload: []
-            });
-            resolve(false)
-            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-        }
-    });
-
-
-
-};
 
 
 
@@ -320,6 +276,52 @@ export const deleteGroup = (groupid) => dispatch => {
         }
 
     })
+
+
+};
+
+
+export const displayGroup = () => dispatch => {
+
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'group/getgroups/' + userdetails.userid)
+                .then(function (res) {
+                    if (res.data.status == "202") {
+                        dispatch({
+                            type: DISPLAY_GROUP,
+                            payload: res.data.results
+                        });
+                        resolve(true)
+                    } else {
+                        dispatch({
+                            type: DISPLAY_GROUP,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                }).catch(function (error) {
+                    dispatch({
+                        type: DISPLAY_GROUP,
+                        payload: []
+                    });
+                    resolve(false)
+                    console.log(error)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+            console.log(e)
+            dispatch({
+                type: DISPLAY_GROUP,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
+
 
 
 };

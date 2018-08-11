@@ -23,7 +23,8 @@ class DisplayGroup extends Component {
             groupid:'',
             groupavatar:'',
             groupname:'',
-			avatarsource:'',
+            avatarsource: '',
+            loading:true,
             avatar:'',
             members:{
                 id:'',
@@ -47,8 +48,15 @@ class DisplayGroup extends Component {
         this.initialize();
     }
         
-    initialize(){
-            this.props.displayGroup();
+    initialize() {
+        this.props.displayGroup().then((res) => {
+            if (res == true) {
+                this.setState({
+                    loading: false,
+                })
+
+            }
+        });
     }
 
     
@@ -75,7 +83,8 @@ class DisplayGroup extends Component {
                                 </View>
                             </Left>
                             <Body style={globalStyle.listBody}  >
-                                <Text  numberOfLines={1} style={globalStyle.listHeading} >{group.groupname}</Text>
+                    <Text numberOfLines={1} style={globalStyle.listHeading} >{group.groupname}</Text>
+                    <Text numberOfLines={1} note >{group.membercount}</Text>
                             </Body>
 
                             <Right style={[globalStyle.listRight]} >
@@ -94,7 +103,8 @@ class DisplayGroup extends Component {
                     <Header style={globalStyle.header}>
                         <Left style={globalStyle.headerLeft} >
                             <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+
                             </Button> 
                         </Left>
                         <Body style={globalStyle.headerBody}>
@@ -102,7 +112,7 @@ class DisplayGroup extends Component {
                         </Body>
                         <Right style={globalStyle.headerRight}>
                             <Button transparent onPress={() =>navigate('CreateGroup')}>
-                                <Text style={globalStyle.headerRightText}>Add</Text>
+                                <MaterialIcons size={30} style={{ color: 'white' }} name='group-add' />
                             </Button> 
                             
                         </Right>
@@ -126,7 +136,7 @@ class DisplayGroup extends Component {
     }
 
     render() {
-        if(this.props.isLoading){
+        if(this.state.loading){
             return this.loading();
         }else{
             return this.ready();
@@ -140,7 +150,6 @@ class DisplayGroup extends Component {
 
 const mapStateToProps = state => ({
     groups: state.fetchGroup.groups,
-    isLoading: state.fetchGroup.isLoadingGroup,
   })
   
 DisplayGroup=connect(mapStateToProps,{displayGroup})(DisplayGroup);

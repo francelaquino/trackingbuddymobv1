@@ -72,8 +72,8 @@ export const updateProfile = (profile) => async dispatch => {
     return new Promise(async (resolve) => {
         try {
             let avatar = "";
-            console.log(profile)
-            if (profile.isPhotoChange == true) {
+            
+            if (profile.isPhotoChange == true && profile.emptyphoto=="1") {
                 let avatarlink = profile.email + '.jpg';
 
                 const ref = firebase.storage().ref("/member_photos/" + avatarlink);
@@ -87,15 +87,18 @@ export const updateProfile = (profile) => async dispatch => {
                     },
                     async (resUrl) => {
                         avatar = resUrl.downloadURL;
+                        console.log(avatar)
                         await axios.post(settings.baseURL + 'member/updateprofile', {
                             email: profile.email,
                             uid: userdetails.userid,
                             avatar: avatar,
                             firstname: profile.firstname,
                             lastname: profile.lastname,
+                            emptyphoto: profile.emptyphoto,
                             middlename: profile.middlename,
                             mobileno: profile.mobileno,
                         }).then(function (res) {
+                            console.log(res)
                             if (res.data.status == "202") {
                                 resolve(true)
                                 ToastAndroid.showWithGravityAndOffset("Profile successfully updated.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
@@ -109,6 +112,7 @@ export const updateProfile = (profile) => async dispatch => {
                         });
                     })
             } else {
+                console.log(profile)
                 await axios.post(settings.baseURL + 'member/updateprofile', {
                     email: profile.email,
                     uid: userdetails.userid,
@@ -116,8 +120,10 @@ export const updateProfile = (profile) => async dispatch => {
                     firstname: profile.firstname,
                     lastname: profile.lastname,
                     middlename: profile.middlename,
+                    emptyphoto: profile.emptyphoto,
                     mobileno: profile.mobileno,
                 }).then(function (res) {
+                    console.log(res)
                     if (res.data.status == "202") {
                         resolve(true)
                         ToastAndroid.showWithGravityAndOffset("Profile successfully updated.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
@@ -133,6 +139,7 @@ export const updateProfile = (profile) => async dispatch => {
 
 
         } catch (e) {
+            console.log(e)
             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }

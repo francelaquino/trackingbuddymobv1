@@ -7,11 +7,13 @@ import { Content } from 'native-base';
 class Loading extends Component{
     render() {
         return (
-            <Content padder>
+            <Content style={{ backgroundColor:'white' }}>
             <View style={[styles.container]}>
-            <ActivityIndicator size="large"  color="#096d71" />
-            
+            <View style={styles.activityIndicatorWrapper}>
+                <ActivityIndicator color="gray" />
+                <Text style={{ color: 'gray',marginTop:10 }}>Please wait</Text>
             </View>
+                </View>
             </Content>
         )
     }
@@ -19,7 +21,18 @@ class Loading extends Component{
 
 const styles = StyleSheet.create({
     container: {
-        marginTop:30
+        backgroundColor:'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: Dimensions.get('window').height ,
+    },
+    activityIndicatorWrapper: {
+        marginTop:-50,
+        borderRadius: 10,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+
     }
   })
 export default  Loading;

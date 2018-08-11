@@ -4,7 +4,6 @@ import { NetInfo, TouchableOpacity, Platform, StyleSheet, Text, View, ScrollView
 import { Drawer,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Switch, Thumbnail,Card,Form } from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -129,12 +128,15 @@ class SavePlace extends Component {
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
                                 <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                    <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+
                                 </Button> 
                             </Left>
-                            <Body>
+                            <Body style={globalStyle.headerBody}>
                                 <Title>Position</Title>
                             </Body>
+                            <Right style={globalStyle.headerRight}>
+                        </Right>
                     </Header>
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
                         <KeyboardAvoidingView style={{ flex: 1, flexDirection:'column' }}

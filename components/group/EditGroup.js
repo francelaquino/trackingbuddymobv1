@@ -4,6 +4,7 @@ import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOp
 import { Content,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left } from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 import { connect } from 'react-redux';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { displayGroup,updateGroup, deleteGroup  } from '../../redux/actions/groupActions' ;
 import Loader  from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
@@ -146,12 +147,14 @@ class EditGroup extends Component {
                 <Header style={globalStyle.header}>
                         <Left style={globalStyle.headerLeft} >
                             <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                             </Button> 
                         </Left>
-                        <Body>
+                        <Body style={globalStyle.headerRight}>
                             <Title>{this.props.navigation.state.params.group.groupname}</Title>
                         </Body>
+                        <Right style={globalStyle.headerLeft}>
+                        </Right>
                     </Header>
                 <Content padder>
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"} showsVerticalScrollIndicator={false}>

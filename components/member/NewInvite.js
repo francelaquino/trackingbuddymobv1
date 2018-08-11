@@ -4,6 +4,7 @@ import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOp
 import { Content,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right } from 'native-base';
 import { connect } from 'react-redux';
 import Loader from '../shared/Loader';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import OfflineNotice  from '../shared/OfflineNotice';
 import { addMember, displayMember, displayHomeMember } from '../../redux/actions/memberActions' ;
 var globalStyle = require('../../assets/style/GlobalStyle');
@@ -39,12 +40,10 @@ class NewInvite extends Component {
         this.props.addMember(this.state.invitationcode).then(async res=>{
             if (res == true) {
                 await this.props.displayMember();
-               /* ToastAndroid.showWithGravityAndOffset("Member successfully added",ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
                 
-                await this.props.displayHomeMember();*/
+                //await this.props.displayHomeMember();*/
                 this.setState({invitationcode:'',loading:false})
             }else{
-               // ToastAndroid.showWithGravityAndOffset(res,ToastAndroid.LONG,ToastAndroid.BOTTOM, 25, 50);
                 this.setState({invitationcode:'',loading:false})
             }
         });
@@ -70,24 +69,28 @@ class NewInvite extends Component {
                     <Header style={globalStyle.header}>
                         <Left style={globalStyle.headerLeft} >
                             <Button transparent onPress={()=> {this.goBack()}} >
-                                <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                             </Button> 
                         </Left>
-                        <Body>
-                            <Title>Add Member</Title>
+                        <Body style={[globalStyle.headerBody, { flex: 3  }]}>
+                            <Title>ADD MEMBER</Title>
                         </Body>
+                        <Right  >
+                        </Right>
                     </Header>
                 
                     <Content padder>
                     <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
-                        <View style={globalStyle.container}>
-                            <Item   style={globalStyle.regularitem}>
-                                <TextInput style={globalStyle.textinputCenter} autoCapitalize="characters"
-                                        name="invitationcode" autoCorrect={false}
-                                        underlineColorAndroid='transparent'
-                                value={this.state.invitationcode}  maxLength = {20}
-                                onChangeText={invitationcode=>this.setState({invitationcode})}/>
-                            </Item>
+                            <View style={globalStyle.container}>
+
+                                <Item stackedLabel>
+                                    <Label style={globalStyle.label} >Invitation Code</Label>
+                                    <Input style={globalStyle.textinput} name="invitationcode" autoCorrect={false}
+                                        value={this.state.invitationcode} maxLength={20} autoCapitalize="characters"
+                                        onChangeText={invitationcode => this.setState({ invitationcode })} />
+                                </Item>
+
+                           
                             
                             
                             <View style={{justifyContent: 'center',alignItems: 'center'}}>

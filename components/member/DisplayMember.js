@@ -18,7 +18,7 @@ class DisplayMember extends Component {
     constructor(props) {
         super(props)
         this.state={
-            modalVisible: false,
+            loading: true,
             memberid:'',
             emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/member_photos%2Ficons8-person-80.png?alt=media&token=59864ce7-cf1c-4c5e-a07d-76c286a2171d',
         }
@@ -26,14 +26,22 @@ class DisplayMember extends Component {
 
    
     componentWillMount() {
+
         this.initialize();
     }
-    onReload = () => {
+    /*onReload = () => {
         this.initialize();
-    }
+    }*/
    
-    initialize(){
-        this.props.displayMember();
+    initialize() {
+        this.props.displayMember().then((res) => {
+            if (res == true) {
+                this.setState({
+                    loading: false,
+                })
+
+            }
+        });
     }
     
 
@@ -85,15 +93,15 @@ class DisplayMember extends Component {
                     <Header style={globalStyle.header}>
                         <Left style={globalStyle.headerLeft} >
                             <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                             </Button> 
                         </Left>
                         <Body style={globalStyle.headerBody} >
-                            <Title>Members</Title>
+                            <Title>MEMBERS</Title>
                         </Body>
                         <Right style={globalStyle.headerRight}>
                             <Button transparent onPress={() => this.props.navigation.navigate("NewInvite",{onReload : this.onReload})}>
-                                <Text style={globalStyle.headerRightText}>Add</Text>
+                                <MaterialIcons size={28} style={{ color: 'white' }} name='person-add' />
                             </Button> 
                             
                         </Right>
@@ -115,7 +123,7 @@ class DisplayMember extends Component {
 
 
     render() {
-        if(this.props.isLoading){
+        if(this.state.loading){
             return this.loading();
         }else{
             return this.ready();
@@ -129,7 +137,6 @@ class DisplayMember extends Component {
 
 const mapStateToProps = state => ({
     members: state.fetchMember.members,
-    isLoading:state.fetchMember.isLoading,
   })
   
   

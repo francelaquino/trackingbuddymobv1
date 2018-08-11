@@ -125,15 +125,16 @@ class PlaceView extends Component {
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
                                 <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                    <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+
                                 </Button> 
                             </Left>
-                            <Body>
+                            <Body style={globalStyle.headerBody} >
                                 <Title>{this.state.place}</Title>
                             </Body>
-                            <Right  >
+                            <Right style={globalStyle.headerRight}  >
                             <Button transparent onPress={() => this.props.navigation.navigate("EditPlace",{place: this.props.navigation.state.params.place})}>
-                                <Text style={globalStyle.headerRightText}>Edit</Text>
+                                <MaterialIcons size={30} style={{ color: 'white' }} name='edit' />
                             </Button> 
                             
                         </Right>

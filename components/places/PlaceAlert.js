@@ -117,7 +117,8 @@ class PlaceAlert extends Component {
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
                                 <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                    <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+
                                 </Button> 
                             </Left>
                             <Body>
@@ -136,7 +137,7 @@ class PlaceAlert extends Component {
                             
                             <ListItem >
                             <Body>
-                                <Text>Arrives</Text>
+                                    <Text style={{ color: '#e67e22' }}>ARRIVES</Text>
                             </Body>
                             <Right>
                                 <Switch onValueChange={arrives => this.setState({arrives})} value={this.state.arrives}  />
@@ -144,7 +145,7 @@ class PlaceAlert extends Component {
                             </ListItem>
                             <ListItem >
                             <Body>
-                                <Text>Leaves</Text>
+                                    <Text style={{ color: '#e67e22' }}>LEAVES</Text>
                             </Body>
                             <Right>
                             <Switch onValueChange={leaves => this.setState({leaves})} value={this.state.leaves}  />

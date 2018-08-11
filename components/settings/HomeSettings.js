@@ -29,9 +29,11 @@ class HomeSettings extends Component {
                                 <Icon size={30} name='arrow-back' />
                             </Button>
                         </Left>
-                        <Body>
-                            <Title>Settings</Title>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>SETTINGS</Title>
                         </Body>
+                        <Right style={globalStyle.headerRight}>
+                        </Right>
                     </Header>
                     <Content padder>
                         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
@@ -47,7 +49,7 @@ class HomeSettings extends Component {
                                         </Left>
 
                                         <Body style={globalStyle.listBody} >
-                                            <Text style={globalStyle.listHeading}>Change Password</Text>
+                                            <Text style={globalStyle.listHeading}>CHANGE PASSWORD</Text>
                                         </Body>
                                         <Right style={globalStyle.listRight} >
                                             <SimpleLineIcons style={globalStyle.listRightOptionIcon} name='arrow-right' />
@@ -63,7 +65,7 @@ class HomeSettings extends Component {
                                         </Left>
 
                                         <Body style={globalStyle.listBody} >
-                                            <Text style={globalStyle.listHeading}>Invitation Code</Text>
+                                            <Text style={globalStyle.listHeading}>INVITATION CODE</Text>
                                         </Body>
                                         <Right style={globalStyle.listRight} >
                                             <SimpleLineIcons style={globalStyle.listRightOptionIcon} name='arrow-right' />
