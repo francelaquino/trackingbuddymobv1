@@ -58,11 +58,11 @@ class LocationView extends Component {
     componentDidMount(){
         this.setState({
             region:{
-                longitude:this.props.navigation.state.params.location.coordinates.longitude,
-                latitude:this.props.navigation.state.params.location.coordinates.latitude
+                longitude:this.props.navigation.state.params.location.longitude,
+                latitude:this.props.navigation.state.params.location.latitude
             },
             placename: this.props.navigation.state.params.location.address,
-            dateadded: this.props.navigation.state.params.location.dateadded,
+            dateadded: this.props.navigation.state.params.location.datemovement,
             loading:false
         })
     }
@@ -99,16 +99,19 @@ class LocationView extends Component {
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
                                 <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                    <Icon size={30} name='arrow-back' />
+                                    <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                                 </Button> 
                             </Left>
-                            <Body>
-                                <Title>Location Details</Title>
+                            <Body style={globalStyle.headerBody}>
+                                <Title>POSITION</Title>
                             </Body>
+                            <Right style={globalStyle.headerRight}>
+                            </Right>
                         </Header>
                         <View style={styles.mainContainer}>
                             <View style={styles.mapContainer}>
-                            
+                                <Image style={globalStyle.marker}
+                                    source={require('../../images/placemarker.png')} />
                                 <MapView ref={map => {this.map = map}}
                                     zoomEnabled = {true}
                                     onLayout = {() => this.fitToMap()} 
@@ -117,23 +120,34 @@ class LocationView extends Component {
                                     loadingEnabled={true}
                                     showsMyLocationButton={false}>
 
-                                    <MapView.Marker  coordinate={this.state.region}/>                                        
+                                    <MapView.Marker  coordinate={this.state.region}>                                        
 
-
+                                        <Image style={globalStyle.marker}
+                                            source={require('../../images/placemarker.png')} />
+                                    </MapView.Marker>
                                     </MapView>
                                     
                             </View>
-
+                            <Content padder>
                              <View  style={styles.footerContainer}>
                              <Item stackedLabel>
-                                <Label style={globalStyle.label} >Date/Time</Label>
+                                <Label style={globalStyle.label} >Date</Label>
                                 <Input numberOfLines={1}  style={globalStyle.textinput} value={this.state.dateadded} editable={false}/>
-                            </Item>
+                                    </Item>
+                                    <Item stackedLabel>
+                                        <Label style={globalStyle.label} >Latitude</Label>
+                                        <Input numberOfLines={1} style={globalStyle.textinput} value={this.state.region.latitude.toString()} editable={false} />
+                                    </Item>
+                                    <Item stackedLabel>
+                                        <Label style={globalStyle.label} >Longitude</Label>
+                                        <Input numberOfLines={1} style={globalStyle.textinput} value={this.state.region.longitude.toString()} editable={false} />
+                                    </Item>
                             <Item stackedLabel style={{borderBottomWidth:0}}>
                                 <Label style={globalStyle.label} >Address</Label>
-                                <Input numberOfLines={1} style={globalStyle.textinput} value={this.state.placename} editable={false}/>
+                                <Input numberOfLines={2} style={globalStyle.textinput} value={this.state.placename} editable={false}/>
                             </Item>
-                            </View>
+                                </View>
+                                </Content>
                             
                         </View>
 
@@ -177,8 +191,7 @@ const styles = StyleSheet.create({
       
     },
     footerContainer: {
-        height:150,
-        padding:5,
+        height:290,
         
       },
   });

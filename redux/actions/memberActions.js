@@ -164,10 +164,25 @@ export const addMember = (invitationcode) => async dispatch => {
             await axios.post(settings.baseURL + 'member/addmember', {
                 invitationcode: invitationcode,
                 uid: userdetails.userid,
-            }).then(function (res) {
+            }).then(async function (res) {
                 if (res.data.status == "202") {
-                    if (res.data.results == "") {
+                    if (res.data.results == "" && res.data.useruid!=="") {
                         ToastAndroid.showWithGravityAndOffset("Member successfully added", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+
+                        await firebase.database().ref().child("users/" + userdetails.userid + "/members/" + res.data.useruid).set({
+                            userid: res.data.useruid,
+                            lastmovement: Date.now(),
+                        }).catch(function (err) {
+                            resolve("Something went wrong...")
+                        });
+
+                        await firebase.database().ref().child("users/" + res.data.useruid + "/members/" + userdetails.userid).set({
+                            userid: userdetails.userid,
+                            lastmovement: Date.now(),
+                        }).catch(function (err) {
+                            resolve("Something went wrong...")
+                            });
+
                         resolve(true)
                     } else {
                         ToastAndroid.showWithGravityAndOffset(res.data.results, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
@@ -443,9 +458,16 @@ export const deleteMember=(memberuid)=> async dispatch=> {
             await axios.post(settings.baseURL + 'member/deletemember', {
                 memberuid: memberuid,
                 owneruid: userdetails.userid,
-            }).then(function (res) {
+            }).then(async function (res) {
                 if (res.data.status == "202") {
+                   
+
+                    await firebase.database().ref().child("users/" + userdetails.userid + "/members/" + memberuid).remove();
+
+                    await firebase.database().ref().child("users/" + memberuid + "/members/" + userdetails.userid).remove();
+
                     ToastAndroid.showWithGravityAndOffset("Member successfully deleted", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+
                     resolve(true)
                 } else {
                     resolve(false)
@@ -521,6 +543,8 @@ export const displayHomeMember = () => async dispatch => {
     if (userdetails.group == "") {
         return new Promise(async (resolve) => {
             try {
+                
+
                 await axios.get(settings.baseURL + 'member/gethomemembers/' + userdetails.userid)
                     .then(function (res) {
                         

@@ -23,6 +23,7 @@ import CreatePlace from '../places/CreatePlace';
 import PlaceList from '../places/PlaceList';
 import EditPlace from '../places/EditPlace';
 import PlaceView from '../places/PlaceView';
+import LocationPlaces from '../places/LocationPlaces';
 import LocationView from '../places/LocationView';
 import PlaceAlert from '../places/PlaceAlert';
 import GroupPlaces from '../places/GroupPlaces';
@@ -35,6 +36,10 @@ import  { createStackNavigator }  from 'react-navigation';
 
 
 export const Stack = createStackNavigator({
+
+
+
+
 
     Home: {
         screen: Home,
@@ -50,7 +55,15 @@ export const Stack = createStackNavigator({
             header: null
         }
     },
-   
+
+
+    LocationPlaces: {
+        screen: LocationPlaces,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
 
     PlaceList: {
         screen: PlaceList,
@@ -320,16 +333,6 @@ export const Stack = createStackNavigator({
    
 
    
-    
-
-    /*LocationPlaces: { 
-        screen: LocationPlaces,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        }
-    },*/
-
    
   
     

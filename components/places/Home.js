@@ -261,7 +261,8 @@ let trackLocation;
            
         }
     },
-    };
+};
+
 const rad = (x) => {
     return x * Math.PI / 180;
 };
@@ -330,10 +331,11 @@ BackgroundJob.register(updateToken);
 var trackPositionSchedule = {
     jobKey: "trackPositionJob",
     //period: 90000,
-    period: 20000,
+    period: 60000,
     exact: true,
     allowExecutionInForeground: true
 }
+
 
 var refreshTokenSchedule = {
     jobKey: "refreshTokenJob",
@@ -341,9 +343,6 @@ var refreshTokenSchedule = {
     exact: true,
     allowExecutionInForeground: true
 }
-
-  
-
 
 
 refreshToken = function () {
@@ -418,7 +417,7 @@ class HomePlaces extends Component {
         trackLocation = function () {
             NetInfo.isConnected.fetch().done((isConnected) => {
                 if (isConnected) {
-                    self.props.pushLocationOnline();
+                    //self.props.pushLocationOnline();
                     self.props.saveLocationOnline();
 
                 } else {
@@ -436,7 +435,7 @@ class HomePlaces extends Component {
 
     async fitToMap() {
         let coordinates = [];
-        if (this.props.members.length == 1) {
+        if (this.props.members.length <= 1) {
             this.map.animateToRegion({
                 latitude: this.props.members[0].coordinates.latitude,
                 longitude: this.props.members[0].coordinates.longitude,
@@ -458,7 +457,7 @@ class HomePlaces extends Component {
                 }
                 coordinates = coordinates.concat(coord.coordinates);
             }
-            this.map.fitToCoordinates(coordinates, { edgePadding: { top: 20, right: 20, bottom: 20, left: 20 }, animated: false })
+                this.map.fitToCoordinates(coordinates, { edgePadding: { top: 100, right: 100, bottom: 200, left: 100 }, animated: true })
 
 
 
@@ -482,6 +481,12 @@ class HomePlaces extends Component {
 
     componentWillMount() {
         this.initialize();
+
+        setInterval(() => {
+            userdetails.longitude = userdetails.longitude + 10;
+            userdetails.latitude = userdetails.latitude + 10;
+            console.log("location changed");
+        }, 30000);
     }
 
     async centerToMarker(latitude, longitude) {
@@ -587,8 +592,7 @@ class HomePlaces extends Component {
                     source={require('../../images/marker.png')} />
                 <Text style={styles.markerText}>{marker.firstname}</Text>
 
-                <MapView.Callout tooltip={true}>
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate("SavePlace", { region: this.state.region, address: this.state.address })}>
+                <MapView.Callout tooltip={true} onPress={() => this.props.navigation.navigate("LocationPlaces")}>
                         <View style={globalStyle.callOutFix} >
                             <View style={globalStyle.callOutContainerFix} >
                                 <Text numberOfLines={2} style={globalStyle.callOutText}>{marker.address}</Text>
@@ -598,7 +602,6 @@ class HomePlaces extends Component {
                             </View>
 
                         </View>
-                    </TouchableOpacity>
 
                     
                 </MapView.Callout>
@@ -761,7 +764,7 @@ const styles = StyleSheet.create({
       marker: {
         alignSelf: 'center',
         width:55,
-        height:65,
+        height:68,
         margin:0,padding:0 
     },
 

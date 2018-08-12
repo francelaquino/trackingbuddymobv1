@@ -9,55 +9,6 @@ var userdetails = require('../../components/shared/userDetails');
 
 
 
-export const displayLocations=(userid)=> dispatch=> {
-    let locations=[];
-    let count=0;
-    let cnt=0;
-
-    return new Promise((resolve) => {
-        firebase.database().ref(".info/connected").on("value", function (snap) {
-            if (snap.val() === true) {
-                firebase.database().ref().child('locations/' + userid).orderByChild("dateadded").limitToFirst(100).once("value", function (snapshot) {
-                    if (snapshot.val() === null) {
-                        resolve("");
-                    } else {
-                        snapshot.forEach(childSnapshot => {
-
-                            let dateadded = Moment(new Date(parseInt(childSnapshot.val().dateadded))).format("DD-MMM-YYYY ddd hh:mm A");
-                            locations.push({
-                                id: childSnapshot.key,
-                                address: childSnapshot.val().address,
-                                dateadded: dateadded,
-                                coordinates: {
-                                    longitude: Number(childSnapshot.val().lon),
-                                    latitude: Number(childSnapshot.val().lat)
-                                }
-
-                            });
-                            cnt++;
-                            if (cnt >= count) {
-                                dispatch({
-                                    type: DISPLAY_LOCATION,
-                                    payload: locations.reverse(),
-                                });
-                                resolve("");
-                            }
-
-                        })
-
-                    }
-                })
-            } else {
-                dispatch({
-                    type: DISPLAY_LOCATION,
-                    payload: [],
-                });
-                resolve("Network connection error");
-            }
-        })
-    })
-    
-};
 const rad=(x)=> {
     return x * Math.PI / 180;
 };
@@ -71,12 +22,22 @@ const getDistance=(lat1,long1,lat2,long2) => {
       let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       let d = R * c;
     return d; 
-  };
+};
+
+const savelocationhistory = async (address, latitude, longitude) => {
+    await axios.post(settings.baseURL + 'place/savelocationhistory', {
+        latitude: latitude,
+        longitude: longitude,
+        address: address,
+        useruid: userdetails.userid,
+    }).then(function (res) {
+    }).catch(function (error) {
+    });
+}
 
 export const saveLocationOffline = () => async dispatch => {
     let userid = await AsyncStorage.getItem("userid");
     if (userid !== "" & userid !== null) {
-        console.log("saving offline");
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                 const coords = {
@@ -89,7 +50,6 @@ export const saveLocationOffline = () => async dispatch => {
                 if (!location) {
                     location = [];
                 }
-                console.log(location)
 
                 if (location.length >= 1) {
                     var loc = location[location.length - 1];
@@ -115,18 +75,71 @@ export const saveLocationOffline = () => async dispatch => {
 };
 
 export const saveLocationOnline=()=> async dispatch=> {
-    let userid = await AsyncStorage.getItem("userid");
+    //let userid = await AsyncStorage.getItem("userid");
+    let userid = userdetails.userid;
     if (userid === "" || userid === null) {
         dispatch({ 
             type: SAVE_LOCATION_ONLINE,
             payload: [],
         });
     } else {
-        console.log("saving online");
+        
         let dateadded=Date.now();
         navigator.geolocation.getCurrentPosition(
-            (position) => {
-                fetch("https://us-central1-trackingbuddy-3bebd.cloudfunctions.net/api/appendOnlineLocation?lat="+ position.coords.latitude +"&lon="+ position.coords.longitude +"&userid="+userdetails.userid+"&dateadded="+dateadded+"&firstname="+userdetails.firstname)
+            async (position) => {
+                if (userdetails.address == "") {
+                    await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
+                        .then(async function (res) {
+                            userdetails.latitude = position.coords.latitude;
+                            userdetails.longitude = position.coords.longitude;
+                            userdetails.address = res.data;
+                            await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/appendOnlineLocation?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude + "&userid=" + userdetails.userid + "&dateadded=" + dateadded + "&firstname=" + userdetails.firstname + "&address=" + userdetails.address)
+                                .then(async function (res) {
+                                }).catch(function (error) {
+                                });
+                            await savelocationhistory(userdetails.address, userdetails.latitude, userdetails.longitude);
+
+                        }).catch(function (error) {
+                        });
+
+                    dispatch({
+                        type: SAVE_LOCATION_ONLINE,
+                        payload: []
+                    });
+                } else {
+                    let distance = await getDistance(userdetails.latitude, userdetails.longitude, position.coords.latitude, position.coords.longitude)
+                    if (distance > 100) {
+                        await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + userdetails.latitude + "&lon=" + userdetails.longitude)
+                            .then(async function (res) {
+                                //userdetails.latitude = position.coords.latitude;
+                                //userdetails.longitude = position.coords.longitude;
+                                userdetails.address = res.data;
+                                await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/appendOnlineLocation?lat=" + userdetails.latitude + "&lon=" + userdetails.longitude + "&userid=" + userdetails.userid + "&dateadded=" + dateadded + "&firstname=" + userdetails.firstname + "&address=" + userdetails.address)
+                                    .then(async function (res) {
+                                    }).catch(function (error) {
+                                    });
+
+                                await savelocationhistory(userdetails.address, userdetails.latitude, userdetails.longitude);
+
+                            }).catch(function (error) {
+                            });
+
+                        
+                    }
+                    dispatch({
+                        type: SAVE_LOCATION_ONLINE,
+                        payload: []
+                    });
+
+                }
+                /*let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
+                if (distance > 100) {
+                    location.push(coords)
+                    await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+                }*/
+
+
+                /*fetch("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/appendOnlineLocation?lat="+ position.coords.latitude +"&lon="+ position.coords.longitude +"&userid="+userdetails.userid+"&dateadded="+dateadded+"&firstname="+userdetails.firstname)
                 .then((response) => response)
                 .then((response) => {
                     dispatch({ 
@@ -140,7 +153,7 @@ export const saveLocationOnline=()=> async dispatch=> {
                         type: SAVE_LOCATION_ONLINE,
                         payload: [],
                     });
-                });
+                });*/
             
             },
             (err) => {
@@ -321,7 +334,6 @@ export const savePlace = (place, address, region) => dispatch => {
                 address: address,
                 owner: userdetails.userid,
             }).then(function (res) {
-                console.log(res)
                 if (res.data.status == "202") {
                     if (res.data.isexist == "true") {
                         ToastAndroid.showWithGravityAndOffset("Place already exist", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
@@ -336,13 +348,11 @@ export const savePlace = (place, address, region) => dispatch => {
                 }
             }).catch(function (error) {
                 resolve(false)
-                console.log(error)
                 ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            console.log(e)
             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
@@ -366,7 +376,6 @@ export const updatePlace = (id, place,address, coordinate) => dispatch => {
                 address: address,
                 owner: userdetails.userid,
             }).then(function (res) {
-                console.log(res);
                 if (res.data.status == "202") {
                     if (res.data.isexist == "true") {
                         ToastAndroid.showWithGravityAndOffset("Place already exist", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
@@ -381,13 +390,11 @@ export const updatePlace = (id, place,address, coordinate) => dispatch => {
                 }
             }).catch(function (error) {
                 resolve(false)
-                console.log(error)
                 ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            console.log(e)
             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
@@ -408,7 +415,6 @@ export const savePlaceNotification = (data) => async dispatch => {
                 leaves: data.leaves,
                 owner: userdetails.userid,
             }).then(function (res) {
-                console.log(res);
                 if (res.data.status == "202") {
                         ToastAndroid.showWithGravityAndOffset("Notification successfully saved.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                         resolve(true)
@@ -418,13 +424,11 @@ export const savePlaceNotification = (data) => async dispatch => {
                 }
             }).catch(function (error) {
                 resolve(false)
-                console.log(error)
                 ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
 
 
         } catch (e) {
-            console.log(e)
             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
@@ -483,12 +487,50 @@ export const getPlaceNotification = (placeid, userid) => async dispatch => {
         } catch (e) {
 
             dispatch({
-                type: DISPLAY_PLACES,
+                type: GET_PLACE_ALERT,
                 payload: []
             });
             resolve(false)
             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
         }
     });
+
+};
+
+
+
+export const displayLocations = () => dispatch => {
+
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'place/getLocationHistory/' + userdetails.userid )
+                .then(function (res) {
+                        dispatch({
+                            type: DISPLAY_LOCATION,
+                            payload: res.data.results
+                        });
+                        resolve(true)
+                }).catch(function (error) {
+
+                    dispatch({
+                        type: DISPLAY_LOCATION,
+                        payload: []
+                    });
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+
+            dispatch({
+                type: DISPLAY_LOCATION,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
+
+
 
 };

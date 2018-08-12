@@ -34,7 +34,6 @@ class InfoMember extends Component {
             this.setState({ loading:false })
         });
         await this.props.getMemberNotification(this.props.navigation.state.params.memberuid).then(res => {
-            console.log(this.props.placenotification)
         });
 
     }
@@ -43,10 +42,12 @@ class InfoMember extends Component {
         let self=this;
         this.setState({loading:true})
         this.props.deleteMember(this.props.navigation.state.params.memberuid).then(res=>{
-                self.setState({loading:false})
+            
                 self.props.displayMember();
-                //self.props.displayHomeMember();
-                self.props.navigate.goBack();
+                self.props.displayHomeMember();
+            this.props.navigation.pop(1);
+            self.setState({ loading: false })
+           
         }).catch(function(err) {
             self.setState({loading:false})
         });
