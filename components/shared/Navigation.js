@@ -62,7 +62,8 @@ export const Stack = createStackNavigator({
         screen: Home,
         headerMode: 'none',
         navigationOptions: {
-            header: null
+            header: null,
+            gesturesEnabled: false,
         }
     },
     Menu: {

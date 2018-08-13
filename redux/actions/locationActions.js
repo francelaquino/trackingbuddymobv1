@@ -63,7 +63,7 @@ export const saveLocationOffline = () => async dispatch => {
                 if (location.length >= 1) {
                     var loc = location[location.length - 1];
                     let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
-                    if (distance > 100) {
+                    if (distance > 150) {
                         location.push(coords)
                         await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
                     }

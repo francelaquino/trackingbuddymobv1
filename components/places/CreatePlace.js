@@ -8,6 +8,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
+import axios from 'axios';
 import MapView, { ProviderPropType, Marker, AnimatedRegion, Animated, Polyline } from 'react-native-maps';
 import Geocoder from 'react-native-geocoder';
 import Loading  from '../shared/Loading';
@@ -23,7 +24,6 @@ const LONGITUDE_DELTA = Dimensions.get("window").width / Dimensions.get("window"
 var globalStyle = require('../../assets/style/GlobalStyle');
 var userdetails = require('../../components/shared/userDetails');
 
-var self;
 
 class CreatePlace extends Component {
     constructor(props) {
@@ -47,35 +47,6 @@ class CreatePlace extends Component {
     
 
     
-    /*onPress = {(e) => this.setMarkerLocation(e.nativeEvent)}
-    setMarkerLocation(location) {
-        setTimeout(() => {
-            let coords = {
-                lat: location.coordinate.latitude,
-                lng: location.coordinate.longitude,
-            };
-            Geocoder.geocodePosition(coords).then(res => {
-                let address = res[1].formattedAddress;
-                this.setState({
-                    address: address,
-                    region: {
-                        latitude: location.coordinate.latitude,
-                        longitude: location.coordinate.longitude,
-                        latitudeDelta: LATITUDE_DELTA,
-                        longitudeDelta: LONGITUDE_DELTA
-                    }
-                })
-            })
-            this.fitToMap()
-
-        },0)
-        
-
-       
-
-       
-
-    }*/
 
     fitToMap() {
        
@@ -101,7 +72,6 @@ class CreatePlace extends Component {
     async componentDidMount(){
         await this.getCurrentPosition();
 
-        self = this;
 
     }
 
@@ -118,7 +88,7 @@ class CreatePlace extends Component {
     getCurrentPosition() {
         try {
           navigator.geolocation.getCurrentPosition(
-              (position) => {
+              async (position) => {
               const region = {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
@@ -138,16 +108,19 @@ class CreatePlace extends Component {
                   let coords = {
                       lat: position.coords.latitude,
                       lng: position.coords.longitude,
-                  };
+              };
+                  let self = this;
+                  await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
+                      .then(async function (res) {
+                          self.setState({
+                              address: res.data,
+                              isMapReady: true,
+                          });
 
-                  Geocoder.geocodePosition(coords).then(res => {
-                      this.setState({
-                          address: res[1].formattedAddress,
-                          isMapReady: true,
 
-                      })
-                      
-                  })
+                      }).catch(function (error) {
+                      });
+                 
 
             },
             (error) => {
@@ -190,18 +163,24 @@ class CreatePlace extends Component {
             lat: region.latitude,
             lng: region.longitude,
         };
-        Geocoder.geocodePosition(coords).then(res => {
-            let address = res[1].formattedAddress;
-            this.setState({
-                address: address,
-                region: {
-                    latitude: region.latitude,
-                    longitude: region.longitude,
-                    latitudeDelta: region.latitudeDelta,
-                    longitudeDelta: region.longitudeDelta
-                }
+        let self = this;
+         axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + region.latitude + "&lon=" + region.longitude)
+             .then(async function (res) {
+                self.setState({
+                    address: res.data,
+                    region: {
+                        latitude: region.latitude,
+                        longitude: region.longitude,
+                        latitudeDelta: region.latitudeDelta,
+                        longitudeDelta: region.longitudeDelta
+                    }
+                });
+
+
+            }).catch(function (error) {
             });
-        })
+
+       
        
       
         

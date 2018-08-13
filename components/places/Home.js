@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { AsyncStorage, NetInfo, TouchableOpacity, Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, Dimensions, FlatList } from 'react-native';
+import { BackHandler, AsyncStorage, NetInfo, TouchableOpacity, Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, Dimensions, FlatList } from 'react-native';
 import { Drawer,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Switch, Thumbnail,Card,CardItem } from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -15,11 +15,11 @@ import OfflineNotice  from '../shared/OfflineNotice';
 import LeftDrawer from '../shared/LeftDrawer'
 import { connect } from 'react-redux';
 import { displayHomeMember  } from '../../redux/actions/memberActions' ;
-import { saveLocationOnline,pushLocationOnline  } from '../../redux/actions/locationActions' ;
+import { saveLocationOnline, pushLocationOnline  } from '../../redux/actions/locationActions' ;
 import firebase from 'react-native-firebase';
 import type { Notification } from 'react-native-firebase';
 var PushNotification = require('react-native-push-notification');
-
+var settings = require('../../components/shared/Settings');
 var screenHeight = Dimensions.get('window').height; 
 
 import BackgroundJob from 'react-native-background-job';
@@ -33,222 +33,8 @@ const LONGITUDE = 0;
 const LATITUDE_DELTA = .05;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-const retro = [
-    {
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "color": "#ebe3cd"
-            }
-        ]
-    },
-    {
-        "elementType": "labels.text.fill",
-        "stylers": [
-            {
-                "color": "#523735"
-            }
-        ]
-    },
-    {
-        "elementType": "labels.text.stroke",
-        "stylers": [
-            {
-                "color": "#f5f1e6"
-            }
-        ]
-    },
-    {
-        "featureType": "administrative",
-        "elementType": "geometry.stroke",
-        "stylers": [
-            {
-                "color": "#c9b2a6"
-            }
-        ]
-    },
-    {
-        "featureType": "administrative.land_parcel",
-        "elementType": "geometry.stroke",
-        "stylers": [
-            {
-                "color": "#dcd2be"
-            }
-        ]
-    },
-    {
-        "featureType": "administrative.land_parcel",
-        "elementType": "labels.text.fill",
-        "stylers": [
-            {
-                "color": "#ae9e90"
-            }
-        ]
-    },
-    {
-        "featureType": "landscape.natural",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "color": "#dfd2ae"
-            }
-        ]
-    },
-    {
-        "featureType": "poi",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "color": "#dfd2ae"
-            }
-        ]
-    },
-    {
-        "featureType": "poi",
-        "elementType": "labels.text.fill",
-        "stylers": [
-            {
-                "color": "#93817c"
-            }
-        ]
-    },
-    {
-        "featureType": "poi.park",
-        "elementType": "geometry.fill",
-        "stylers": [
-            {
-                "color": "#a5b076"
-            }
-        ]
-    },
-    {
-        "featureType": "poi.park",
-        "elementType": "labels.text.fill",
-        "stylers": [
-            {
-                "color": "#447530"
-            }
-        ]
-    },
-    {
-        "featureType": "road",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "color": "#f5f1e6"
-            }
-        ]
-    },
-    {
-        "featureType": "road.arterial",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "color": "#fdfcf8"
-            }
-        ]
-    },
-    {
-        "featureType": "road.highway",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "color": "#f8c967"
-            }
-        ]
-    },
-    {
-        "featureType": "road.highway",
-        "elementType": "geometry.stroke",
-        "stylers": [
-            {
-                "color": "#e9bc62"
-            }
-        ]
-    },
-    {
-        "featureType": "road.highway.controlled_access",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "color": "#e98d58"
-            }
-        ]
-    },
-    {
-        "featureType": "road.highway.controlled_access",
-        "elementType": "geometry.stroke",
-        "stylers": [
-            {
-                "color": "#db8555"
-            }
-        ]
-    },
-    {
-        "featureType": "road.local",
-        "elementType": "labels.text.fill",
-        "stylers": [
-            {
-                "color": "#806b63"
-            }
-        ]
-    },
-    {
-        "featureType": "transit.line",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "color": "#dfd2ae"
-            }
-        ]
-    },
-    {
-        "featureType": "transit.line",
-        "elementType": "labels.text.fill",
-        "stylers": [
-            {
-                "color": "#8f7d77"
-            }
-        ]
-    },
-    {
-        "featureType": "transit.line",
-        "elementType": "labels.text.stroke",
-        "stylers": [
-            {
-                "color": "#ebe3cd"
-            }
-        ]
-    },
-    {
-        "featureType": "transit.station",
-        "elementType": "geometry",
-        "stylers": [
-            {
-                "color": "#dfd2ae"
-            }
-        ]
-    },
-    {
-        "featureType": "water",
-        "elementType": "geometry.fill",
-        "stylers": [
-            {
-                "color": "#b9d3c2"
-            }
-        ]
-    },
-    {
-        "featureType": "water",
-        "elementType": "labels.text.fill",
-        "stylers": [
-            {
-                "color": "#92998d"
-            }
-        ]
-    }
-];
 //BackgroundJob.cancelAll();
+let self = this;
 let trackLocation;
     const trackPosition = {
     jobKey: "trackPositionJob",
@@ -277,9 +63,9 @@ const getDistance = (lat1, long1, lat2, long2) => {
     let d = R * c;
     return d;
 };
-    
-const saveLocationOffline = async () =>   {
-    let userid =  await AsyncStorage.getItem("userid");
+
+const saveLocationOffline = async () => {
+    let userid = await AsyncStorage.getItem("userid");
     if (userid !== "" & userid !== null) {
         console.log("saving offline");
         navigator.geolocation.getCurrentPosition(
@@ -301,11 +87,11 @@ const saveLocationOffline = async () =>   {
                     let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
                     if (distance > 100) {
                         location.push(coords)
-                         await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+                        await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
                     }
                 } else {
                     location.push(coords)
-                     await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+                    await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
                 }
 
 
@@ -367,7 +153,7 @@ class HomePlaces extends Component {
         this.state = {
             mapMode:'standard',
             groupname: '',
-            isLoading: true,
+            isLoading: false,
             memberReady: false,
             region: {
                 latitude: LATITUDE,
@@ -384,13 +170,17 @@ class HomePlaces extends Component {
 
 
 
-
     componentWillUnmount() {
         //BackgroundJob.cancelAll();
         this.notificationListener();
         
     }
+
+   
     async componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', function () {
+            return true;
+        });
         BackgroundJob.cancelAll();
 
         this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
@@ -421,7 +211,7 @@ class HomePlaces extends Component {
                     self.props.saveLocationOnline();
 
                 } else {
-                    self.props.saveLocationOffline();
+                    saveLocationOffline();
                 }
             });
         }
@@ -653,7 +443,7 @@ class HomePlaces extends Component {
                                         source={require('../../images/marker.png')} />
                                     <MapView ref={map => { this.map = map }}
                                     provider={PROVIDER_GOOGLE}
-                                    customMapStyle={retro}
+                                    customMapStyle={settings.retro}
                                     mapType={this.state.mapMode}
                                         followsUserLocation={false}
                                     loadingEnabled={true}
@@ -794,6 +584,6 @@ const mapStateToProps = state => ({
   
   
   
-HomePlaces=connect(mapStateToProps,{displayHomeMember,saveLocationOnline,pushLocationOnline})(HomePlaces);
+HomePlaces = connect(mapStateToProps, { displayHomeMember, saveLocationOnline, pushLocationOnline})(HomePlaces);
   
 export default HomePlaces;

@@ -32,6 +32,7 @@ class Login extends Component {
   
     async componentDidMount() {
        
+
         let userid = await AsyncStorage.getItem("userid");
         let email = await AsyncStorage.getItem("email");
         let firstname = await AsyncStorage.getItem("firstname");
