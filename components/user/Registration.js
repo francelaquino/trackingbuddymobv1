@@ -1,9 +1,10 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Platform,  StyleSheet,  View, TextInput, TouchableOpacity,ScrollView,Picker, Alert, ToastAndroid, Form ,Image } from 'react-native';
-import { Root, Container, Header, Body, Title, Item, Input, Label, Button,Text, Icon } from 'native-base';
+import { Platform, StyleSheet, View, TextInput, TouchableOpacity, ScrollView, Picker, Alert, ToastAndroid, Form, Image } from 'react-native';
+import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Text, Icon, Content, Left, Right } from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Loading  from '../shared/Loading';
 import ImagePicker from 'react-native-image-picker';
 import Loader from '../shared/Loader';
@@ -11,7 +12,7 @@ import firebase from 'react-native-firebase';
 import OfflineNotice from '../shared/OfflineNotice';
 import { registerUser } from '../../redux/actions/userActions';
 var registrationStyle = require('../../assets/style/Registration');
-
+var globalStyle = require('../../assets/style/GlobalStyle');
 
 
 class Register extends Component {
@@ -123,6 +124,9 @@ class Register extends Component {
         }
         this.setState({ loading: true })
         this.props.registerUser(user).then((res) => {
+            if (res == true) {
+                this.resetState();
+            }
             this.setState({ loading: false })
         })
 
@@ -130,7 +134,7 @@ class Register extends Component {
     }
 
 
-  async resetState(){
+   resetState(){
       this.setState({
           email: '',
           password: '',
@@ -158,12 +162,30 @@ class Register extends Component {
 		const { navigate } = this.props.navigation;
 	  return (
 			<Root>
-			<Container style={registrationStyle.containerWrapper} >
+              <Container style={globalStyle.containerWrapper} >
       <Loader loading={this.state.loading} />
-      <OfflineNotice/>
+                  <OfflineNotice />
+                  <Header style={globalStyle.header}>
+                      <Left style={globalStyle.headerLeft} >
+                          <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                              <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+
+                          </Button>
+                      </Left>
+                      <Body style={globalStyle.headerBody}>
+                          <Title style={globalStyle.headerTitle}>REGISTRATION</Title>
+                      </Body>
+                      <Right style={globalStyle.headerRight} >
+
+
+
+                      </Right>
+
+                  </Header>
+                  <Content padder>
 			<ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
-				<View style={registrationStyle.container}>
-                    <View  style={{marginBottom:20}}>
+                      <View style={globalStyle.container}>
+                    <View  style={{marginBottom:20,marginTop:20}}>
 						<TouchableOpacity onPress={this.selectPhoto.bind(this)}>
 							<View style={registrationStyle.avatarContainer}>
 							{ this.state.avatarsource === '' ? <Text style={{fontSize:10,marginTop:32,color:'white'}}>Select a Photo</Text> :
@@ -172,66 +194,60 @@ class Register extends Component {
 							</View>
 						</TouchableOpacity>
 					</View>
-         
-					
-					<Item   style={registrationStyle.regularitem}  >
-                        <TextInput  style={registrationStyle.textinput} 
-                            underlineColorAndroid= 'transparent'
-                            placeholder="Email address"
+                         
+                          <Item stackedLabel>
+                              <Label style={globalStyle.label} >Email address</Label>
+                              <Input style={globalStyle.textinput} 
 							name="email" autoCorrect={false} maxLength = {50}
 							value={this.state.email}
 							onChangeText={email=>this.setState({email})}/>
 						</Item>
 					
-						<Item   style={registrationStyle.regularitem}>
-                            <TextInput  style={registrationStyle.textinput } 
-                             underlineColorAndroid= 'transparent'
-                             placeholder="Password"
+                          <Item stackedLabel>
+                              <Label style={globalStyle.label} >Password</Label>
+                            <Input  style={registrationStyle.textinput } 
 								name="password" autoCorrect={false}
 								value={this.state.password} secureTextEntry
 								onChangeText={password=>this.setState({password})}/>
 						</Item>
 
 
-						<Item   style={registrationStyle.regularitem} >
-                            <TextInput  style={registrationStyle.textinput} 
-                             underlineColorAndroid= 'transparent'
-                             placeholder="Re-Type Passwprd"
+                          <Item stackedLabel>
+                              <Label style={globalStyle.label} >Re-Type Password</Label>
+                            <Input  style={registrationStyle.textinput} 
 								name="retypepassword" autoCorrect={false}
 								value={this.state.retypepassword} secureTextEntry
 								onChangeText={retypepassword=>this.setState({retypepassword})}/>
 						
 						</Item>
-						<Item   style={registrationStyle.regularitem}>
-                            <TextInput  style={registrationStyle.textinput} 
-                             underlineColorAndroid= 'transparent'
-                             placeholder="First Name" maxLength = {10}
+                          <Item stackedLabel>
+                              <Label style={globalStyle.label} >First Name</Label>
+                            <Input  style={registrationStyle.textinput} 
+                              maxLength = {10}
 								name="firstname" autoCorrect={false}
 								value={this.state.firstname}
 								onChangeText={firstname=>this.setState({firstname})}/>
 						</Item>
 					
-						<Item   style={registrationStyle.regularitem}>
-                        <TextInput  style={registrationStyle.textinput} 
-                         underlineColorAndroid= 'transparent'
-                         placeholder="Middle Name" maxLength = {10}
+                          <Item stackedLabel>
+                              <Label style={globalStyle.label} >Middle Name</Label>
+                        <Input  style={registrationStyle.textinput} 
+                         maxLength = {10}
 								name="middlename" autoCorrect={false}
 								value={this.state.middlename}
 								onChangeText={middlename=>this.setState({middlename})}/>
 						</Item>
 					
-						<Item   style={registrationStyle.regularitem}>
-                            <TextInput  style={registrationStyle.textinput} 
-                             underlineColorAndroid= 'transparent'
-                             placeholder="Last Name"
+                          <Item stackedLabel>
+                              <Label style={globalStyle.label} >Last Name</Label>
+                            <Input  style={registrationStyle.textinput} 
 								name="lastname" autoCorrect={false} maxLength = {10}
 								value={this.state.lastname}
 								onChangeText={lastname=>this.setState({lastname})}/>
 					</Item>
-						<Item   style={registrationStyle.regularitem}>
-                            <TextInput  style={registrationStyle.textinput} 
-                             underlineColorAndroid= 'transparent'
-                             placeholder="Mobile No."
+                          <Item stackedLabel>
+                              <Label style={globalStyle.label} >Mobile No.</Label>
+                            <Input  style={registrationStyle.textinput} 
 								name="mobileno" autoCorrect={false}
 								value={this.state.mobileno}
 								onChangeText={mobileno=>this.setState({mobileno})}/>
@@ -244,13 +260,14 @@ class Register extends Component {
 							full  style={registrationStyle.registrationbutton}>
 							<Text>Register</Text>
 						</Button>
-						<TouchableOpacity  style={{marginTop:20}} underlayColor={'transparent'} onPress={() =>navigate('Login')}>
+                                  <TouchableOpacity style={{ marginTop: 20 }} underlayColor={'transparent'} onPress={() => this.props.navigation.goBack()}>
 						<Text style={registrationStyle.haveaccount}>Already have an acccount? <Text style={registrationStyle.loginButton}>Login</Text></Text>
 						</TouchableOpacity>
 						
 					</View>
 					</View>
-				</ScrollView>
+                      </ScrollView>
+                      </Content>
 				</Container>
 			</Root>
 	  )

@@ -73,9 +73,7 @@ class LeftDrawer extends Component<Props> {
                             </Left>
                             <Body style={{width:'100%',borderBottomWidth:0}} >
                                 
-                                <TouchableOpacity  onPress={() =>this.displayHome()}>
                                 <Text style={{ fontSize: 19, color: '#454444', marginLeft: 5}}>ABOUT</Text>
-                                </TouchableOpacity>
                             </Body>
                     </ListItem>
                     <ListItem icon style={{ marginBottom: 5, padding: 10 }}>
@@ -84,19 +82,15 @@ class LeftDrawer extends Component<Props> {
                         </Left>
                         <Body style={{ width: '100%', borderBottomWidth: 0 }} >
 
-                            <TouchableOpacity>
                                 <Text style={{ fontSize: 19, color: '#454444', marginLeft: 5 }}>FAQs</Text>
-                            </TouchableOpacity>
                         </Body>
                     </ListItem>
-                           <ListItem icon style={{ marginBottom: 5,padding:10}}>
+                    <ListItem button icon style={{ marginBottom: 5, padding: 10 }} onPress={() => this.displayLogout()}>
                             <Left>
                             <SimpleLineIcons style={{ fontSize: 30, width: 25, color:'#454444'}} name="logout" />
                             </Left>
                             <Body style={{width:'100%',borderBottomWidth:0}} >
-                            <TouchableOpacity  onPress={() =>this.displayLogout()}>
                                 <Text style={{ fontSize: 19, color: '#454444', marginLeft: 5}}>LOGOUT</Text>
-                                </TouchableOpacity>
                             </Body>
                             </ListItem>
                         </List>

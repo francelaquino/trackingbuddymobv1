@@ -32,7 +32,8 @@ class LocationPlaces extends Component<Props> {
     }
         
     initialize() {
-        this.props.displayLocations(this.props.memberid).then(res => {
+       
+        this.props.displayLocations(this.props.navigation.state.params.uid).then(res => {
             if (res == true) {
                 this.setState({ loading: false })
                 console.log(this.props.locations)

@@ -40,13 +40,15 @@ class InfoMember extends Component {
 
     onDelete(){
         let self=this;
-        this.setState({loading:true})
+        this.setState({ isbusy:true})
         this.props.deleteMember(this.props.navigation.state.params.memberuid).then(res=>{
             
                 self.props.displayMember();
-                self.props.displayHomeMember();
-            this.props.navigation.pop(1);
-            self.setState({ loading: false })
+            self.props.displayHomeMember();
+            setTimeout(() => {
+                this.props.navigation.pop(1);
+                self.setState({ isbusy: false })
+            },500)
            
         }).catch(function(err) {
             self.setState({loading:false})

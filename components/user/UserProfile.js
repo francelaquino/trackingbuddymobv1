@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOpacity, ToastAndroid, Alert, Image, Picker } from 'react-native';
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right, List, ListItem, Content } from 'native-base';
 import { connect } from 'react-redux';
-import {  getProfile, updateProfile } from '../../redux/actions/userActions' ;
-import { displayHomeMember  } from '../../actions/memberActions' ;
+import { getProfile, updateProfile } from '../../redux/actions/userActions';
+import { displayHomeMember } from '../../redux/actions/memberActions';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { NavigationActions } from 'react-navigation'
@@ -32,7 +32,7 @@ class UserProfile extends Component {
                 uri:''
             },
             isPhotoChange: false,
-            emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/member_photos%2Ficons8-person-80.png?alt=media&token=59864ce7-cf1c-4c5e-a07d-76c286a2171d',
+            //emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/member_photos%2Ficons8-person-80.png?alt=media&token=59864ce7-cf1c-4c5e-a07d-76c286a2171d',
     
         };
       }
@@ -99,6 +99,7 @@ class UserProfile extends Component {
         this.props.updateProfile(profile).then(res => {
             this.setState({ loading: false })
             this.componentWillMount();
+            this.props.displayHomeMember();
         });
     }
 

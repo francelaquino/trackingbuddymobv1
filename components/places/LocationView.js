@@ -8,7 +8,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
-import MapView, { ProviderPropType, Marker, AnimatedRegion,Animated,Polyline } from 'react-native-maps';
+import MapView, { ProviderPropType, Marker, AnimatedRegion, Animated, Polyline } from 'react-native-maps';
+import { getLocationDetails } from '../../redux/actions/locationActions';
+import { connect } from 'react-redux';
 import Loading  from '../shared/Loading';
 import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
@@ -55,7 +57,8 @@ class LocationView extends Component {
     }
 
    
-    componentDidMount(){
+    async componentDidMount() {
+        
         this.setState({
             region:{
                 longitude:this.props.navigation.state.params.location.longitude,
@@ -197,7 +200,17 @@ const styles = StyleSheet.create({
   });
 
   
-  
+
+
+const mapStateToProps = state => ({
+    details: state.fetchLocation.details,
+    isLoading: state.fetchLocation.isLoading,
+})
+
+LocationView = connect(mapStateToProps, { getLocationDetails })(LocationView);
 
 export default LocationView;
+
+
+
 

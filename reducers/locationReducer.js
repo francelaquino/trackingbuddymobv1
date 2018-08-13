@@ -1,10 +1,11 @@
-import {  DISPLAY_LOCATION, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES, GET_PLACE_ALERT } from '../actions/types';
+import { DISPLAY_LOCATION, GET_LOCATIONDETAILS, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES, GET_PLACE_ALERT } from '../actions/types';
 
 const initialState = {
     coordinates:[],
     places:[],
     locations:[],
-    location:[],
+    location: [],
+    details:[],
     alerts:[],
     isLoading:true,
     success:true,
@@ -18,6 +19,12 @@ export default function(state=initialState,action){
                 ...state,
                 locations: action.payload,
                 isLoading:false,
+            };
+        case GET_LOCATIONDETAILS:
+            return {
+                ...state,
+                details: action.payload,
+                isLoading: false,
             };
         case DISPLAY_PLACES:
             return {

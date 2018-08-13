@@ -2,7 +2,7 @@ import { SIGNIN_USER,REGISTRATION_USER, NO_CONNECTION, GET_PROFILE } from './typ
 import { ToastAndroid, AsyncStorage } from 'react-native';
 import axios from 'axios';
 import firebase from 'react-native-firebase';
-import Moment from 'moment';
+import Moment from 'moment';    
 var settings = require('../../components/shared/Settings');
 var userdetails = require('../../components/shared/userDetails');
 
@@ -32,25 +32,43 @@ export const submitSignUp=(user)=> dispatch=> {
 export const userLogin = (email, password) => async dispatch => {
     
     return new Promise(async (resolve) => {
+        try {
                 firebase.auth().signInAndRetrieveDataWithEmailAndPassword(email, password)
-                    .then(function (res) {
+                    .then(async function (res) {
+                       
                         //if(res.user.emailVerified){
-                        let childPromise = new Promise( (childResolve) => {
-                             firebase.database().ref().child('users/' + res.user.uid).on('value', function (snapshot) {
-                                userdetails.userid = res.user.uid;
-                                userdetails.email = snapshot.val().email;
-                                userdetails.firstname = snapshot.val().firstname;
-                                userdetails.lastname = snapshot.val().lastname;
-                                AsyncStorage.setItem("userid", userdetails.userid);
-                                AsyncStorage.setItem("email", userdetails.email);
-                                AsyncStorage.setItem("firstname", userdetails.firstname);
-                                 AsyncStorage.setItem("lastname", userdetails.lastname);
-                                AsyncStorage.setItem("offlineLocation", "");
-                                childResolve();
+                        await axios.get(settings.baseURL + 'member/getmemberinfo/' + res.user.uid)
+                            .then(function (response) {
+                                if (response.data.status == "202") {
+                                    userdetails.userid = res.user.uid;
+                                    userdetails.email = response.data.results.email;
+                                    userdetails.firstname = response.data.results.firstname;
+                                    userdetails.lastname = response.data.results.lastname;
+                                    AsyncStorage.setItem("userid", userdetails.userid);
+                                    AsyncStorage.setItem("email", userdetails.email);
+                                    AsyncStorage.setItem("firstname", userdetails.firstname);
+                                    AsyncStorage.setItem("lastname", userdetails.lastname);
+                                    AsyncStorage.setItem("offlineLocation", "");
+                                    resolve(true);
+
+                                }
+                                else {
+                                    resolve(false);
+                                }
+
+                            }).catch(function (error) {
+                                dispatch({
+                                    type: GET_INVITATIONCODE,
+                                    payload: []
+                                });
+                                resolve(false)
+                                ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                             });
-                        }).then(function () {
-                            resolve("");
-                        })
+
+
+                        
+
+
 
                         /*}else{
                           resolve("Invalid username or bad password")
@@ -58,8 +76,13 @@ export const userLogin = (email, password) => async dispatch => {
 
                     })
                     .catch(function (err) {
-                        resolve("Invalid username or bad password")
-                    });
+                        resolve(false);
+                        ToastAndroid.showWithGravityAndOffset("Invalid username or bad password", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+        } catch (e) {
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+            resolve(false)
+        }
       
     })
 

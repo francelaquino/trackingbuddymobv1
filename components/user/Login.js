@@ -5,22 +5,23 @@ import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon 
 import firebase from 'react-native-firebase';
 import Geocoder from 'react-native-geocoder';
 import { connect } from 'react-redux';
-import { saveLocationOffline, saveLocationOnline  } from '../../actions/locationActions' ;
-import { displayHomeMember  } from '../../actions/memberActions' ;
-import {  userLogin } from '../../actions/userActions' ;
+import { saveLocationOffline, saveLocationOnline  } from '../../redux/actions/locationActions' ;
+import { displayHomeMember } from '../../redux/actions/memberActions' ;
+import { userLogin } from '../../redux/actions/userActions' ;
 import Loader from '../shared/Loader';
 import OfflineNotice from '../shared/OfflineNotice';
 import Splash  from '../shared/Splash';
 var registrationStyle = require('../../assets/style/Registration');
 var userdetails = require('../shared/userDetails');
+var globalStyle = require('../../assets/style/GlobalStyle');
 
 class Login extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            showSplash:false,
+            showSplash:true,
             loading:false,
-            email: 'francel_aquino@yahoo.com',
+            email: 'lazarak@rchsp.med.sa',
             password:'111111',
             
         };
@@ -66,14 +67,16 @@ class Login extends Component {
         }
         this.setState({ loading: true });
 
-        this.props.userLogin(this.state.email, this.state.password).then((res) => {
-            setTimeout(() => {
+        this.props.userLogin(this.state.email, this.state.password).then(async (res) => {
+
+           /* setTimeout(() => {
                 if (userdetails.userid === "" || userdetails.userid === null) {
                     this.setState({ loading: false })
-                    ToastAndroid.showWithGravityAndOffset("Network connection error", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    ToastAndroid.showWithGravityAndOffset("Network connection error. Please try again", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
-            }, 3000);
-            if (res == "") {
+            }, 3000);*/
+
+            if (res == true) {
                 setTimeout(() => {
                     this.props.saveLocationOnline();
                     setTimeout(() => {
@@ -88,7 +91,6 @@ class Login extends Component {
                 }, 500);
             } else {
                 this.setState({ loading: false, email: '', password: '' })
-                ToastAndroid.showWithGravityAndOffset(res, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             }
         });
 
@@ -108,30 +110,26 @@ class Login extends Component {
                     <View style={registrationStyle.container}>
                         <View style={registrationStyle.logoContainer}>
                         <Image  style={registrationStyle.logo} resizeMode='contain'  source={require('../../images/logo.png')} />
-                        <Text style={{fontSize:15,color:'silver',marginTop:10}}>Tracking Buddy</Text>
+                            <Text style={{ fontSize: 15, color:'#16a085',marginTop:10}}>Tracking Buddy</Text>
                         
                         </View>
-                        <Item  style={registrationStyle.regularitem}>
-                        <TextInput style={registrationStyle.textinput} 
-                            underlineColorAndroid= 'transparent'
-                            placeholder="Email address"
+                       
+
+                        <Item stackedLabel>
+                            <Label style={globalStyle.label} >Email Address</Label>
+                        <Input style={registrationStyle.textinput} 
                             name="email" autoCorrect={false}
                             value={this.state.email}  maxLength = {50}
                             onChangeText={email=>this.setState({email})}/>
                         </Item>
-                        <Item  style={registrationStyle.regularitem}>
-                            <TextInput style={registrationStyle.textinput} 
-                             underlineColorAndroid= 'transparent'
-                             placeholder="Password"
+                        <Item stackedLabel>
+                            <Label style={globalStyle.label} >Password</Label>
+                            <Input style={registrationStyle.textinput} 
                             name="password" autoCorrect={false} secureTextEntry
                             value={this.state.password}  maxLength = {50}
                             onChangeText={password=>this.setState({password})}/>
                         </Item>
-                        <View style={{alignSelf: 'flex-end',marginTop:10}}>
-                            <TouchableOpacity underlayColor={'transparent'}  onPress={() =>navigate('ForgotPassword')}>
-                            <Text style={{color:'#16a085',fontSize:16}}>Forgot Password?</Text>
-                            </TouchableOpacity>
-                        </View>
+                       
                         <View style={{justifyContent: 'center',alignItems: 'center',marginTop:20}}>
                             <Button 
                                 onPress={()=>this.onLogin()}
@@ -141,8 +139,13 @@ class Login extends Component {
                             
                            
                         </View>
+                        <View style={{ alignSelf: 'flex-end', marginTop: 10 }}>
+                            <TouchableOpacity underlayColor={'transparent'} onPress={() => navigate('ForgotPassword')}>
+                                <Text style={{ color: '#16a085', fontSize: 16 }}>Forgot Password?</Text>
+                            </TouchableOpacity>
+                        </View>
                         
-                        <View style={{justifyContent: 'center',alignItems: 'center',marginTop:10}}>
+                        <View style={{justifyContent: 'center',alignItems: 'center',marginTop:20}}>
                             <TouchableOpacity  underlayColor={'transparent'}  onPress={() =>navigate('Register')}>
                             <Text style={registrationStyle.haveaccount}>Don't have an account? <Text style={registrationStyle.loginButton}>Register</Text></Text>
                             </TouchableOpacity>

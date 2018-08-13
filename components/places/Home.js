@@ -331,7 +331,7 @@ BackgroundJob.register(updateToken);
 var trackPositionSchedule = {
     jobKey: "trackPositionJob",
     //period: 90000,
-    period: 60000,
+    period: 20000,
     exact: true,
     allowExecutionInForeground: true
 }
@@ -435,7 +435,7 @@ class HomePlaces extends Component {
 
     async fitToMap() {
         let coordinates = [];
-        if (this.props.members.length <= 1) {
+        if (this.props.members.length == 1) {
             this.map.animateToRegion({
                 latitude: this.props.members[0].coordinates.latitude,
                 longitude: this.props.members[0].coordinates.longitude,
@@ -443,7 +443,6 @@ class HomePlaces extends Component {
                 longitudeDelta: 0.005
             })
 
-            this.setState({ isLoading: false })
         } else if (this.props.members.length > 1) {
 
             for (let i = 0; i < this.props.members.length; i++) {
@@ -457,7 +456,8 @@ class HomePlaces extends Component {
                 }
                 coordinates = coordinates.concat(coord.coordinates);
             }
-                this.map.fitToCoordinates(coordinates, { edgePadding: { top: 100, right: 100, bottom: 200, left: 100 }, animated: true })
+                this.map.fitToCoordinates(coordinates, { edgePadding: { top: 200, right: 100, bottom: 200, left: 100 }, animated: true })
+           
 
 
 
@@ -479,14 +479,14 @@ class HomePlaces extends Component {
     }
 
 
-    componentWillMount() {
+     componentWillMount() {
         this.initialize();
 
-        setInterval(() => {
-            userdetails.longitude = userdetails.longitude + 10;
-            userdetails.latitude = userdetails.latitude + 10;
+        /*setInterval(() => {
+            userdetails.longitude = userdetails.longitude + 2;
+            userdetails.latitude = userdetails.latitude + 2;
             console.log("location changed");
-        }, 30000);
+        }, 30000);*/
     }
 
     async centerToMarker(latitude, longitude) {
@@ -517,26 +517,28 @@ class HomePlaces extends Component {
         await self.props.displayHomeMember().then(res => {
             setTimeout(async () => {
                 await self.fitToMap();
+                this.setState({ isLoading: false })
             }, 10);
         });
-        await self.setState({ isLoading: false })
     }
 
 
     initialize() {
         let self = this;
         setTimeout(() => {
-            firebase.database().ref('users/' + userdetails.userid + '/members').on("value", (snapshot) => {
+        this.setState({ isLoading: false })
+            firebase.database().ref('users/' + userdetails.userid).child('members').on("value", function (snapshot) {
                 if (userdetails.userid !== "" && userdetails.userid !== null) {
                     self.props.displayHomeMember().then(res => {
                         setTimeout(async () => {
                             await self.fitToMap();
-                            await self.setState({ memberReady: true, isLoading : false })
+                            self.setState({ memberReady: true, isLoading: false })
                         }, 10);
                     });
                 }
-            })
-        }, 1000);
+            });
+
+           }, 500);
     }
     loading() {
         return (
@@ -592,7 +594,7 @@ class HomePlaces extends Component {
                     source={require('../../images/marker.png')} />
                 <Text style={styles.markerText}>{marker.firstname}</Text>
 
-                <MapView.Callout tooltip={true} onPress={() => this.props.navigation.navigate("LocationPlaces")}>
+                <MapView.Callout tooltip={true} onPress={() => this.props.navigation.navigate("LocationPlaces", { uid:marker.uid})}>
                         <View style={globalStyle.callOutFix} >
                             <View style={globalStyle.callOutContainerFix} >
                                 <Text numberOfLines={2} style={globalStyle.callOutText}>{marker.address}</Text>
@@ -653,11 +655,10 @@ class HomePlaces extends Component {
                                     provider={PROVIDER_GOOGLE}
                                     customMapStyle={retro}
                                     mapType={this.state.mapMode}
-                                        followsUserLocation={true}
+                                        followsUserLocation={false}
                                     loadingEnabled={true}
                                     zoomEnabled={true}
                                     style={styles.map}
-                                    loadingEnabled={false}
                                 >
                                    
                                     {markers}

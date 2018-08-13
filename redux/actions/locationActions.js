@@ -1,4 +1,4 @@
-import { DISPLAY_LOCATION, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES,GET_PLACE_ALERT } from './types';
+import { DISPLAY_LOCATION, GET_LOCATIONDETAILS, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES,GET_PLACE_ALERT } from './types';
 import firebase from 'react-native-firebase';
 import Moment from 'moment';
 import Geocoder from 'react-native-geocoder';
@@ -25,14 +25,23 @@ const getDistance=(lat1,long1,lat2,long2) => {
 };
 
 const savelocationhistory = async (address, latitude, longitude) => {
+
+    let dateadded = Date.now();
     await axios.post(settings.baseURL + 'place/savelocationhistory', {
         latitude: latitude,
         longitude: longitude,
         address: address,
         useruid: userdetails.userid,
-    }).then(function (res) {
+    }).then(async function (res) {
+        if (res.data.results !== "") {
+            await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/appendOnlineLocation?lat=" + latitude + "&lon=" + longitude + "&userid=" + userdetails.userid + "&dateadded=" + dateadded + "&firstname=" + userdetails.firstname + "&address=" + address)
+                .then(async function (res) {
+                }).catch(function (error) {
+                });
+        }
+
     }).catch(function (error) {
-    });
+    })
 }
 
 export const saveLocationOffline = () => async dispatch => {
@@ -75,88 +84,37 @@ export const saveLocationOffline = () => async dispatch => {
 };
 
 export const saveLocationOnline=()=> async dispatch=> {
-    //let userid = await AsyncStorage.getItem("userid");
-    let userid = userdetails.userid;
+    let userid = await AsyncStorage.getItem("userid");
+    //let userid = userdetails.userid;
     if (userid === "" || userid === null) {
-        dispatch({ 
+        dispatch({
             type: SAVE_LOCATION_ONLINE,
             payload: [],
         });
     } else {
-        
-        let dateadded=Date.now();
+
+      
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                if (userdetails.address == "") {
-                    await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
-                        .then(async function (res) {
-                            userdetails.latitude = position.coords.latitude;
-                            userdetails.longitude = position.coords.longitude;
-                            userdetails.address = res.data;
-                            await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/appendOnlineLocation?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude + "&userid=" + userdetails.userid + "&dateadded=" + dateadded + "&firstname=" + userdetails.firstname + "&address=" + userdetails.address)
-                                .then(async function (res) {
-                                }).catch(function (error) {
-                                });
-                            await savelocationhistory(userdetails.address, userdetails.latitude, userdetails.longitude);
+                await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
+                    .then(async function (res) {
+                        userdetails.address = res.data;
+                        await savelocationhistory(userdetails.address, position.coords.latitude, position.coords.longitude);
 
-                        }).catch(function (error) {
-                        });
-
-                    dispatch({
-                        type: SAVE_LOCATION_ONLINE,
-                        payload: []
+                    }).catch(function (error) {
                     });
-                } else {
-                    let distance = await getDistance(userdetails.latitude, userdetails.longitude, position.coords.latitude, position.coords.longitude)
-                    if (distance > 100) {
-                        await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + userdetails.latitude + "&lon=" + userdetails.longitude)
-                            .then(async function (res) {
-                                //userdetails.latitude = position.coords.latitude;
-                                //userdetails.longitude = position.coords.longitude;
-                                userdetails.address = res.data;
-                                await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/appendOnlineLocation?lat=" + userdetails.latitude + "&lon=" + userdetails.longitude + "&userid=" + userdetails.userid + "&dateadded=" + dateadded + "&firstname=" + userdetails.firstname + "&address=" + userdetails.address)
-                                    .then(async function (res) {
-                                    }).catch(function (error) {
-                                    });
+               
+                dispatch({
+                    type: SAVE_LOCATION_ONLINE,
+                    payload: []
+                });
 
-                                await savelocationhistory(userdetails.address, userdetails.latitude, userdetails.longitude);
-
-                            }).catch(function (error) {
-                            });
-
-                        
-                    }
-                    dispatch({
-                        type: SAVE_LOCATION_ONLINE,
-                        payload: []
-                    });
-
-                }
-                /*let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
-                if (distance > 100) {
-                    location.push(coords)
-                    await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
-                }*/
-
-
-                /*fetch("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/appendOnlineLocation?lat="+ position.coords.latitude +"&lon="+ position.coords.longitude +"&userid="+userdetails.userid+"&dateadded="+dateadded+"&firstname="+userdetails.firstname)
-                .then((response) => response)
-                .then((response) => {
-                    dispatch({ 
-                        type: SAVE_LOCATION_ONLINE,
-                        payload: [],
-                    });
-                })
-                .catch((error) => {
-                    
-                    dispatch({ 
-                        type: SAVE_LOCATION_ONLINE,
-                        payload: [],
-                    });
-                });*/
-            
             },
             (err) => {
+                dispatch({
+                    type: SAVE_LOCATION_ONLINE,
+                    payload: []
+                });
             },
              { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
         );
@@ -280,6 +238,7 @@ export const displayPlaces = () => async dispatch => {
         try {
             await axios.get(settings.baseURL + 'place/getplaces/' + userdetails.userid)
                 .then(function (res) {
+                    console.log(res.data.results)
                     if (res.data.status == "202") {
                         dispatch({
                             type: DISPLAY_PLACES,
@@ -499,11 +458,11 @@ export const getPlaceNotification = (placeid, userid) => async dispatch => {
 
 
 
-export const displayLocations = () => dispatch => {
+export const displayLocations = (useruid) => dispatch => {
 
     return new Promise(async (resolve) => {
         try {
-            await axios.get(settings.baseURL + 'place/getLocationHistory/' + userdetails.userid )
+            await axios.get(settings.baseURL + 'place/getLocationHistory/' + useruid )
                 .then(function (res) {
                         dispatch({
                             type: DISPLAY_LOCATION,
@@ -531,6 +490,54 @@ export const displayLocations = () => dispatch => {
         }
     });
 
+
+
+};
+
+
+export const getLocationDetails = (id) => async dispatch => {
+
+
+
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'place/getLocationHistoryDetails/' + id)
+                .then(function (res) {
+                    if (res.data.status == "202") {
+                        console.log(res.data.results)
+                        dispatch({
+                            type: GET_LOCATIONDETAILS,
+                            payload: res.data.results
+                        });
+                        resolve(true)
+                    } else {
+                        dispatch({
+                            type: GET_LOCATIONDETAILS,
+                            payload: []
+                        });
+                        resolve(false)
+                        ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+                }).catch(function (error) {
+
+                    dispatch({
+                        type: GET_LOCATIONDETAILS,
+                        payload: []
+                    });
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+
+            dispatch({
+                type: GET_LOCATIONDETAILS,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
 
 
 };
