@@ -24,13 +24,13 @@ class Register extends Component {
           longitude: '',
           address: '',
           isLoading: true,
-          email: 'lazarak@rchsp.med.sa',
+          email: 'cruzivanchristopher@gmail.com',
           password: '111111',
           retypepassword: '111111',
-          mobileno: '0538191138',
-          firstname: 'Kathleen',
-          middlename: 'Dizon',
-          lastname: 'Aquino',
+          mobileno: '0535277204',
+          firstname: 'Ivan',
+          middlename: 'Del Rosario',
+          lastname: 'Cruz',
           avatar: '',
           avatarsource: ''
 
@@ -113,22 +113,36 @@ class Register extends Component {
             ToastAndroid.showWithGravityAndOffset("Password mismatch", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             return false;
         }
-        let user = {
-            email: this.state.email,
-            password: this.state.password,
-            firstname: this.state.firstname,
-            lastname: this.state.lastname,
-            middlename: this.state.middlename,
-            mobileno: this.state.mobileno,
-            avatarsource: this.state.avatarsource
-        }
-        this.setState({ loading: true })
-        this.props.registerUser(user).then((res) => {
-            if (res == true) {
-                this.resetState();
-            }
-            this.setState({ loading: false })
-        })
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                let user = {
+                    email: this.state.email,
+                    password: this.state.password,
+                    firstname: this.state.firstname,
+                    lastname: this.state.lastname,
+                    middlename: this.state.middlename,
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    mobileno: this.state.mobileno,
+                    avatarsource: this.state.avatarsource
+                }
+                
+                this.setState({ loading: true })
+                this.props.registerUser(user).then((res) => {
+                    if (res == true) {
+                        this.resetState();
+                    }
+                    this.setState({ loading: false })
+                })
+
+
+            },
+            (err) => {
+            },
+            { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
+        );
+
+       
 
 
     }
@@ -199,7 +213,8 @@ class Register extends Component {
                               <Label style={globalStyle.label} >Email address</Label>
                               <Input style={globalStyle.textinput} 
 							name="email" autoCorrect={false} maxLength = {50}
-							value={this.state.email}
+                                      value={this.state.email}
+                                      autoCapitalize="none"
 							onChangeText={email=>this.setState({email})}/>
 						</Item>
 					
@@ -223,7 +238,7 @@ class Register extends Component {
                           <Item stackedLabel>
                               <Label style={globalStyle.label} >First Name</Label>
                             <Input  style={registrationStyle.textinput} 
-                              maxLength = {10}
+                              maxLength = {15}
 								name="firstname" autoCorrect={false}
 								value={this.state.firstname}
 								onChangeText={firstname=>this.setState({firstname})}/>
@@ -232,7 +247,7 @@ class Register extends Component {
                           <Item stackedLabel>
                               <Label style={globalStyle.label} >Middle Name</Label>
                         <Input  style={registrationStyle.textinput} 
-                         maxLength = {10}
+                         maxLength = {15}
 								name="middlename" autoCorrect={false}
 								value={this.state.middlename}
 								onChangeText={middlename=>this.setState({middlename})}/>
@@ -241,7 +256,7 @@ class Register extends Component {
                           <Item stackedLabel>
                               <Label style={globalStyle.label} >Last Name</Label>
                             <Input  style={registrationStyle.textinput} 
-								name="lastname" autoCorrect={false} maxLength = {10}
+								name="lastname" autoCorrect={false} maxLength = {15}
 								value={this.state.lastname}
 								onChangeText={lastname=>this.setState({lastname})}/>
 					</Item>

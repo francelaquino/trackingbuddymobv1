@@ -71,6 +71,7 @@ const saveLocationOffline = async () => {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                 const coords = {
+                    useruid: userid,
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     dateadded: Date.now()
@@ -80,7 +81,6 @@ const saveLocationOffline = async () => {
                 if (!location) {
                     location = [];
                 }
-                console.log(location)
 
                 if (location.length >= 1) {
                     var loc = location[location.length - 1];
@@ -91,8 +91,10 @@ const saveLocationOffline = async () => {
                     }
                 } else {
                     location.push(coords)
-                    await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+                await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+               
                 }
+                console.log(location);
 
 
 
@@ -117,7 +119,7 @@ BackgroundJob.register(updateToken);
 var trackPositionSchedule = {
     jobKey: "trackPositionJob",
     //period: 90000,
-    period: 20000,
+    period: 60000,
     exact: true,
     allowExecutionInForeground: true
 }
@@ -207,7 +209,7 @@ class HomePlaces extends Component {
         trackLocation = function () {
             NetInfo.isConnected.fetch().done((isConnected) => {
                 if (isConnected) {
-                    //self.props.pushLocationOnline();
+                    self.props.pushLocationOnline();
                     self.props.saveLocationOnline();
 
                 } else {
@@ -272,11 +274,6 @@ class HomePlaces extends Component {
      componentWillMount() {
         this.initialize();
 
-        /*setInterval(() => {
-            userdetails.longitude = userdetails.longitude + 2;
-            userdetails.latitude = userdetails.latitude + 2;
-            console.log("location changed");
-        }, 30000);*/
     }
 
     async centerToMarker(latitude, longitude) {

@@ -24,23 +24,23 @@ const getDistance=(lat1,long1,lat2,long2) => {
     return d; 
 };
 
-const savelocationhistory = async (address, latitude, longitude) => {
-
+const savelocationhistory = async (useruid,address, latitude, longitude) => {
     let dateadded = Date.now();
     await axios.post(settings.baseURL + 'place/savelocationhistory', {
         latitude: latitude,
         longitude: longitude,
         address: address,
-        useruid: userdetails.userid,
+        useruid: useruid,
     }).then(async function (res) {
         if (res.data.results !== "") {
-            await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/appendOnlineLocation?lat=" + latitude + "&lon=" + longitude + "&userid=" + userdetails.userid + "&dateadded=" + dateadded + "&firstname=" + userdetails.firstname + "&address=" + address)
+            await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/appendOnlineLocation?lat=" + latitude + "&lon=" + longitude + "&userid=" + useruid + "&dateadded=" + dateadded + "&firstname=" + userdetails.firstname + "&address=" + address)
                 .then(async function (res) {
+                    
                 }).catch(function (error) {
                 });
         }
 
-    }).catch(function (error) {
+        }).catch(function (error) {
     })
 }
 
@@ -96,11 +96,10 @@ export const saveLocationOnline=()=> async dispatch=> {
       
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
+                await axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude +"&sensor=false")
                     .then(async function (res) {
-                        userdetails.address = res.data;
-                        await savelocationhistory(userdetails.address, position.coords.latitude, position.coords.longitude);
-
+                        userdetails.address = res.data.results[0].formatted_address;
+                        await savelocationhistory(userid, res.data.results[0].formatted_address, position.coords.latitude, position.coords.longitude);
                     }).catch(function (error) {
                     });
                
@@ -126,21 +125,20 @@ export const pushLocationOnline = () => async dispatch => {
     if (userid !== "" & userid !== null) {
         const offlineLocation = await AsyncStorage.getItem('offlineLocation');
         let location = JSON.parse(offlineLocation);
+        
+
         await AsyncStorage.setItem("offlineLocation", "");
         if (!location) {
             location = [];
         }
         if (location.length > 0) {
-            for (let x = 0; x < location.length; x++) {
-                var loc = location[x];
-                await fetch("https://us-central1-trackingbuddy-3bebd.cloudfunctions.net/api/appendOfflineLocation?lat=" + loc.latitude + "&lon=" + loc.longitude + "&userid=" + userdetails.userid + "&dateadded=" + loc.dateadded + "&firstname=" + userdetails.firstname)
-                    .then((response) => response)
-                    .then((response) => {
-                    })
-                    .catch((error) => {
-                    });
-                
-            }
+            await axios.post(settings.baseURL + 'place/saveofflinelocationhistory', {
+                locations: location,
+            }).then(function (res) {
+            }).catch(function (error) {
+                });
+
+            
 
         }
     }
@@ -238,7 +236,6 @@ export const displayPlaces = () => async dispatch => {
         try {
             await axios.get(settings.baseURL + 'place/getplaces/' + userdetails.userid)
                 .then(function (res) {
-                    console.log(res.data.results)
                     if (res.data.status == "202") {
                         dispatch({
                             type: DISPLAY_PLACES,
@@ -504,7 +501,6 @@ export const getLocationDetails = (id) => async dispatch => {
             await axios.get(settings.baseURL + 'place/getLocationHistoryDetails/' + id)
                 .then(function (res) {
                     if (res.data.status == "202") {
-                        console.log(res.data.results)
                         dispatch({
                             type: GET_LOCATIONDETAILS,
                             payload: res.data.results

@@ -35,7 +35,7 @@ export const userLogin = (email, password) => async dispatch => {
         try {
                 firebase.auth().signInAndRetrieveDataWithEmailAndPassword(email, password)
                     .then(async function (res) {
-                       
+                        console.log(res)
                         //if(res.user.emailVerified){
                         await axios.get(settings.baseURL + 'member/getmemberinfo/' + res.user.uid)
                             .then(function (response) {
@@ -239,7 +239,6 @@ export const registerUser = (profile) => async dispatch => {
                         },
                         async (resUrl) => {
                             avatar = resUrl.downloadURL;
-
                             await axios.post(settings.baseURL + 'member/register', {
                                 email: profile.email,
                                 uid: uid,
@@ -247,6 +246,8 @@ export const registerUser = (profile) => async dispatch => {
                                 lastname: profile.lastname,
                                 middlename: profile.middlename,
                                 mobileno: profile.mobileno,
+                                latitude: profile.latitude,
+                                longitude: profile.longitude,
                                 avatar: avatar,
                             }).then(function (res) {
                                 if (res.data.status == "202") {
@@ -270,6 +271,8 @@ export const registerUser = (profile) => async dispatch => {
                         lastname: profile.lastname,
                         middlename: profile.middlename,
                         mobileno: profile.mobileno,
+                        latitude: profile.latitude,
+                        longitude: profile.longitude,
                         avatar: avatar,
                     }).then(function (res) {
                         if (res.data.status == "202") {

@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import {  AsyncStorage, NetInfo, Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOpacity, Image,ToastAndroid, NavigationActions  } from 'react-native';
+import {  BackHandler, AsyncStorage, NetInfo, Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOpacity, Image,ToastAndroid, NavigationActions  } from 'react-native';
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon } from 'native-base';
 import firebase from 'react-native-firebase';
 import Geocoder from 'react-native-geocoder';
@@ -19,10 +19,9 @@ class Login extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            showSplash:true,
             loading:false,
-            email: 'lazarak@rchsp.med.sa',
-            password:'111111',
+            email: 'cruzivanchristopher@gmail.com',
+            password:'',
             
         };
        
@@ -30,33 +29,10 @@ class Login extends Component {
       }
       
   
-    async componentDidMount() {
-       
-
-        let userid = await AsyncStorage.getItem("userid");
-        let email = await AsyncStorage.getItem("email");
-        let firstname = await AsyncStorage.getItem("firstname");
-        let lastname = await AsyncStorage.getItem("lastname");
-        setTimeout(async () => {
-            if (userid === "" || userid === null) {
-                setTimeout(() => {
-                    this.setState({showSplash:false})
-                }, 1500);
-            } else {
-                userdetails.userid = userid;
-                userdetails.email = email;
-                userdetails.firstname = firstname;
-                userdetails.lastname = lastname;
-                await this.props.saveLocationOnline();
-                setTimeout(() => {
-                    this.props.displayHomeMember();
-                    this.props.navigation.navigate('Home');
-                }, 1500);
-
-
-            }
-
-        }, 1000);
+     componentDidMount() {
+         BackHandler.addEventListener('hardwareBackPress', function () {
+             return true;
+         });
     }
 
     onLogin() {
@@ -70,13 +46,7 @@ class Login extends Component {
 
         this.props.userLogin(this.state.email, this.state.password).then(async (res) => {
 
-           /* setTimeout(() => {
-                if (userdetails.userid === "" || userdetails.userid === null) {
-                    this.setState({ loading: false })
-                    ToastAndroid.showWithGravityAndOffset("Network connection error. Please try again", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
-                }
-            }, 3000);*/
-
+          
             if (res == true) {
                 setTimeout(() => {
                     this.props.saveLocationOnline();
@@ -102,7 +72,6 @@ class Login extends Component {
     return (
         <Root>
             <Container style={registrationStyle.containerWrapper}>
-            <Splash hide={this.state.showSplash}/>
           	<Loader loading={this.state.loading} />
                 <OfflineNotice />
                 
@@ -119,7 +88,8 @@ class Login extends Component {
                         <Item stackedLabel>
                             <Label style={globalStyle.label} >Email Address</Label>
                         <Input style={registrationStyle.textinput} 
-                            name="email" autoCorrect={false}
+                                name="email" autoCorrect={false}
+                                autoCapitalize="none"
                             value={this.state.email}  maxLength = {50}
                             onChangeText={email=>this.setState({email})}/>
                         </Item>

@@ -47,7 +47,7 @@ class LeftDrawer extends Component<Props> {
         this.props.closeDrawer();
 
         setTimeout(() => {
-            this.props.navigation.pop(1);
+            this.props.navigation.navigate("Login");
             this.props.clearHomeMembers();
         }, 1000);
 

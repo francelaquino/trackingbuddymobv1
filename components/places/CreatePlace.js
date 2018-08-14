@@ -110,12 +110,15 @@ class CreatePlace extends Component {
                       lng: position.coords.longitude,
               };
                   let self = this;
-                  await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
+                  await axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false")
+                  //await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
                       .then(async function (res) {
-                          self.setState({
-                              address: res.data,
-                              isMapReady: true,
-                          });
+                          if (res.data.results.length > 0) {
+                              self.setState({
+                                  address: res.data.results[0].formatted_address,
+                                  isMapReady: true,
+                              });
+                          }
 
 
                       }).catch(function (error) {
@@ -142,6 +145,7 @@ class CreatePlace extends Component {
           </Root>
         )
     }
+
   
     updateLocation(details) {
             this.setState({
@@ -159,22 +163,20 @@ class CreatePlace extends Component {
          
     }
     onRegionChangeComplete = region => {
-        let coords = {
-            lat: region.latitude,
-            lng: region.longitude,
-        };
         let self = this;
-         axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + region.latitude + "&lon=" + region.longitude)
-             .then(async function (res) {
-                self.setState({
-                    address: res.data,
-                    region: {
-                        latitude: region.latitude,
-                        longitude: region.longitude,
-                        latitudeDelta: region.latitudeDelta,
-                        longitudeDelta: region.longitudeDelta
-                    }
-                });
+        axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + region.latitude + "," + region.longitude + "&sensor=false")
+            .then(async function (res) {
+                if (res.data.results.length > 0) {
+                    self.setState({
+                        address: res.data.results[0].formatted_address,
+                        region: {
+                            latitude: region.latitude,
+                            longitude: region.longitude,
+                            latitudeDelta: region.latitudeDelta,
+                            longitudeDelta: region.longitudeDelta
+                        }
+                    });
+                }
 
 
             }).catch(function (error) {

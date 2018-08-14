@@ -95,7 +95,8 @@ class ForgotPassword extends Component {
 
                             <Item stackedLabel>
                                 <Label style={globalStyle.label} >Email Address</Label>
-                            <Input style={registrationStyle.textinput} 
+                                <Input style={registrationStyle.textinput} 
+                                    autoCapitalize="none"
                                 name="email" autoCorrect={false}
                             value={this.state.email}  maxLength = {50}
                             onChangeText={email=>this.setState({email})}/>

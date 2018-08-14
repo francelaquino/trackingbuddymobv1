@@ -1,16 +1,39 @@
 import React, { Component } from 'react';
-import { View, Text, NetInfo, Dimensions, StyleSheet, Image } from 'react-native';
+import { AsyncStorage, View, Text, NetInfo, Dimensions, StyleSheet, Image } from 'react-native';
 import { connect } from 'react-redux';
-import { setConnection } from '../../actions/connectionActions';
+import { displayHomeMember } from '../../redux/actions/memberActions';
 const { width, height } = Dimensions.get('window');
-
+var userdetails = require('../shared/userDetails');
 
 
 class Splash extends Component {
 
+    async componentDidMount() {
+        let self = this;
+        let userid = await AsyncStorage.getItem("userid");
+        let email = await AsyncStorage.getItem("email");
+        let firstname = await AsyncStorage.getItem("firstname");
+        let lastname = await AsyncStorage.getItem("lastname");
+        setTimeout(async () => {
+            if (userid === "" || userid === null) {
+                self.props.navigation.navigate('Login');
+            } else {
+                userdetails.userid = userid;
+                userdetails.email = email;
+                userdetails.firstname = firstname;
+                userdetails.lastname = lastname;
+                setTimeout(() => {
+                    self.props.displayHomeMember();
+                    self.props.navigation.navigate('Home');
+                }, 1000);
+
+
+            }
+
+        }, 2000);
+    }
 
     render() {
-        if (this.props.hide) {
             return (
                 <View style={{  zIndex: 99999, height: height+30, backgroundColor:'#16a085' }} >
                 <View style={{
@@ -26,22 +49,17 @@ class Splash extends Component {
                     
                 </View >
             )
-        } else {
-            return null;
-        }
     }
 }
-
-
 
 
 const mapStateToProps = state => ({
 
 })
 
-Splash = connect(mapStateToProps, { })(Splash);
+
+
+Splash = connect(mapStateToProps, { displayHomeMember })(Splash);
 
 export default Splash;
 
-
-    
