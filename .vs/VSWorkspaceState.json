@@ -4,14 +4,16 @@
     "\\actions",
     "\\android",
     "\\android\\app",
+    "\\android\\app\\src",
+    "\\android\\app\\src\\main",
     "\\assets",
+    "\\assets\\style",
     "\\components",
-    "\\components\\member",
-    "\\components\\places",
-    "\\components\\shared",
+    "\\components\\group",
+    "\\components\\user",
     "\\redux",
     "\\redux\\actions"
   ],
-  "SelectedNode": "\\components\\places\\Home.js",
+  "SelectedNode": "\\redux\\actions\\locationActions.js",
   "PreviewInSolutionExplorer": false
 }

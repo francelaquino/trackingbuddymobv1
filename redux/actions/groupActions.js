@@ -91,7 +91,7 @@ export const createGroup = (groupname, avatarsource) => dispatch => {
             }
 
         } catch (e) {
-            console.log(e)
+            
             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
@@ -206,7 +206,7 @@ export const updateGroup = (group) => dispatch => {
                                     ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                                 }
                                 }).catch(function (error) {
-                                    console.log(error)
+                                    
                                 resolve(false)
                                 ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                             });
@@ -227,14 +227,14 @@ export const updateGroup = (group) => dispatch => {
                         }
                     }).catch(function (error) {
                         resolve(false);
-                        console.log(error)
+                        
                         ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     });
                 }
 
 
             } catch (e) {
-                console.log(e)
+                
                 ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 resolve(false)
             }
@@ -307,12 +307,12 @@ export const displayGroup = () => dispatch => {
                         payload: []
                     });
                     resolve(false)
-                    console.log(error)
+                    
                     ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 });
 
         } catch (e) {
-            console.log(e)
+            
             dispatch({
                 type: DISPLAY_GROUP,
                 payload: []

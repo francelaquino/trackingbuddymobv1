@@ -24,7 +24,7 @@ const getDistance=(lat1,long1,lat2,long2) => {
     return d; 
 };
 
-const savelocationhistory = async (useruid,address, latitude, longitude) => {
+const savelocationhistory = async (useruid, address, latitude, longitude) => {
     let dateadded = Date.now();
     await axios.post(settings.baseURL + 'place/savelocationhistory', {
         latitude: latitude,
@@ -86,18 +86,19 @@ export const saveLocationOffline = () => async dispatch => {
 export const saveLocationOnline=()=> async dispatch=> {
     let userid = await AsyncStorage.getItem("userid");
     //let userid = userdetails.userid;
+   
     if (userid === "" || userid === null) {
         dispatch({
             type: SAVE_LOCATION_ONLINE,
             payload: [],
         });
     } else {
+                
 
-      
         navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                await axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude +"&sensor=false")
-                    .then(async function (res) {
+            (position) => {
+                 axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude +"&sensor=false")
+                     .then(async function (res) {
                         userdetails.address = res.data.results[0].formatted_address;
                         await savelocationhistory(userid, res.data.results[0].formatted_address, position.coords.latitude, position.coords.longitude);
                     }).catch(function (error) {
@@ -115,9 +116,28 @@ export const saveLocationOnline=()=> async dispatch=> {
                     payload: []
                 });
             },
-             { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
+             { enableHighAccuracy: false, timeout: 10000}
         );
     }
+};
+
+
+export const getUserLocation = () => async dispatch => {
+    let userid = await AsyncStorage.getItem("userid");
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+               
+                await axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false")
+                    .then(async function (res) {
+                        userdetails.address = res.data.results[0].formatted_address;
+                    }).catch(function (error) {
+                    });
+
+            },
+            (err) => {
+            },
+            { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
+        );
 };
 
 export const pushLocationOnline = () => async dispatch => {
@@ -156,7 +176,7 @@ export const saveLocationOnLogin=()=> async dispatch=> {
             },
             (err) => {
             },
-            { enableHighAccuracy: true, timeout: 20000 }
+            { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
         );
 
     }).then(function(position){

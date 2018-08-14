@@ -547,7 +547,6 @@ export const displayHomeMember = () => async dispatch => {
 
                 await axios.get(settings.baseURL + 'member/gethomemembers/' + userdetails.userid)
                     .then(function (res) {
-                        
                         if (res.data.status == "202") {
                             count = res.data.results.length;
                             res.data.results.forEach(data => {
@@ -555,6 +554,7 @@ export const displayHomeMember = () => async dispatch => {
                                     uid: data.uid,
                                     firstname: data.firstname,
                                     avatar: data.avatar,
+                                    emptyphoto: data.emptyphoto,
                                     coordinates: {
                                         longitude: data.longitude,
                                         latitude: data.latitude
@@ -613,7 +613,6 @@ export const displayHomeMember = () => async dispatch => {
                     .then(function (res) {
                       
                         if (res.data.status == "202") {
-                            console.log(res.data.results)
                             count = res.data.results.length;
                             if (count > 0) {
                                 res.data.results.forEach(data => {
@@ -621,6 +620,7 @@ export const displayHomeMember = () => async dispatch => {
                                         uid: data.uid,
                                         firstname: data.firstname,
                                         avatar: data.avatar,
+                                        emptyphoto: data.emptyphoto,
                                         coordinates: {
                                             longitude: data.longitude,
                                             latitude: data.latitude

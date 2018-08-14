@@ -102,7 +102,7 @@ const saveLocationOffline = async () => {
             },
             (err) => {
             },
-            { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
+            { enableHighAccuracy: false, timeout: 10000}
         );
     }
 }
@@ -184,6 +184,8 @@ class HomePlaces extends Component {
             return true;
         });
         BackgroundJob.cancelAll();
+
+      
 
         this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
 
@@ -357,8 +359,8 @@ class HomePlaces extends Component {
                     <TouchableOpacity key={item.uid.toString()} onPress={() => this.centerToMarker(item.coordinates.latitude, item.coordinates.longitude)}>
                         <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', width: 80, height: 60, margin: 2, backgroundColor: '#2c3e50', borderRadius:10, }}>
                             <View style={globalStyle.listAvatarContainerSmall} >
-                                {item.avatar === '' ? <Thumbnail onPress={() => this.centerToMarker(item.latitude, item.longitude)} style={globalStyle.listAvatar} source={{ uri: this.state.emptyPhoto }} /> :
-                                    <Thumbnail onPress={() => this.centerToMarker(item.latitude, item.longitude)} style={globalStyle.listAvatarSmall} source={{ uri: item.avatar }} />
+                                {item.emptyphoto === "1" ? <Ionicons size={46} style={{ color: '#2c3e50' }} name="ios-person" /> :
+                                    <Thumbnail style={globalStyle.listAvatar} source={{ uri: item.avatar }} />
                                 }
                             </View>
                             <Text numberOfLines={1} style={{ color: 'white', fontSize: 12 }}>{item.firstname}</Text>
@@ -419,7 +421,7 @@ class HomePlaces extends Component {
                                 </Button>
                             </Left>
                             <Body style={globalStyle.headerBody}>
-                                <Title style={globalStyle.headerTitle}></Title>
+                                <Title numberOfLines={1} style={globalStyle.headerTitle}>{userdetails.address} </Title>
                             </Body>
                             <Right style={globalStyle.headerRight} >
                                

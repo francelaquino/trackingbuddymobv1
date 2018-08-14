@@ -21,7 +21,7 @@ class Login extends Component {
         this.state = {
             loading:false,
             email: 'cruzivanchristopher@gmail.com',
-            password:'',
+            password:'111111',
             
         };
        

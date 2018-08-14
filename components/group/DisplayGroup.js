@@ -77,7 +77,7 @@ class DisplayGroup extends Component {
                             
                             <Left style={globalStyle.listLeft}>
                                 <View style={globalStyle.listAvatarContainer} >
-                                { group.avatar==='' ?  <Thumbnail  style={globalStyle.listAvatar} source={{uri: this.state.emptyPhoto}} /> :
+                        {group.emptyphoto === 1 ? <Ionicons size={46} style={{ color: '#2c3e50' }} name="ios-people" /> :
                                 <Thumbnail  style={globalStyle.listAvatar} source={{uri: group.avatar}} />
                                 }
                                 </View>

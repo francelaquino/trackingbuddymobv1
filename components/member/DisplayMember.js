@@ -46,24 +46,25 @@ class DisplayMember extends Component {
     
 
     renderMember(){
-        const data=this.props.members;
         return (
             <FlatList
                 style={{flex:1}}
                 keyExtractor={item => item.uid}
-                data={data}
+                data={this.props.members}
                 renderItem={({ item }) => (
 
                         <ListItem key={item.uid}  button avatar style={globalStyle.listItem}  onPress={() => {this.props.navigation.navigate("InfoMember",{memberuid:item.uid,firstname:item.firstname})}}>
                             <Left style={globalStyle.listLeft}>
                                 <View style={globalStyle.listAvatarContainer} >
-                                { item.avatar==='' ?  <Thumbnail  style={globalStyle.listAvatar} source={{uri: this.state.emptyPhoto}} /> :
-                                <Thumbnail  style={globalStyle.listAvatar} source={{uri: item.avatar}} />
+                               
+                                {item.emptyphoto === "1" ? <Ionicons size={46} style={{ color: '#2c3e50' }} name="ios-person" /> :
+                                    <Thumbnail style={globalStyle.listAvatar} source={{ uri: item.avatar }} />
                                 }
                                 </View>
                             </Left>
                             <Body style={globalStyle.listBody} >
-                                <Text  style={globalStyle.listHeading}>{item.firstname}</Text>
+                            <Text numberOfLines={1}  style={globalStyle.listHeading}>{item.firstname}</Text>
+                            <Text note numberOfLines={1} >{item.address}</Text>
                             </Body>
                             <Right style={globalStyle.listRight} >
                                 <SimpleLineIcons  style={globalStyle.listRightOptionIcon}   name='arrow-right' />

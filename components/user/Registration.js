@@ -24,13 +24,13 @@ class Register extends Component {
           longitude: '',
           address: '',
           isLoading: true,
-          email: 'cruzivanchristopher@gmail.com',
+          email: 'lazarak@rchsp.med.sa',
           password: '111111',
           retypepassword: '111111',
-          mobileno: '0535277204',
-          firstname: 'Ivan',
-          middlename: 'Del Rosario',
-          lastname: 'Cruz',
+          mobileno: '0538191138',
+          firstname: 'Kathleen',
+          middlename: 'Santos',
+          lastname: 'Lazara',
           avatar: '',
           avatarsource: ''
 
@@ -113,6 +113,7 @@ class Register extends Component {
             ToastAndroid.showWithGravityAndOffset("Password mismatch", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             return false;
         }
+        this.setState({ loading: true })
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                 let user = {
@@ -127,7 +128,7 @@ class Register extends Component {
                     avatarsource: this.state.avatarsource
                 }
                 
-                this.setState({ loading: true })
+               
                 this.props.registerUser(user).then((res) => {
                     if (res == true) {
                         this.resetState();
@@ -138,6 +139,7 @@ class Register extends Component {
 
             },
             (err) => {
+                this.setState({ loading: false })
             },
             { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
         );
@@ -238,7 +240,8 @@ class Register extends Component {
                           <Item stackedLabel>
                               <Label style={globalStyle.label} >First Name</Label>
                             <Input  style={registrationStyle.textinput} 
-                              maxLength = {15}
+                                      maxLength={15}
+                                      autoCapitalize="words"
 								name="firstname" autoCorrect={false}
 								value={this.state.firstname}
 								onChangeText={firstname=>this.setState({firstname})}/>
@@ -247,7 +250,8 @@ class Register extends Component {
                           <Item stackedLabel>
                               <Label style={globalStyle.label} >Middle Name</Label>
                         <Input  style={registrationStyle.textinput} 
-                         maxLength = {15}
+                                      maxLength={15}
+                                      autoCapitalize="words"
 								name="middlename" autoCorrect={false}
 								value={this.state.middlename}
 								onChangeText={middlename=>this.setState({middlename})}/>
@@ -256,7 +260,8 @@ class Register extends Component {
                           <Item stackedLabel>
                               <Label style={globalStyle.label} >Last Name</Label>
                             <Input  style={registrationStyle.textinput} 
-								name="lastname" autoCorrect={false} maxLength = {15}
+                                      name="lastname" autoCorrect={false} maxLength={15}
+                                      autoCapitalize="words"
 								value={this.state.lastname}
 								onChangeText={lastname=>this.setState({lastname})}/>
 					</Item>

@@ -206,15 +206,20 @@ module.exports = StyleSheet.create({
         top:10
     },
     listAvatarContainer:{
-        borderRadius: 50,
-        backgroundColor:'#1abc9c',
+        borderRadius: 25,
+        backgroundColor: 'white',
         padding:2,
         width:50,
-        height:50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor: '#383939',
+        borderWidth:1,
     },
     listAvatar:{
-        width:46,
-        height:46,
+        width:43,
+        height: 43,
+        
     },
     listItemSmall:{
         borderTopColor:'#e5e5e5',
@@ -235,10 +240,13 @@ module.exports = StyleSheet.create({
         padding:2,
         width:50,
         height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     listAvatarSmall:{
         width:46,
-        height:46,
+        height: 46,
+      
     },
     /* List Design End */
 

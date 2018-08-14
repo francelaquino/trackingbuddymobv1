@@ -35,7 +35,7 @@ export const userLogin = (email, password) => async dispatch => {
         try {
                 firebase.auth().signInAndRetrieveDataWithEmailAndPassword(email, password)
                     .then(async function (res) {
-                        console.log(res)
+                        
                         //if(res.user.emailVerified){
                         await axios.get(settings.baseURL + 'member/getmemberinfo/' + res.user.uid)
                             .then(function (response) {
@@ -121,7 +121,7 @@ export const updateProfile = (profile) => async dispatch => {
                             middlename: profile.middlename,
                             mobileno: profile.mobileno,
                         }).then(function (res) {
-                            console.log(res)
+                            
                             if (res.data.status == "202") {
                                 resolve(true)
                                 ToastAndroid.showWithGravityAndOffset("Profile successfully updated.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
@@ -146,7 +146,7 @@ export const updateProfile = (profile) => async dispatch => {
                     emptyphoto: profile.emptyphoto,
                     mobileno: profile.mobileno,
                 }).then(function (res) {
-                    console.log(res)
+                    
                     if (res.data.status == "202") {
                         resolve(true)
                         ToastAndroid.showWithGravityAndOffset("Profile successfully updated.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
@@ -162,7 +162,7 @@ export const updateProfile = (profile) => async dispatch => {
 
 
         } catch (e) {
-            console.log(e)
+            
             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         }
@@ -224,7 +224,7 @@ export const registerUser = (profile) => async dispatch => {
             await firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(profile.email, profile.password).then(async (res) => {
 
                 let uid = res.user.uid;
-                //res.user.sendEmailVerification();
+                res.user.sendEmailVerification();
                 if (profile.avatarsource !== "") {
                     let avatarlink = profile.email + '.jpg';
 
@@ -258,7 +258,6 @@ export const registerUser = (profile) => async dispatch => {
                                     ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                                 }
                             }).catch(function (error) {
-                                console.log(error)
                                 resolve(false)
                                 ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                             });
@@ -282,9 +281,9 @@ export const registerUser = (profile) => async dispatch => {
                             resolve(false)
                             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                         }
-                        console.log(res)
+                        
                     }).catch(function (error) {
-                        console.log(error)
+                        
                         resolve(false)
                         ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                     });
@@ -296,7 +295,7 @@ export const registerUser = (profile) => async dispatch => {
 
 
             }).catch(function (e) {
-                console.log(e)
+                
                 if (e.code === 'auth/email-already-in-use') {
                     ToastAndroid.showWithGravityAndOffset("Email aready used", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 } else {
@@ -305,7 +304,7 @@ export const registerUser = (profile) => async dispatch => {
                 resolve(false)
             })
         } catch (e) {
-            console.log(e)
+            
             ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             resolve(false)
         };

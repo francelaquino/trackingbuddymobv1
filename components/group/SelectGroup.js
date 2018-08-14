@@ -75,8 +75,8 @@ class SelectGroup extends Component {
             <ListItem key={group.id}  avatar style={globalStyle.listItem} onPress={()=>this.changeGroup(group.id,group.groupname)}>
                 <Left style={globalStyle.listLeft}>
                     <View style={globalStyle.listAvatarContainer} >
-                        { group.avatar==='' ?  <Thumbnail  style={globalStyle.listAvatar} source={{uri: this.state.emptyPhoto}} /> :
-                        <Thumbnail  style={globalStyle.listAvatar} source={{uri: group.avatar}} />
+                        {group.emptyphoto === 1 ? <Ionicons size={46} style={{ color: '#2c3e50' }} name="ios-people" /> :
+                            <Thumbnail style={globalStyle.listAvatar} source={{ uri: group.avatar }} />
                         }
                     </View>
                 </Left>
@@ -112,7 +112,7 @@ class SelectGroup extends Component {
                         <ListItem  avatar style={globalStyle.listItem} onPress={()=>this.allMembers()}>
                             <Left style={globalStyle.listLeft}>
                                 <View style={globalStyle.listAvatarContainer} >
-                                    <Thumbnail  style={globalStyle.listAvatar} source={{uri: this.state.emptyPhoto}} />
+                                                <Ionicons size={46} style={{ color: '#2c3e50' }} name="ios-person" />
                                 </View>
                             </Left>
                             <Body style={globalStyle.listBody} >
