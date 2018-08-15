@@ -40,45 +40,48 @@ const savelocation = async (useruid, latitude, longitude) => {
 export const saveLocationOffline = () => async dispatch => {
     let userid = await AsyncStorage.getItem("userid");
     if (userid !== "" & userid !== null) {
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const coords = {
-                    latitude: position.coords.latitude,
-                    useruid: userid,
-                    longitude: position.coords.longitude,
-                    dateadded: Date.now()
-                }
-                const offlineLocation = await AsyncStorage.getItem('offlineLocation');
-                let location = JSON.parse(offlineLocation);
-                if (!location) {
-                    location = [];
-                }
-                if (location.length <= 200) {
+        try {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const coords = {
+                        latitude: position.coords.latitude,
+                        useruid: userid,
+                        longitude: position.coords.longitude,
+                        dateadded: Date.now()
+                    }
+                    const offlineLocation = await AsyncStorage.getItem('offlineLocation');
+                    let location = JSON.parse(offlineLocation);
+                    if (!location) {
+                        location = [];
+                    }
                     console.log("saving offline")
-                    /*if (location.length >= 1) {
-                        var loc = location[location.length - 1];
-                        let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
-                        if (distance > 150) {
+                    if (location.length <= 200) {
+
+                        if (location.length >= 1) {
+                            var loc = location[location.length - 1];
+                            let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
+                            if (distance > 150) {
+                                location.push(coords)
+                                await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+                            }
+                        } else {
                             location.push(coords)
                             await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
                         }
-                    } else {
-                        location.push(coords)
-                        await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
-                    }*/
-                    location.push(coords)
-                    await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
-                    console.log(location)
-                }
+                        
+                    }
 
 
 
 
-            },
-            (err) => {
-            },
-            { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
-        );
+                },
+                (err) => {
+                },
+                { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
+            );
+        }catch (e) {
+            console.log(e)
+        }
     }
 };
 
@@ -96,7 +99,6 @@ export const saveLocationOnline=()=> async dispatch=> {
             console.log("saving foreground location")
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
-                    console.log(position.coords);
 
                         await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon="+position.coords.longitude)
                          //axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false")
@@ -108,10 +110,10 @@ export const saveLocationOnline=()=> async dispatch=> {
                                 });
                             }).catch(function (error) {
                                 console.log(error)
-                                dispatch({
-                                    type: SAVE_LOCATION_ONLINE,
-                                    payload: ""
-                                });
+                               /* dispatch({
+                                   type: SAVE_LOCATION_ONLINE,
+                                   // payload: ""
+                                });*/
                             });
 
                         await savelocation(userid, position.coords.latitude, position.coords.longitude);
@@ -121,12 +123,12 @@ export const saveLocationOnline=()=> async dispatch=> {
                 },
                 (err) => {
                     console.log(err)
-                    dispatch({
+                   /* dispatch({
                         type: SAVE_LOCATION_ONLINE,
                         payload: ""
-                    });
+                    });*/
                 },
-                { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
+                { enableHighAccuracy: false, timeout: 10000}
             );
         } catch (e) {
             console.log(e)
@@ -170,14 +172,13 @@ export const pushLocationOnline = () => async dispatch => {
                 await axios.post(settings.baseURL + 'place/saveofflinelocation', {
                     locations: location,
                 }).then(function (res) {
-                    console.log(res)
                 }).catch(function (error) {
                     console.log(error)
                 });
             } catch (e) {
-            console.log(e)
-        }
-            
+                console.log(e)
+            }
+
 
         }
 

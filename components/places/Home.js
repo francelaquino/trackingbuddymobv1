@@ -73,18 +73,53 @@ const saveBackGround = async () => {
 
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                try {
-                    await axios.post(settings.baseURL + 'place/savelocation', {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                        useruid: userid,
-                    }).then(async function (res) {
-                    }).catch(function (error) {
-                    })
+                NetInfo.isConnected.fetch().done(async (isConnected) => {
+                    if (isConnected) {
+                        try {
+                            await axios.post(settings.baseURL + 'place/savelocation', {
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                                useruid: userid,
+                            }).then(async function (res) {
+                            }).catch(function (error) {
+                            })
 
-                } catch (e) {
-                    console.log(e);
-                }
+                        } catch (e) {
+                            console.log(e);
+                        }
+
+                    } else {
+                        const coords = {
+                            latitude: position.coords.latitude,
+                            useruid: userid,
+                            longitude: position.coords.longitude,
+                            dateadded: Date.now()
+                        }
+                        const offlineLocation = await AsyncStorage.getItem('offlineLocation');
+                        let location = JSON.parse(offlineLocation);
+                        if (!location) {
+                            location = [];
+                        }
+                        console.log("saving offline")
+                        if (location.length <= 200) {
+
+                            if (location.length >= 1) {
+                                var loc = location[location.length - 1];
+                                let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
+                                if (distance > 150) {
+                                    location.push(coords)
+                                    await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+                                }
+                            } else {
+                                location.push(coords)
+                                await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+                            }
+
+                        }
+                    }
+                });
+
+               
 
 
                 
@@ -98,42 +133,6 @@ const saveBackGround = async () => {
     }
 }
 
-/*
-const saveOffLine = async () => {
-    let userid = await AsyncStorage.getItem("userid");
-    if (userid !== "" & userid !== null) {
-        console.log("saving offline background");
-
-
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-
-                const offlineLocation = await AsyncStorage.getItem('offlineLocation');
-                let location = JSON.parse(offlineLocation);
-                if (!location) {
-                    location = [];
-                }
-
-                if (location.length >= 1) {
-                    var loc = location[location.length - 1];
-                    let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
-                    if (distance > 100) {
-                        location.push(coords)
-                        await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
-                    }
-                } else {
-                    location.push(coords)
-                await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
-               
-
-
-            },
-            (err) => {
-            },
-            { enableHighAccuracy: false, timeout: 10000 }
-        );
-    }
-}*/
 
 
 const updateToken={
