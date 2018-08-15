@@ -14,10 +14,11 @@ import Loader  from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
 import LeftDrawer from '../shared/LeftDrawer'
 import { connect } from 'react-redux';
-import { displayHomeMember  } from '../../redux/actions/memberActions' ;
-import { saveLocationOnline, pushLocationOnline  } from '../../redux/actions/locationActions' ;
+import { displayHomeMember } from '../../redux/actions/memberActions';
+import { saveLocationOnline, pushLocationOnline, saveLocationOffline } from '../../redux/actions/locationActions';
 import firebase from 'react-native-firebase';
 import type { Notification } from 'react-native-firebase';
+import axios from 'axios';
 var PushNotification = require('react-native-push-notification');
 var settings = require('../../components/shared/Settings');
 var screenHeight = Dimensions.get('window').height; 
@@ -43,7 +44,7 @@ let trackLocation;
         try{
             trackLocation();
         } catch (e) {
-            saveLocationOffline();
+            saveBackGround();
            
         }
     },
@@ -64,18 +65,49 @@ const getDistance = (lat1, long1, lat2, long2) => {
     return d;
 };
 
-const saveLocationOffline = async () => {
+const saveBackGround = async () => {
     let userid = await AsyncStorage.getItem("userid");
     if (userid !== "" & userid !== null) {
-        console.log("saving offline");
+        console.log("saving background");
+
+
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                const coords = {
-                    useruid: userid,
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    dateadded: Date.now()
+                try {
+                    await axios.post(settings.baseURL + 'place/savelocation', {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        useruid: userid,
+                    }).then(async function (res) {
+                    }).catch(function (error) {
+                    })
+
+                } catch (e) {
+                    console.log(e);
                 }
+
+
+                
+
+
+            },
+            (err) => {
+            },
+            { enableHighAccuracy: false, timeout: 10000}
+        );
+    }
+}
+
+/*
+const saveOffLine = async () => {
+    let userid = await AsyncStorage.getItem("userid");
+    if (userid !== "" & userid !== null) {
+        console.log("saving offline background");
+
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+
                 const offlineLocation = await AsyncStorage.getItem('offlineLocation');
                 let location = JSON.parse(offlineLocation);
                 if (!location) {
@@ -93,19 +125,15 @@ const saveLocationOffline = async () => {
                     location.push(coords)
                 await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
                
-                }
-                console.log(location);
-
-
 
 
             },
             (err) => {
             },
-            { enableHighAccuracy: false, timeout: 10000}
+            { enableHighAccuracy: false, timeout: 10000 }
         );
     }
-}
+}*/
 
 
 const updateToken={
@@ -215,7 +243,7 @@ class HomePlaces extends Component {
                     self.props.saveLocationOnline();
 
                 } else {
-                    saveLocationOffline();
+                    self.props.saveLocationOffline();
                 }
             });
         }
@@ -421,7 +449,7 @@ class HomePlaces extends Component {
                                 </Button>
                             </Left>
                             <Body style={globalStyle.headerBody}>
-                                <Title numberOfLines={1} style={globalStyle.headerTitle}>{userdetails.address} </Title>
+                                <Title numberOfLines={1} style={globalStyle.headerTitle}>{this.props.address} </Title>
                             </Body>
                             <Right style={globalStyle.headerRight} >
                                
@@ -576,6 +604,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
     members: state.fetchMember.home_members,
+    address: state.fetchLocation.address,
     //isLoading:state.fetchMember.isLoading,
     isConnected:state.fetchConnection.isConnected,
     
@@ -583,6 +612,6 @@ const mapStateToProps = state => ({
   
   
   
-HomePlaces = connect(mapStateToProps, { displayHomeMember, saveLocationOnline, pushLocationOnline})(HomePlaces);
+HomePlaces = connect(mapStateToProps, { displayHomeMember, saveLocationOffline,  saveLocationOnline, pushLocationOnline})(HomePlaces);
   
 export default HomePlaces;

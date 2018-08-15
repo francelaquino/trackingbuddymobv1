@@ -549,7 +549,9 @@ export const displayHomeMember = () => async dispatch => {
                     .then(function (res) {
                         if (res.data.status == "202") {
                             count = res.data.results.length;
+                            let x = 0;
                             res.data.results.forEach(data => {
+                               
                                 members.push({
                                     uid: data.uid,
                                     firstname: data.firstname,

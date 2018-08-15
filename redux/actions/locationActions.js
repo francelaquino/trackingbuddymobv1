@@ -24,24 +24,17 @@ const getDistance=(lat1,long1,lat2,long2) => {
     return d; 
 };
 
-const savelocationhistory = async (useruid, address, latitude, longitude) => {
-    let dateadded = Date.now();
-    await axios.post(settings.baseURL + 'place/savelocationhistory', {
-        latitude: latitude,
-        longitude: longitude,
-        address: address,
-        useruid: useruid,
-    }).then(async function (res) {
-        if (res.data.results !== "") {
-            await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/appendOnlineLocation?lat=" + latitude + "&lon=" + longitude + "&userid=" + useruid + "&dateadded=" + dateadded + "&firstname=" + userdetails.firstname + "&address=" + address)
-                .then(async function (res) {
-                    
-                }).catch(function (error) {
-                });
-        }
-
-        }).catch(function (error) {
-    })
+const savelocation = async (useruid, latitude, longitude) => {
+    try {
+        await axios.post(settings.baseURL + 'place/savelocation', {
+            latitude: latitude,
+            longitude: longitude,
+            useruid: useruid,
+        }).then(async function (res) {
+            }).catch(function (error) {
+            })
+    } catch (e) {
+    }
 }
 
 export const saveLocationOffline = () => async dispatch => {
@@ -51,6 +44,7 @@ export const saveLocationOffline = () => async dispatch => {
             async (position) => {
                 const coords = {
                     latitude: position.coords.latitude,
+                    useruid: userid,
                     longitude: position.coords.longitude,
                     dateadded: Date.now()
                 }
@@ -59,17 +53,22 @@ export const saveLocationOffline = () => async dispatch => {
                 if (!location) {
                     location = [];
                 }
-
-                if (location.length >= 1) {
-                    var loc = location[location.length - 1];
-                    let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
-                    if (distance > 150) {
+                if (location.length <= 200) {
+                    console.log("saving offline")
+                    /*if (location.length >= 1) {
+                        var loc = location[location.length - 1];
+                        let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
+                        if (distance > 150) {
+                            location.push(coords)
+                            await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+                        }
+                    } else {
                         location.push(coords)
                         await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
-                    }
-                } else {
+                    }*/
                     location.push(coords)
                     await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+                    console.log(location)
                 }
 
 
@@ -85,7 +84,6 @@ export const saveLocationOffline = () => async dispatch => {
 
 export const saveLocationOnline=()=> async dispatch=> {
     let userid = await AsyncStorage.getItem("userid");
-    //let userid = userdetails.userid;
    
     if (userid === "" || userid === null) {
         dispatch({
@@ -94,30 +92,45 @@ export const saveLocationOnline=()=> async dispatch=> {
         });
     } else {
                 
+        try {
+            console.log("saving foreground location")
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    console.log(position.coords);
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                 axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude +"&sensor=false")
-                     .then(async function (res) {
-                        userdetails.address = res.data.results[0].formatted_address;
-                        await savelocationhistory(userid, res.data.results[0].formatted_address, position.coords.latitude, position.coords.longitude);
-                    }).catch(function (error) {
+                        await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon="+position.coords.longitude)
+                         //axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false")
+                            .then(function (res) {
+                              
+                                dispatch({
+                                    type: SAVE_LOCATION_ONLINE,
+                                    payload: res.data
+                                });
+                            }).catch(function (error) {
+                                console.log(error)
+                                dispatch({
+                                    type: SAVE_LOCATION_ONLINE,
+                                    payload: ""
+                                });
+                            });
+
+                        await savelocation(userid, position.coords.latitude, position.coords.longitude);
+
+                   
+
+                },
+                (err) => {
+                    console.log(err)
+                    dispatch({
+                        type: SAVE_LOCATION_ONLINE,
+                        payload: ""
                     });
-               
-                dispatch({
-                    type: SAVE_LOCATION_ONLINE,
-                    payload: []
-                });
-
-            },
-            (err) => {
-                dispatch({
-                    type: SAVE_LOCATION_ONLINE,
-                    payload: []
-                });
-            },
-             { enableHighAccuracy: false, timeout: 10000}
-        );
+                },
+                { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
+            );
+        } catch (e) {
+            console.log(e)
+        }
     }
 };
 
@@ -145,22 +158,29 @@ export const pushLocationOnline = () => async dispatch => {
     if (userid !== "" & userid !== null) {
         const offlineLocation = await AsyncStorage.getItem('offlineLocation');
         let location = JSON.parse(offlineLocation);
-        
+        console.log("pusing online");
 
         await AsyncStorage.setItem("offlineLocation", "");
         if (!location) {
             location = [];
         }
         if (location.length > 0) {
-            await axios.post(settings.baseURL + 'place/saveofflinelocationhistory', {
-                locations: location,
-            }).then(function (res) {
-            }).catch(function (error) {
-                });
+            try {
 
+                await axios.post(settings.baseURL + 'place/saveofflinelocation', {
+                    locations: location,
+                }).then(function (res) {
+                    console.log(res)
+                }).catch(function (error) {
+                    console.log(error)
+                });
+            } catch (e) {
+            console.log(e)
+        }
             
 
         }
+
     }
 
     

@@ -6,7 +6,8 @@ const initialState = {
     locations:[],
     location: [],
     details:[],
-    alerts:[],
+    alerts: [],
+    address:'',
     isLoading:true,
     success:true,
 }
@@ -46,6 +47,7 @@ export default function(state=initialState,action){
         case SAVE_LOCATION_ONLINE:
             return {
                 ...state,
+                address: action.payload,
             };
        
 
