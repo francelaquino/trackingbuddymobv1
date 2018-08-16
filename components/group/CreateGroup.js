@@ -93,37 +93,19 @@ class CreateGroup extends Component {
 
     loading() {
         return (
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
                     <Loading />
-                </Container>
-            </Root>
         )
   }
     ready() {
         return (
-            <Root>
-                <Loader loading={this.state.loading} />
-                <OfflineNotice />
-                <Container style={globalStyle.containerWrapper}>
-                    <Header style={globalStyle.header}>
-                        <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                            </Button>
-                        </Left>
-                        <Body style={globalStyle.headerBody}>
-                            <Title>ADD GROUP</Title>
-                        </Body>
-                        <Right style={globalStyle.headerRight}>
-                        </Right>
-                    </Header>
-                    <Content padder>
-                        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+          
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                        <Content padder>
                             <View style={globalStyle.container}>
                                 <TouchableOpacity style={{ marginTop: 20 }} onPress={this.selectPhoto.bind(this)}>
-                                    <View style={globalStyle.avatarContainer}>
-                                        {this.state.avatarsource === '' ? <Image style={globalStyle.avatarBig} source={{ uri: this.state.emptyPhoto }} /> :
+                            <View style={globalStyle.avatarContainer}>
+
+                                {this.state.avatarsource === '' ? <Ionicons size={75} style={{ color: '#2c3e50' }} name="ios-people" />  :
                                             <Image style={globalStyle.avatarBig} source={this.state.avatarsource} />
                                         }
 
@@ -154,20 +136,39 @@ class CreateGroup extends Component {
                                 </View>
 
                             </View>
+                             </Content>
                         </ScrollView>
-                    </Content>
-                </Container>
-            </Root>
+                   
         )
     }
 
 
     render() {
-        if (this.state.busy) {
-            return this.loading();
-        } else {
-            return this.ready();
-        }
+        return (
+            <Root>
+                <Loader loading={this.state.loading} />
+                <OfflineNotice />
+                <Container style={globalStyle.containerWrapper}>
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>ADD GROUP</Title>
+                        </Body>
+                        <Right style={globalStyle.headerRight}>
+                        </Right>
+                    </Header>
+                    {
+                        this.state.isbusy ? this.loading() :
+                            this.ready()
+                    }
+                </Container>
+            </Root>
+        )
+
     }
 }
 

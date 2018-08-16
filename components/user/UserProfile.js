@@ -32,7 +32,6 @@ class UserProfile extends Component {
                 uri:''
             },
             isPhotoChange: false,
-            //emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/member_photos%2Ficons8-person-80.png?alt=media&token=59864ce7-cf1c-4c5e-a07d-76c286a2171d',
     
         };
       }
@@ -52,7 +51,6 @@ class UserProfile extends Component {
                     emptyphoto: this.props.profile.emptyphoto,
                     avatarsource: { uri: this.props.profile.avatar },
                 })
-                
             }
         });
       
@@ -97,9 +95,9 @@ class UserProfile extends Component {
         }
         this.setState({ loading: true })
         this.props.updateProfile(profile).then(res => {
-            this.setState({ loading: false })
-            this.componentWillMount();
-            this.props.displayHomeMember();
+                this.setState({ loading: false })
+                this.componentWillMount();
+                this.props.displayHomeMember();
         });
     }
 
@@ -149,117 +147,110 @@ class UserProfile extends Component {
     ready(){
        
         return (
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
-                    <OfflineNotice />
-            <View style={globalStyle.container}>
-           <Loader loading={this.state.loading} />
-                    <Header style={globalStyle.header}>
-                        <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
-                                    <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                            </Button>
-                        </Left>
-                            <Body style={globalStyle.headerBody}>
-                            <Title>PROFILE</Title>
-                            </Body>
-                            <Right style={globalStyle.headerRight}>
-                            </Right>
-                       
-                    </Header>
-                        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
-                            <Content padder>
-                <View  style={{marginTop:20,marginBottom:10}}>
-						<TouchableOpacity onPress={this.selectPhoto.bind(this)}>
-                        <View style={globalStyle.avatarContainer}>
-                            { this.state.avatarsource.uri === '' ? <Image style={globalStyle.avatarBig} source={{uri : this.state.emptyPhoto}} />  :
-                                <Image style={globalStyle.avatarBig} source={this.state.avatarsource} />
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                <Content padder>
+                    <View style={{ marginTop: 20, marginBottom: 10 }}>
+                        <TouchableOpacity onPress={this.selectPhoto.bind(this)}>
+                            <View style={globalStyle.avatarContainer}>
+                                {this.state.emptyphoto === '1' ? <Ionicons size={75} style={{ color: '#2c3e50' }} name="ios-person" /> :
+                                    <Image style={globalStyle.avatarBig} source={this.state.avatarsource} />
                                 }
-                                        </View>
-                                        
-                                    </TouchableOpacity>
-                                    <Label style={{ width: '100%', textAlign: 'center', color: '#16a085',marginBottom:10 }}>{this.state.fullname}</Label>
-                            {(this.state.emptyphoto != '1') &&
-                            <TouchableOpacity   onPress={this.removePhoto.bind(this)}>
-                            <Text style={globalStyle.deleteButtonSmall} >Remove Photo</Text>
-                                        </TouchableOpacity>
-                                    
-                                    }
-                                    
-				</View>
+                            </View>
 
-                    
-					
+                        </TouchableOpacity>
+                        <Label style={{ width: '100%', textAlign: 'center', color: '#16a085', marginBottom: 10 }}>{this.state.fullname}</Label>
+                        {(this.state.emptyphoto != '1') &&
+                            <TouchableOpacity onPress={this.removePhoto.bind(this)}>
+                                <Text style={globalStyle.deleteButtonSmall} >Remove Photo</Text>
+                            </TouchableOpacity>
 
-						
+                        }
 
-                                <Item stackedLabel>
-                                    <Label style={globalStyle.label} >Email</Label>
-                                    <Input style={[globalStyle.textinput, {color:'gray'}]} name="email" autoCorrect={false}
-                                        value={this.state.email} 
-                                        onChangeText={email => this.setState({ email })} editable={false}/>
-                                </Item>
+                    </View>
+                    <Item stackedLabel>
+                        <Label style={globalStyle.label} >Email</Label>
+                        <Input style={[globalStyle.textinput, { color: 'gray' }]} name="email" autoCorrect={false}
+                            value={this.state.email}
+                            onChangeText={email => this.setState({ email })} editable={false} />
+                    </Item>
 
-					
-                                <Item stackedLabel>
-                                    <Label style={globalStyle.label} >First name</Label>
-                                    <Input style={globalStyle.textinput} name="firstname" autoCorrect={false}
-                                        value={this.state.firstname} maxLength={10}
-                                        onChangeText={firstname => this.setState({ firstname })} />
-                                </Item>
 
-                                <Item stackedLabel>
-                                    <Label style={globalStyle.label} >Middle name</Label>
-                                    <Input style={globalStyle.textinput} name="middlename" autoCorrect={false}
-                                        value={this.state.middlename} maxLength={10}
-                                        onChangeText={middlename => this.setState({ middlename })} />
-                                </Item>
+                    <Item stackedLabel>
+                        <Label style={globalStyle.label} >First name</Label>
+                        <Input style={globalStyle.textinput} name="firstname" autoCorrect={false}
+                            value={this.state.firstname} maxLength={10}
+                            onChangeText={firstname => this.setState({ firstname })} />
+                    </Item>
 
-                                <Item stackedLabel>
-                                    <Label style={globalStyle.label} >Last name</Label>
-                                    <Input style={globalStyle.textinput} name="lastname" autoCorrect={false}
-                                        value={this.state.lastname} maxLength={10}
-                                        onChangeText={lastname => this.setState({ lastname })} />
-                                </Item>
+                    <Item stackedLabel>
+                        <Label style={globalStyle.label} >Middle name</Label>
+                        <Input style={globalStyle.textinput} name="middlename" autoCorrect={false}
+                            value={this.state.middlename} maxLength={10}
+                            onChangeText={middlename => this.setState({ middlename })} />
+                    </Item>
 
-                                <Item stackedLabel>
-                                    <Label style={globalStyle.label} >Last name</Label>
-                                    <Input style={globalStyle.textinput} name="lastname" autoCorrect={false}
-                                        value={this.state.lastname} maxLength={10}
-                                        onChangeText={lastname => this.setState({ lastname })} />
-                                </Item>
+                    <Item stackedLabel>
+                        <Label style={globalStyle.label} >Last name</Label>
+                        <Input style={globalStyle.textinput} name="lastname" autoCorrect={false}
+                            value={this.state.lastname} maxLength={10}
+                            onChangeText={lastname => this.setState({ lastname })} />
+                    </Item>
 
-                                <Item stackedLabel>
-                                    <Label style={globalStyle.label} >Mobile No.</Label>
-                                    <Input style={globalStyle.textinput} name="mobileno" autoCorrect={false}
-                                        value={this.state.mobileno} maxLength={20}
-                                        onChangeText={v => this.setState({ mobileno })} />
-                                </Item>
+                    <Item stackedLabel>
+                        <Label style={globalStyle.label} >Last name</Label>
+                        <Input style={globalStyle.textinput} name="lastname" autoCorrect={false}
+                            value={this.state.lastname} maxLength={10}
+                            onChangeText={lastname => this.setState({ lastname })} />
+                    </Item>
 
-						
-					
-						
-					
-						
-					
-                        <Button  onPress={()=>this.onSubmit()}
-                        bordered light full  style={globalStyle.secondaryButton}>
-                        <Text style={{color:'white'}}>Update</Text>
-                        </Button>
-					</Content>
-				</ScrollView>
-                   
-                </View>
-                </Container>
-                </Root>
+                    <Item stackedLabel>
+                        <Label style={globalStyle.label} >Mobile No.</Label>
+                        <Input style={globalStyle.textinput} name="mobileno" autoCorrect={false}
+                            value={this.state.mobileno} maxLength={20}
+                            onChangeText={v => this.setState({ mobileno })} />
+                    </Item>
+
+                    <Button onPress={() => this.onSubmit()}
+                        bordered light full style={globalStyle.secondaryButton}>
+                        <Text style={{ color: 'white' }}>Update</Text>
+                    </Button>
+                </Content>
+            </ScrollView>
         )
     }
     render() {
-        if (this.state.isbusy) {
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <OfflineNotice />
+                    <View style={globalStyle.container}>
+                        <Loader loading={this.state.loading} />
+                        <Header style={globalStyle.header}>
+                            <Left style={globalStyle.headerLeft} >
+                                <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                    <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                                </Button>
+                            </Left>
+                            <Body style={globalStyle.headerBody}>
+                                <Title>PROFILE</Title>
+                            </Body>
+                            <Right style={globalStyle.headerRight}>
+                            </Right>
+
+                        </Header>
+
+                        {
+                            this.state.isbusy ? this.loading() :
+                            this.ready()
+                        }
+
+                    
+                    </View>
+                </Container>
+            </Root>
+        )
+
+
     }
 
 }

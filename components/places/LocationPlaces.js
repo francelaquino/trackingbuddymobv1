@@ -16,14 +16,12 @@ var globalStyle = require('../../assets/style/GlobalStyle');
 
 
 
-class LocationPlaces extends Component<Props> {
+class LocationPlaces extends Component {
     constructor(props) {
         super(props)
         this.state = {
             loading: true,
         };
-
-
     
     }
    
@@ -36,7 +34,6 @@ class LocationPlaces extends Component<Props> {
         this.props.displayLocations(this.props.navigation.state.params.uid).then(res => {
             if (res == true) {
                 this.setState({ loading: false })
-                console.log(this.props.locations)
             }
         })
 
@@ -74,6 +71,25 @@ class LocationPlaces extends Component<Props> {
     ready(){
          
         return (
+                    
+                        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                        <Content padder>
+                            <View style={globalStyle.container}>
+                                <List>
+                                    {this.renderLocation()}
+                                </List>
+
+
+                            </View>
+                        </Content>
+                        </ScrollView>
+                   
+        )
+    }
+
+    render() {
+
+        return (
             <Root>
                 <Container style={globalStyle.containerWrapper}>
                     <OfflineNotice />
@@ -91,30 +107,16 @@ class LocationPlaces extends Component<Props> {
 
                         </Right>
                     </Header>
-                    <Content padder>
-                        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                    {
+                        this.state.loading ? this.loading() :
+                            this.ready()
+                    }
 
-                            <View style={globalStyle.container}>
-                                <List>
-                                    {this.renderLocation()}
-                                </List>
-
-
-                            </View>
-
-                        </ScrollView>
-                    </Content>
                 </Container>
             </Root>
         )
-    }
 
-    render() {
-        if(this.state.loading){
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+        
     }
    
 }

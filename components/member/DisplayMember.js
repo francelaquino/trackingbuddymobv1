@@ -20,7 +20,6 @@ class DisplayMember extends Component {
         this.state={
             loading: true,
             memberid:'',
-            emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/member_photos%2Ficons8-person-80.png?alt=media&token=59864ce7-cf1c-4c5e-a07d-76c286a2171d',
         }
       }
 
@@ -87,26 +86,7 @@ class DisplayMember extends Component {
     
     ready(){
         return (
-            
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
-                <OfflineNotice/>
-                    <Header style={globalStyle.header}>
-                        <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                            </Button> 
-                        </Left>
-                        <Body style={globalStyle.headerBody} >
-                            <Title>MEMBERS</Title>
-                        </Body>
-                        <Right style={globalStyle.headerRight}>
-                            <Button transparent onPress={() => this.props.navigation.navigate("NewInvite",{onReload : this.onReload})}>
-                                <MaterialIcons size={28} style={{ color: 'white' }} name='person-add' />
-                            </Button> 
-                            
-                        </Right>
-                    </Header>
+           
                     <Content padder>
                         <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
                             <View style={globalStyle.container}>
@@ -117,18 +97,46 @@ class DisplayMember extends Component {
                             </View>
                         </ScrollView>
                         </Content>
-                </Container>
-            </Root>
         )
     }
 
 
     render() {
-        if(this.state.loading){
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+
+        return (
+
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <OfflineNotice />
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerBody} >
+                            <Title>MEMBERS</Title>
+                        </Body>
+                        <Right style={globalStyle.headerRight}>
+                            <Button transparent onPress={() => this.props.navigation.navigate("NewInvite", { onReload: this.onReload })}>
+                                <MaterialIcons size={28} style={{ color: 'white' }} name='person-add' />
+                            </Button>
+
+                        </Right>
+                    </Header>
+                    {
+                        this.state.loading ? this.loading() :
+                            this.ready()
+                    }
+
+                </Container>
+            </Root>
+        )
+
+
+
+
+        
     }
     
 }

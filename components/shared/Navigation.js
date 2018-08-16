@@ -12,21 +12,21 @@ import MembersGroup from '../group/MembersGroup';
 import AddMember from '../group/AddMember';
 import DisplayMember from '../member/DisplayMember';
 import GenerateInviteCode from '../member/GenerateInviteCode';
-import MemberHome from '../member/MemberHome';
 import InfoMember from '../member/InfoMember';
 import SavePlace from '../places/SavePlace';
+import EditSavePlace from '../places/EditSavePlace';
 import GroupHome from '../group/GroupHome';
 import ProfileHome from '../user/ProfileHome';
 import NewInvite from '../member/NewInvite';
 import Home from '../places/Home';
 import CreatePlace from '../places/CreatePlace';
+import EditCreatePlace from '../places/EditCreatePlace';
 import PlaceList from '../places/PlaceList';
 import EditPlace from '../places/EditPlace';
 import PlaceView from '../places/PlaceView';
 import LocationPlaces from '../places/LocationPlaces';
 import LocationView from '../places/LocationView';
 import PlaceAlert from '../places/PlaceAlert';
-import GroupPlaces from '../places/GroupPlaces';
 import HomeSettings from '../settings/HomeSettings';
 import ChangePassword from '../user/ChangePassword';
 import Menu from '../shared/Menu';
@@ -113,6 +113,14 @@ export const Stack = createStackNavigator({
         }
     },
 
+    EditCreatePlace: {
+        screen: EditCreatePlace,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
    
 
     DisplayMember: {
@@ -139,6 +147,14 @@ export const Stack = createStackNavigator({
 
     SavePlace: {
         screen: SavePlace,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
+
+    EditSavePlace: {
+        screen: EditSavePlace,
         headerMode: 'none',
         navigationOptions: {
             header: null
@@ -304,15 +320,6 @@ export const Stack = createStackNavigator({
     
    
  
-   
-    MemberHome: { 
-        screen: MemberHome,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        } 
-    },
-    
    
 
     

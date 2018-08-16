@@ -29,9 +29,12 @@ class InfoMember extends Component {
     async componentWillMount() {
        
         await this.props.getMember(this.props.navigation.state.params.memberuid).then(res => {
+            if (res == true) {
+                this.setState({ loading: false })
+            }
         });
         await this.props.getMemberGroup(this.props.navigation.state.params.memberuid).then(res => {
-            this.setState({ loading:false })
+           
         });
         await this.props.getMemberNotification(this.props.navigation.state.params.memberuid).then(res => {
         });
@@ -151,31 +154,17 @@ class InfoMember extends Component {
         
 
         return (
-                <Root>
-                    <Container style={globalStyle.containerWrapper}>
-                    <View style={globalStyle.container}>
-                        <Loader loading={this.state.isbusy} />
-                        <OfflineNotice />
-                        <Header hasTabs style={globalStyle.header}>
-                            <Left style={globalStyle.headerLeft} >
-                                <Button transparent onPress={() => { this.props.navigation.goBack() }} >
-                                    <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                                </Button>
-                            </Left>
-                            <Body style={globalStyle.headerBody}>
-                                <Title>{this.props.navigation.state.params.firstname}</Title>
-                            </Body>
-                            <Right style={globalStyle.headerRight}>
-                            </Right>
-                           
-                        </Header>
-                       
+                
                         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
 
                             <View style={{ marginTop: 10, paddingBottom: 10 }}>
                            
-                        <View style={globalStyle.avatarContainer}>
-                            <Image style={globalStyle.avatarBig} source={{uri : this.props.member.avatar}} />
+                    <View style={globalStyle.avatarContainer}>
+                        {this.props.member.emptyphoto === '1' ? <Ionicons size={75} style={{ color: '#2c3e50' }} name="ios-person" /> :
+                            <Image style={globalStyle.avatarBig} source={{ uri: this.props.member.avatar }} />
+                        }
+
+                            
                                     </View>
                                     <Label style={{ width: '100%', textAlign: 'center', color: '#16a085' }}>{this.props.member.fullname}</Label>
                                     <View style={{ width: '100%', flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}><View><Label style={{ fontSize: 16 }}> <MaterialCommunityIcons name='email-outline' style={{ fontSize: 15 }} /> {this.props.member.email}</Label></View></View>
@@ -211,21 +200,48 @@ class InfoMember extends Component {
 
                                
                             </ScrollView>
-                    </View>
-                        
-                </Container>
-            </Root>
-                    
+                   
                             
                     
         );
     }
     render() {
-        if (this.state.loading) {
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <View style={globalStyle.container}>
+                        <Loader loading={this.state.isbusy} />
+                        <OfflineNotice />
+                        <Header hasTabs style={globalStyle.header}>
+                            <Left style={globalStyle.headerLeft} >
+                                <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                    <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                                </Button>
+                            </Left>
+                            <Body style={globalStyle.headerBody}>
+                                <Title>{this.props.navigation.state.params.firstname}</Title>
+                            </Body>
+                            <Right style={globalStyle.headerRight}>
+                            </Right>
+
+                        </Header>
+
+                        {
+                            this.state.loading ? this.loading() :
+                                this.ready()
+                        }
+                    </View>
+
+                </Container>
+            </Root>
+
+
+
+        );
+
+
+        
     }
 
 }

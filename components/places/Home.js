@@ -14,6 +14,7 @@ import Loader  from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
 import LeftDrawer from '../shared/LeftDrawer'
 import { connect } from 'react-redux';
+import Moment from 'moment';
 import { displayHomeMember } from '../../redux/actions/memberActions';
 import { saveLocationOnline, pushLocationOnline, saveLocationOffline } from '../../redux/actions/locationActions';
 import firebase from 'react-native-firebase';
@@ -74,12 +75,14 @@ const saveBackGround = async () => {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                 NetInfo.isConnected.fetch().done(async (isConnected) => {
+                    console.log(isConnected)
                     if (isConnected) {
                         try {
                             await axios.post(settings.baseURL + 'place/savelocation', {
                                 latitude: position.coords.latitude,
                                 longitude: position.coords.longitude,
                                 useruid: userid,
+                                dateadded: Moment().format('YYYY-MM-DD HH:mm:ss')
                             }).then(async function (res) {
                             }).catch(function (error) {
                             })
@@ -93,7 +96,7 @@ const saveBackGround = async () => {
                             latitude: position.coords.latitude,
                             useruid: userid,
                             longitude: position.coords.longitude,
-                            dateadded: Date.now()
+                            dateadded: Moment().format('YYYY-MM-DD HH:mm:ss')
                         }
                         const offlineLocation = await AsyncStorage.getItem('offlineLocation');
                         let location = JSON.parse(offlineLocation);
@@ -114,6 +117,7 @@ const saveBackGround = async () => {
                                 location.push(coords)
                                 await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
                             }
+                            console.log(location)
 
                         }
                     }

@@ -2,7 +2,8 @@
 import React, { Component } from 'react';
 import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOpacity, ToastAndroid,  } from 'react-native';
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right, Content} from 'native-base';
-import Loading  from '../shared/Loading';
+import Loading from '../shared/Loading';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
 import firebase from 'react-native-firebase';
@@ -81,11 +82,7 @@ class ChangePassword extends Component {
    
     loading(){
         return (
-          <Root>
-          <Container style={globalStyle.containerWrapper}>
           <Loading/>
-          </Container>
-          </Root>
         )
     }
     ready(){
@@ -97,9 +94,9 @@ class ChangePassword extends Component {
                
                     <Header style={globalStyle.header}>
                         <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Icon size={30} name='arrow-back' />
-                            </Button> 
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                            </Button>
                         </Left>
                         <Body style={[globalStyle.headerBody, {flex:3}]} >
                             <Title>CHANGE PASSWORD</Title>

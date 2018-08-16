@@ -133,7 +133,7 @@ class SavePlace extends Component {
                                 </Button> 
                             </Left>
                             <Body style={globalStyle.headerBody}>
-                                <Title>Position</Title>
+                                <Title>POSITION</Title>
                             </Body>
                             <Right style={globalStyle.headerRight}>
                         </Right>

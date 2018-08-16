@@ -13,7 +13,6 @@ import { connect } from 'react-redux';
 import { updatePlace, displayPlaces  } from '../../redux/actions/locationActions' ;
 import { displayMember  } from '../../redux/actions/memberActions' ;
 import Loading  from '../shared/Loading';
-import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
 const LATITUDE_DELTA = 0.01;
 const LONGITUDE_DELTA = 0.01;
@@ -49,19 +48,20 @@ class PlaceView extends Component {
 
       
 
-    fitToMap(){
+    fitToMap() {
+        setTimeout(() => {
             this.map.animateToRegion({
                 latitude: this.state.region.latitude,
                 longitude: this.state.region.longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005
-              })
+                latitudeDelta: this.state.region.latitudeDelta,
+                longitudeDelta: this.state.region.longitudeDelta
+            })
+        },50)
 
     }
 
     componentWillMount() {
         this.initialize();
-        this.setState({loading:false})
     }
             
     async initialize() {
@@ -77,8 +77,10 @@ class PlaceView extends Component {
             },
            
         })
-
-        this.props.displayMember();
+        this.props.displayMember().then(res => {
+            this.setState({ loading: false })
+            this.fitToMap();
+        });
     }
 
 
@@ -86,11 +88,7 @@ class PlaceView extends Component {
    
     loading(){
         return (
-          <Root>
-          <Container style={globalStyle.containerWrapper}>
           <Loading/>
-          </Container>
-          </Root>
         )
     }
 
@@ -100,10 +98,11 @@ class PlaceView extends Component {
             <ListItem key={member.id}  avatar button style={globalStyle.listItem}  onPress={() => {this.props.navigation.navigate("PlaceAlert",{place: this.state.place,placeid:this.state.id,userid:member.uid,firstname:member.firstname,region:this.state.region})}}>
             <Left style={globalStyle.listLeft}>
                
-                <View style={globalStyle.listAvatarContainer} >
-                { member.avatar==='' ?  <Thumbnail  style={globalStyle.listAvatar} source={{uri: this.state.emptyPhoto}} /> :
-                <Thumbnail  style={globalStyle.listAvatar} source={{uri: member.avatar}} />
-                }
+                    <View style={globalStyle.listAvatarContainer} >
+                        {member.emptyphoto === "1" ? <Ionicons size={46} style={{ color: '#2c3e50' }} name="ios-person" /> :
+                            <Thumbnail style={globalStyle.listAvatar} source={{ uri: member.avatar }} />
+                        }
+
                 </View>
             </Left>
             <Body style={globalStyle.listBody} >
@@ -117,28 +116,6 @@ class PlaceView extends Component {
 
 
         return (
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
-                <OfflineNotice/>
-               
-                    <Loader loading={this.state.loading} />
-                        <Header style={globalStyle.header}>
-                            <Left style={globalStyle.headerLeft} >
-                                <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-
-                                </Button> 
-                            </Left>
-                            <Body style={globalStyle.headerBody} >
-                                <Title>{this.state.place}</Title>
-                            </Body>
-                            <Right style={globalStyle.headerRight}  >
-                            <Button transparent onPress={() => this.props.navigation.navigate("EditPlace",{place: this.props.navigation.state.params.place})}>
-                                <MaterialIcons size={30} style={{ color: 'white' }} name='edit' />
-                            </Button> 
-                            
-                        </Right>
-                    </Header>
                    
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
                         <View style={styles.mainContainer}>
@@ -188,10 +165,6 @@ class PlaceView extends Component {
 
 
                     </ScrollView  >
-                   
-
-                </Container>
-        </Root>
             
         )
     }
@@ -199,7 +172,42 @@ class PlaceView extends Component {
 
 
     render() {
-                return this.ready();
+        
+
+
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <OfflineNotice />
+
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerBody} >
+                            <Title>{this.state.place}</Title>
+                        </Body>
+                        <Right style={globalStyle.headerRight}  >
+                            <Button transparent onPress={() => this.props.navigation.navigate("EditCreatePlace", { place: this.props.navigation.state.params.place })}>
+                                <MaterialIcons size={30} style={{ color: 'white' }} name='edit' />
+                            </Button>
+
+                        </Right>
+                    </Header>
+
+                    {
+                        this.state.loading ? this.loading() :
+                            this.ready()
+                    }
+
+
+                </Container>
+            </Root>
+
+        )
         
 
   }

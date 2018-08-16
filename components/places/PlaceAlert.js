@@ -97,42 +97,21 @@ class PlaceAlert extends Component {
    
     loading(){
         return (
-          <Root>
-          <Container style={globalStyle.containerWrapper}>
           <Loading/>
-          </Container>
-          </Root>
         )
     }
     
     ready(){
-        
-
-
         return (
-            <Root>
-                <Loader loading={this.state.busy} />
-                <OfflineNotice/>
-                <Container style={globalStyle.containerWrapper}>
-                        <Header style={globalStyle.header}>
-                            <Left style={globalStyle.headerLeft} >
-                                <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
 
-                                </Button> 
-                            </Left>
-                            <Body>
-                            <Title>{this.state.place}</Title>
-                            </Body>
-                           
-                        </Header>
-                        
+           
                         <View style={globalStyle.container}>
                         <List style={{ height: 35 }}>
                             <Separator  bordered>
                                 <Text style={{ height: 35, textAlignVertical: 'center' }}>{this.state.firstname}'s notification</Text>
                             </Separator>
-                        </List>
+                </List>
+                <Content padder>
                         <List>
                             
                             <ListItem >
@@ -152,19 +131,14 @@ class PlaceAlert extends Component {
                             </Right>
                             </ListItem>
                         </List>
-                        <Content padder>
+                        
                         <Button disabled={!this.state.place} style={this.state.place ? globalStyle.secondaryButton : globalStyle.secondaryButtonDisabled}
                                         onPress={()=>this.onSubmit()}
                                         bordered light full  >
                                         <Text style={{color:'white'}}>Save</Text>
                                     </Button>
                                     </Content>
-                        </View>
-
-
-
-                </Container>
-        </Root>
+                </View>
             
         )
     }
@@ -172,11 +146,37 @@ class PlaceAlert extends Component {
 
 
     render() {
-        if(this.state.loading){
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+
+
+        return (
+            <Root>
+                <Loader loading={this.state.busy} />
+                <OfflineNotice />
+                <Container style={globalStyle.containerWrapper}>
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>{this.state.place}</Title>
+                        </Body>
+                        <Right style={globalStyle.headerRight}>
+                        </Right>
+
+                    </Header>
+
+                    {
+                        this.state.loading ? this.loading() :
+                            this.ready()
+                    }
+
+                </Container>
+            </Root>
+
+        )
 
     }
 }

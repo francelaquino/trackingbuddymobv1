@@ -18,13 +18,18 @@ class GenerateInviteCode extends Component {
         super(props)
         this.state = {
             loading: false,
+            isbusy: true,
             invitationcode:'',
             expiration:'',
         };
       }
 
     componentWillMount() {
-        this.props.getInvitationCode();
+        this.props.getInvitationCode().then(res => {
+            if (res == true) {
+                this.setState({ isbusy: false })
+            }
+        });
     }
             
     
@@ -51,38 +56,15 @@ class GenerateInviteCode extends Component {
    
     loading(){
         return (
-          <Root>
-          <Container style={globalStyle.containerWrapper}>
           <Loading/>
-          </Container>
-          </Root>
         )
     }
     ready(){
         return (
-            <Root>
-                <Loader loading={this.state.loading} />
-                <OfflineNotice/>
-                <Container style={globalStyle.containerWrapper}>
-               
-                    <Header style={globalStyle.header}>
-                        <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                            </Button> 
-                        </Left>
-                        <Body style={globalStyle.headerBody} >
-                            <Title>INVITATION CODE</Title>
-                        </Body>
-                        <Right style={globalStyle.headerRight}  >
-                            <Button transparent onPress={() => this.onShare()}>
-                                <MaterialIcons size={28} style={{color:'white'}} name='share' />
-                            </Button>
-
-                        </Right>
-                    </Header>
+            
                 
-                    <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                <Content padder>
                         <View style={globalStyle.container}>
                         { this.props.invitationcode.code !='' &&
                                     <View >
@@ -101,22 +83,52 @@ class GenerateInviteCode extends Component {
                             </View>
                             </Content>
 
-                        </View>
+                    </View>
+                    </Content>
                     </ScrollView>
-                </Container>
-        
-                
-        </Root>
+               
         )
     }
     
 
     render() {
-        if(this.props.isLoading){
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+
+        return (
+            <Root>
+                <Loader loading={this.state.loading} />
+                <OfflineNotice />
+                <Container style={globalStyle.containerWrapper}>
+
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerBody} >
+                            <Title>INVITATION CODE</Title>
+                        </Body>
+                        <Right style={globalStyle.headerRight}  >
+                            <Button transparent onPress={() => this.onShare()}>
+                                <MaterialIcons size={28} style={{ color: 'white' }} name='share' />
+                            </Button>
+
+                        </Right>
+                    </Header>
+
+                    {
+                        this.state.isbusy ? this.loading() :
+                            this.ready()
+                    }
+
+                   
+                </Container>
+
+
+            </Root>
+        )
+
+      
     }
 }
 

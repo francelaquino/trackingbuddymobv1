@@ -173,17 +173,17 @@ export const addMember = (invitationcode) => async dispatch => {
                             userid: res.data.useruid,
                             lastmovement: Date.now(),
                         }).catch(function (err) {
-                            resolve("Something went wrong...")
+                            resolve(false)
                         });
 
                         await firebase.database().ref().child("users/" + res.data.useruid + "/members/" + userdetails.userid).set({
                             userid: userdetails.userid,
                             lastmovement: Date.now(),
                         }).catch(function (err) {
-                            resolve("Something went wrong...")
+                            resolve(false)
                             });
-
                         resolve(true)
+
                     } else {
                         ToastAndroid.showWithGravityAndOffset(res.data.results, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                         resolve(false)
@@ -191,6 +191,7 @@ export const addMember = (invitationcode) => async dispatch => {
                   
                    
                 } else {
+                    console.log(res.data)
                     resolve(false)
                     ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }

@@ -202,6 +202,7 @@ export const getProfile = () => async dispatch => {
                     });
 
             } catch (e) {
+
                 dispatch({
                     type: GET_PROFILE,
                     payload: []

@@ -251,7 +251,7 @@ module.exports = StyleSheet.create({
     /* List Design End */
 
     avatarContainer:{
-        backgroundColor:'#16a085',
+        backgroundColor:'white',
         alignItems: 'center',
         marginBottom:10,
         borderRadius: 40,
@@ -259,7 +259,10 @@ module.exports = StyleSheet.create({
         height: 80,
         padding:2,
         alignSelf: "center",
-        flexDirection:'column',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        borderColor: '#383939',
+        borderWidth: 1,
     },
    
     avatarcontainerbottom:{

@@ -4,6 +4,7 @@ import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOp
 import { Content,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right } from 'native-base';
 import { connect } from 'react-redux';
 import Loader from '../shared/Loader';
+import Loading from '../shared/Loading';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import OfflineNotice  from '../shared/OfflineNotice';
 import { addMember, displayMember, displayHomeMember } from '../../redux/actions/memberActions' ;
@@ -14,7 +15,8 @@ class NewInvite extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            loading:false,
+            loading: false,
+            isbusy:true,
             invitationcode:'',
         };
       }
@@ -25,7 +27,7 @@ class NewInvite extends Component {
             
     initialize(){
         this.setState({
-            isLoading:false,
+            isbusy:false,
         })
     }
     
@@ -40,8 +42,7 @@ class NewInvite extends Component {
         this.props.addMember(this.state.invitationcode).then(async res=>{
             if (res == true) {
                 await this.props.displayMember();
-                
-                //await this.props.displayHomeMember();*/
+                await this.props.displayHomeMember();
                 this.setState({invitationcode:'',loading:false})
             }else{
                 this.setState({invitationcode:'',loading:false})
@@ -49,38 +50,15 @@ class NewInvite extends Component {
         });
     }
 
-    loading(){
+    loading() {
         return (
-          <Root>
-          <Container style={globalStyle.containerWrapper}>
-          <View>
-              <Text>Loading</Text>
-          </View>
-          </Container>
-          </Root>
+            <Loading />
         )
     }
     ready(){
         return (
-            <Root>
-                <Loader loading={this.state.loading} />
-                <OfflineNotice/>
-                <Container style={globalStyle.containerWrapper}>
-                    <Header style={globalStyle.header}>
-                        <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={()=> {this.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                            </Button> 
-                        </Left>
-                        <Body style={[globalStyle.headerBody, { flex: 3  }]}>
-                            <Title>ADD MEMBER</Title>
-                        </Body>
-                        <Right  >
-                        </Right>
-                    </Header>
-                
-                    <Content padder>
-                    <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                        <Content padder>
                             <View style={globalStyle.container}>
 
                                 <Item stackedLabel>
@@ -101,19 +79,41 @@ class NewInvite extends Component {
                                 </Button>
                             </View>
 
-                        </View>
+                            </View>
+                            </Content>
                     </ScrollView>
-                    </Content>
-                </Container>
-        </Root>
+                    
         );
     }
+
     render() {
-        if(this.state.isLoading){
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+        return (
+            <Root>
+                <Loader loading={this.state.loading} />
+                <OfflineNotice />
+                <Container style={globalStyle.containerWrapper}>
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                            </Button>
+                        </Left>
+                        <Body style={[globalStyle.headerBody, { flex: 3 }]}>
+                            <Title>ADD MEMBER</Title>
+                        </Body>
+                        <Right  >
+                        </Right>
+                    </Header>
+
+                    {
+                        this.state.isbusy ? this.loading() :
+                            this.ready()
+                    }
+
+                </Container>
+            </Root>
+        );
+      
     }
 }
 

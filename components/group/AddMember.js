@@ -7,7 +7,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { connect } from 'react-redux';
-import { displayGroupMember, addGroupMember, displayHomeMember, removeGroupMember  } from '../../redux/actions/memberActions' ;
+import { displayGroupMember, addGroupMember, displayHomeMember, removeGroupMember } from '../../redux/actions/memberActions';
+import { displayGroup } from '../../redux/actions/groupActions';
 import { LeftHome } from '../shared/LeftHome';
 import OfflineNotice  from '../shared/OfflineNotice';
 import Loading  from '../shared/Loading';
@@ -20,7 +21,8 @@ class AddMember extends Component {
     constructor(props) {
         super(props)
         this.state={
-            refresh:true,
+            refresh: true,
+            loading:true,
         }
       }
 
@@ -38,6 +40,7 @@ class AddMember extends Component {
                 this.setState({ 
                     refresh: !this.state.refresh
                 })
+                this.props.displayGroup();
             })
         }else{
             this.props.members[index].ismember=0;
@@ -45,7 +48,9 @@ class AddMember extends Component {
                 this.setState({ 
                     refresh: !this.state.refresh
                 })
+                this.props.displayGroup();
             })
+
         }
       
 
@@ -55,7 +60,10 @@ class AddMember extends Component {
     
     
     initialize() {
-        this.props.displayGroupMember(this.props.navigation.state.params.group.id).then(res=>{
+        this.props.displayGroupMember(this.props.navigation.state.params.group.id).then(res => {
+            if (res == true) {
+                this.setState({ loading:false })
+            }
         })
        
     }
@@ -106,52 +114,62 @@ class AddMember extends Component {
        
 
         return (
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
-                <OfflineNotice/>
-                    <Header style={globalStyle.header}>
-                        <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-
-                            </Button> 
-                        </Left>
-                        <Body style={globalStyle.headerBody}>
-                            <Title>{this.props.navigation.state.params.group.groupname}</Title>
-                        </Body>
-                        <Right style={globalStyle.headerRight}>
-                            <Button transparent onPress={() =>this.props.navigation.navigate('EditGroup',{group:this.props.navigation.state.params.group})}>
-                                <MaterialIcons size={28} style={{ color: 'white' }} name='mode-edit' />
-                            </Button> 
-                            
-                        </Right>
-                    </Header>
-                    <Content padder>
-                    <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
+           
+                    
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                        <Content padder>
                     <View style={globalStyle.container}>
                         <List>
                             {this.renderMember()}
                         </List>
 
                          
-                    </View>
+                            </View>
+                        </Content>
                         </ScrollView>
-                    </Content>
-                </Container>
-            </Root>
-
-                            
+                   
+        
                             
         )
     }
 
 
     render() {
-        if(this.props.isLoading){
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <OfflineNotice />
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>{this.props.navigation.state.params.group.groupname}</Title>
+                        </Body>
+                        <Right style={globalStyle.headerRight}>
+                            <Button transparent onPress={() => this.props.navigation.navigate('EditGroup', { group: this.props.navigation.state.params.group })}>
+                                <MaterialIcons size={28} style={{ color: 'white' }} name='mode-edit' />
+                            </Button>
+
+                        </Right>
+                    </Header>
+                    {
+                        this.state.loading ? this.loading() :
+                            this.ready()
+                    }
+                </Container>
+            </Root>
+
+
+
+        )
+
+
+        
     }
     
 }
@@ -166,7 +184,7 @@ const mapStateToProps = state => ({
   })
   
   
-  AddMember=connect(mapStateToProps,{displayGroupMember,displayHomeMember, addGroupMember, removeGroupMember})(AddMember);
+AddMember = connect(mapStateToProps, { displayGroupMember, displayHomeMember, addGroupMember, removeGroupMember, displayGroup})(AddMember);
   
   
   

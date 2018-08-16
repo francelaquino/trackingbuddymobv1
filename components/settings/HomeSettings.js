@@ -26,8 +26,10 @@ class HomeSettings extends Component {
                     <Header style={globalStyle.header}>
                         <Left style={globalStyle.headerLeft} >
                             <Button transparent onPress={() => { this.props.navigation.goBack() }} >
-                                <Icon size={30} name='arrow-back' />
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
                             </Button>
+
+                           
                         </Left>
                         <Body style={globalStyle.headerBody}>
                             <Title>SETTINGS</Title>

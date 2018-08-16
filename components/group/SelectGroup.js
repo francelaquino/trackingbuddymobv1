@@ -20,7 +20,6 @@ class SelectGroup extends Component {
         super(props)
         this.state = {
             loading:true,
-            emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-3bebd.appspot.com/o/group_photos%2Fgroup.png?alt=media&token=d1bade4b-6fee-43f7-829a-0b6f76005b40',
         };
         
 
@@ -62,11 +61,7 @@ class SelectGroup extends Component {
 
     loading(){
         return (
-          <Root>
-          <Container style={globalStyle.containerWrapper}>
           <Loading/>
-          </Container>
-          </Root>
         )
     }
     ready(){
@@ -78,6 +73,7 @@ class SelectGroup extends Component {
                         {group.emptyphoto === 1 ? <Ionicons size={46} style={{ color: '#2c3e50' }} name="ios-people" /> :
                             <Thumbnail style={globalStyle.listAvatar} source={{ uri: group.avatar }} />
                         }
+
                     </View>
                 </Left>
                 <Body style={globalStyle.listBody} >
@@ -90,22 +86,9 @@ class SelectGroup extends Component {
 
          
         return(
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
-                    <Header style={globalStyle.header}>
-                    <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                            </Button> 
-                        </Left>
-                    <Body style={globalStyle.headerBody}>
-                            <Title>Switch Group</Title>
-                    </Body>
-                    <Right style={globalStyle.headerRight}>
-                        </Right>
-                    </Header>
-                    <Content padder>
-                    <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
+                    
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                <Content padder>
                     <View style={globalStyle.container}>
                     
                         <List>
@@ -123,20 +106,40 @@ class SelectGroup extends Component {
                         </List>
 
                          
-                    </View>
+                            </View>
+                             </Content>
                     </ScrollView>
-                    </Content>
-                </Container>
-            </Root>
+                   
         )
     }
 
     render() {
-        if (this.state.loading){
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+       
+
+
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>Switch Group</Title>
+                        </Body>
+                        <Right style={globalStyle.headerRight}>
+                        </Right>
+                    </Header>
+                    {
+                        this.state.loading ? this.loading() :
+                            this.ready()
+                    }
+
+                </Container>
+            </Root>
+        )
     }
    
 }

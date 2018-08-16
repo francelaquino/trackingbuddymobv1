@@ -1,12 +1,13 @@
 
 import React, { Component } from 'react';
-import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOpacity, ToastAndroid, Alert, Image } from 'react-native';
-import { Content,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left } from 'native-base';
+import { Platform, StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ToastAndroid, Alert, Image } from 'react-native';
+import { Content, Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right } from 'native-base';
 import ImagePicker from 'react-native-image-picker';
 import { connect } from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { displayGroup,updateGroup, deleteGroup  } from '../../redux/actions/groupActions' ;
-import Loader  from '../shared/Loader';
+import Loader from '../shared/Loader';
+import Loading from '../shared/Loading';
 import OfflineNotice  from '../shared/OfflineNotice';
 import { NavigationActions } from 'react-navigation'
 var globalStyle = require('../../assets/style/GlobalStyle');
@@ -16,10 +17,10 @@ class EditGroup extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            isLoading: true,
-            loading:false,
+            isbusy: true,
+            loading: false,
             groupNameOld: '',
-            emptyPhoto:'https://firebasestorage.googleapis.com/v0/b/trackingbuddy-5598a.appspot.com/o/group_photos%2Fgroup_empty.png?alt=media&token=2f84667f-b828-4303-b18d-8310279ac5a6',
+            emptyphoto:'1',
             groupname:'',
             avatarsource:'',
             isPhotoChange:false,
@@ -33,18 +34,22 @@ class EditGroup extends Component {
     }
             
     initialize() {
-        this.setState({
-            avatarsource:{uri :this.props.navigation.state.params.group.avatar},
-            groupNameOld:this.props.navigation.state.params.group.groupname,
-            groupname:this.props.navigation.state.params.group.groupname,
-            groupid:this.props.navigation.state.params.group.id,
-            isLoading:false,
-        })
+        setTimeout(() => {
+            this.setState({
+                avatarsource: { uri: this.props.navigation.state.params.group.avatar },
+                groupNameOld: this.props.navigation.state.params.group.groupname,
+                groupname: this.props.navigation.state.params.group.groupname,
+                emptyphoto: this.props.navigation.state.params.group.emptyphoto,
+                groupid: this.props.navigation.state.params.group.id,
+                isbusy: false,
+            })
+        }, 500);
     }
     removePhoto(){
 		this.setState({
             avatarsource:{uri:''},
-            isPhotoChange:false,
+            isPhotoChange: false,
+            emptyphoto:'1',
         });
     }
     
@@ -71,7 +76,8 @@ class EditGroup extends Component {
             
             this.setState({
               avatarsource: source,
-              isPhotoChange : true
+                isPhotoChange: true,
+                emptyphoto: '0',
             });
           }
         });
@@ -139,34 +145,21 @@ class EditGroup extends Component {
     ready() {
 
         return (
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
-                <Loader loading={this.state.loading} />
-
-                <OfflineNotice />
-                <Header style={globalStyle.header}>
-                        <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                            </Button> 
-                        </Left>
-                        <Body style={globalStyle.headerRight}>
-                            <Title>{this.props.navigation.state.params.group.groupname}</Title>
-                        </Body>
-                        <Right style={globalStyle.headerLeft}>
-                        </Right>
-                    </Header>
+               
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"} showsVerticalScrollIndicator={false}>
                 <Content padder>
-                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"} showsVerticalScrollIndicator={false}>
                         <View style={globalStyle.container}>
                             <TouchableOpacity style={{ marginTop: 20 }} onPress={this.selectPhoto.bind(this)}>
                                 <View style={globalStyle.avatarContainer}>
-                                    {this.state.avatarsource === '' ? <Image style={globalStyle.avatarBig} source={{ uri: this.state.emptyPhoto }} /> :
-                                        <Image style={globalStyle.avatarBig} source={this.state.avatarsource} />
-                                    }
+                                   
+
+                                        {this.state.emptyphoto === 1 ? <Ionicons size={75} style={{ color: '#2c3e50' }} name="ios-people" /> :
+                                            <Image style={globalStyle.avatarBig} source={this.state.avatarsource} />
+                                        }
+
                                 </View>
                             </TouchableOpacity>
-                            {(this.props.emptyphoto != '1' && this.state.avatarsource.uri != this.state.emptyPhoto) &&
+                            {this.state.emptyphoto !== 1  &&
                                 <TouchableOpacity onPress={this.removePhoto.bind(this)}>
                                     <Text style={globalStyle.deleteButtonSmall} >Remove Photo</Text>
                                 </TouchableOpacity>
@@ -196,11 +189,10 @@ class EditGroup extends Component {
                                 </Button>
                             </View>
 
-                        </View>
-                    </ScrollView>
+                    </View>
                 </Content>
-                </Container>
-            </Root>
+                    </ScrollView>
+               
         )
     }
 
@@ -208,11 +200,34 @@ class EditGroup extends Component {
 
     
     render() {
-        if(this.state.isLoading){
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <Loader loading={this.state.loading} />
+
+                    <OfflineNotice />
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerRight}>
+                            <Title>{this.props.navigation.state.params.group.groupname}</Title>
+                        </Body>
+                        <Right style={globalStyle.headerLeft}>
+                        </Right>
+                    </Header>
+
+                    {
+                        this.state.isbusy ? this.loading() :
+                            this.ready()
+                    }
+                </Container>
+            </Root>
+        )
+
     }
 }
 

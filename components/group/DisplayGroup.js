@@ -63,84 +63,83 @@ class DisplayGroup extends Component {
 
     loading(){
         return (
-          <Root>
-          <Container style={globalStyle.containerWrapper}>
           <Loading/>
-          </Container>
-          </Root>
         )
     }
-    ready(){
-        const { navigate } = this.props.navigation;
-        const groups =this.props.groups.map(group=>(
-            <ListItem key={group.id} button avatar style={globalStyle.listItem} onPress={() => { this.props.navigation.navigate("AddMember", { group: group})}}>
-                            
-                            <Left style={globalStyle.listLeft}>
-                                <View style={globalStyle.listAvatarContainer} >
+    ready() {
+        const groups = this.props.groups.map(group => (
+            <ListItem key={group.id} button avatar style={globalStyle.listItem} onPress={() => { this.props.navigation.navigate("AddMember", { group: group }) }}>
+
+                <Left style={globalStyle.listLeft}>
+                    <View style={globalStyle.listAvatarContainer} >
                         {group.emptyphoto === 1 ? <Ionicons size={46} style={{ color: '#2c3e50' }} name="ios-people" /> :
-                                <Thumbnail  style={globalStyle.listAvatar} source={{uri: group.avatar}} />
-                                }
-                                </View>
-                            </Left>
-                            <Body style={globalStyle.listBody}  >
+                            <Thumbnail style={globalStyle.listAvatar} source={{ uri: group.avatar }} />
+                        }
+                    </View>
+                </Left>
+                <Body style={globalStyle.listBody}  >
                     <Text numberOfLines={1} style={globalStyle.listHeading} >{group.groupname}</Text>
                     <Text numberOfLines={1} note >{group.membercount}</Text>
-                            </Body>
+                </Body>
 
-                            <Right style={[globalStyle.listRight]} >
-                                    <SimpleLineIcons  style={globalStyle.listRightOptionIcon}   name='arrow-right' />
-                            </Right>
-                            </ListItem>
+                <Right style={[globalStyle.listRight]} >
+                    <SimpleLineIcons style={globalStyle.listRightOptionIcon} name='arrow-right' />
+                </Right>
+            </ListItem>
 
-           
-          ));
 
-         
-        return(
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
-                <OfflineNotice/>
-                    <Header style={globalStyle.header}>
-                        <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-
-                            </Button> 
-                        </Left>
-                        <Body style={globalStyle.headerBody}>
-                            <Title>GROUP</Title>
-                        </Body>
-                        <Right style={globalStyle.headerRight}>
-                            <Button transparent onPress={() =>navigate('CreateGroup')}>
-                                <MaterialIcons size={30} style={{ color: 'white' }} name='group-add' />
-                            </Button> 
-                            
-                        </Right>
-                    </Header>
-                    <Content padder>
-                    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
-                        
+        ));
+        return (
+            
+                <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+                <Content padder>
                     <View style={globalStyle.container}>
                         <List>
                             {groups}
                         </List>
 
-                         
-                            </View>
-                             
-                        </ScrollView>
-                        </Content>
-                </Container>
-            </Root>
-        )
+
+                    </View>
+                      </Content>
+                </ScrollView>
+          
+            )
     }
 
     render() {
-        if(this.state.loading){
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+        const { navigate } = this.props.navigation;
+        
+
+
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <OfflineNotice />
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>GROUP</Title>
+                        </Body>
+                        <Right style={globalStyle.headerRight}>
+                            <Button transparent onPress={() => navigate('CreateGroup')}>
+                                <MaterialIcons size={30} style={{ color: 'white' }} name='group-add' />
+                            </Button>
+
+                        </Right>
+                    </Header>
+                    {
+                        this.state.loading ? this.loading() :
+                            this.ready()
+                    }
+                </Container>
+            </Root>
+        )
+       
     }
    
 }

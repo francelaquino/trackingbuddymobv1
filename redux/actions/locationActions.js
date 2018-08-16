@@ -26,10 +26,12 @@ const getDistance=(lat1,long1,lat2,long2) => {
 
 const savelocation = async (useruid, latitude, longitude) => {
     try {
+        
         await axios.post(settings.baseURL + 'place/savelocation', {
             latitude: latitude,
             longitude: longitude,
             useruid: useruid,
+            dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
         }).then(async function (res) {
             }).catch(function (error) {
             })
@@ -47,7 +49,7 @@ export const saveLocationOffline = () => async dispatch => {
                         latitude: position.coords.latitude,
                         useruid: userid,
                         longitude: position.coords.longitude,
-                        dateadded: Date.now()
+                        dateadded: Moment().format('YYYY-MM-DD HH:mm:ss')
                     }
                     const offlineLocation = await AsyncStorage.getItem('offlineLocation');
                     let location = JSON.parse(offlineLocation);
@@ -160,13 +162,14 @@ export const pushLocationOnline = () => async dispatch => {
     if (userid !== "" & userid !== null) {
         const offlineLocation = await AsyncStorage.getItem('offlineLocation');
         let location = JSON.parse(offlineLocation);
-        console.log("pusing online");
+        
 
         await AsyncStorage.setItem("offlineLocation", "");
         if (!location) {
             location = [];
         }
         if (location.length > 0) {
+            console.log("pushing online");
             try {
 
                 await axios.post(settings.baseURL + 'place/saveofflinelocation', {

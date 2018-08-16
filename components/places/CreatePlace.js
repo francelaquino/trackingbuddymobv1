@@ -77,12 +77,6 @@ class CreatePlace extends Component {
 
 
 
-    setModalVisible(visible) {
-        this.setState({ modalVisible: visible });
-    }
-    showModal() {
-        this.setState({ modalVisible: true });
-    }
 
 
     getCurrentPosition() {
@@ -111,7 +105,6 @@ class CreatePlace extends Component {
               };
                   let self = this;
                   await axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false")
-                  //await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
                       .then(async function (res) {
                           if (res.data.results.length > 0) {
                               self.setState({
@@ -138,11 +131,7 @@ class CreatePlace extends Component {
    
     loading(){
         return (
-          <Root>
-          <Container style={globalStyle.containerWrapper}>
           <Loading/>
-          </Container>
-          </Root>
         )
     }
 
@@ -190,27 +179,9 @@ class CreatePlace extends Component {
     }
     ready(){
 
-        const { region } = this.state;
+        //const { region } = this.state;
 
         return (
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
-                <Loader loading={this.state.loading} />
-                <OfflineNotice/>
-               
-                    
-                        <Header style={globalStyle.header}>
-                            <Left style={globalStyle.headerLeft} >
-                                <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                                </Button> 
-                            </Left>
-                            <Body style={globalStyle.headerBody}>
-                                <Title>ADD PLACE</Title>
-                            </Body>
-                            <Right style={globalStyle.headerRight}>
-                        </Right>
-                    </Header>
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
                         <View style={styles.mainContainer}>
                             <View style={styles.searchContainer}>
@@ -313,13 +284,6 @@ class CreatePlace extends Component {
 
 
                     </ScrollView  >
-                    
-                    
-                       
-
-
-                </Container>
-        </Root>
             
         )
     }
@@ -327,11 +291,43 @@ class CreatePlace extends Component {
 
 
     render() {
-            if(!this.state.isMapReady){
-                return this.loading();
-            }else{
-                return this.ready();
-            }
+
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <Loader loading={this.state.loading} />
+                    <OfflineNotice />
+
+
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>ADD PLACE</Title>
+                        </Body>
+                        <Right style={globalStyle.headerRight}>
+                        </Right>
+                    </Header>
+                    {
+                        !this.state.isMapReady ? this.loading() :
+                            this.ready()
+                    }
+
+
+
+
+
+
+                </Container>
+            </Root>
+
+        )
+
+
+            
         
 
   }

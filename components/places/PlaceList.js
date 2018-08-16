@@ -18,6 +18,9 @@ var globalStyle = require('../../assets/style/GlobalStyle');
 class PlaceList extends Component {
     constructor(props) {
         super(props)
+        this.state = {
+            loading: true,
+        };
     
     }
    
@@ -25,8 +28,10 @@ class PlaceList extends Component {
         this.initialize();
     }
         
-    initialize(){
-        this.props.displayPlaces();
+    initialize() {
+        this.props.displayPlaces().then(res => {
+            this.setState({ loading: false })
+        });
     }
 
 
@@ -68,47 +73,52 @@ class PlaceList extends Component {
       
          
         return(
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
-                <OfflineNotice/>
-                    <Header style={globalStyle.header}>
-                    <Left style={globalStyle.headerLeft} >
-                            <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                            </Button> 
-                        </Left>
-                        <Body style={globalStyle.headerBody}>
-                            <Title>PLACES</Title>
-                        </Body>
-                        <Right style={globalStyle.headerRight} >
-                            <Button transparent onPress={() =>this.props.navigation.navigate('CreatePlace')}>
-                                <MaterialIcons size={28} style={{ color: 'white' }} name='add-circle' />
-                            </Button> 
-                            
-                        </Right>
-                    </Header>
-                    <Content padder >
-                    <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"} showsVerticalScrollIndicator={false}>
+           
+                   
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"} showsVerticalScrollIndicator={false}>
+                <Content padder >
                     <View style={globalStyle.container}>
                     
                         <List>
                             {this.renderPlaces()}
                         </List>
                          
-                    </View>
+                            </View>
+                            </Content>
                     </ScrollView>
-                    </Content>
-                </Container>
-            </Root>
+                    
         )
     }
 
     render() {
-        if(this.props.isLoading){
-            return this.loading();
-        }else{
-            return this.ready();
-        }
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <OfflineNotice />
+                    <Header style={globalStyle.header}>
+                        <Left style={globalStyle.headerLeft} >
+                            <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                            </Button>
+                        </Left>
+                        <Body style={globalStyle.headerBody}>
+                            <Title>PLACES</Title>
+                        </Body>
+                        <Right style={globalStyle.headerRight} >
+                            <Button transparent onPress={() => this.props.navigation.navigate('CreatePlace')}>
+                                <MaterialIcons size={28} style={{ color: 'white' }} name='add-circle' />
+                            </Button>
+
+                        </Right>
+                    </Header>
+                    {
+                        this.state.loading ? this.loading() :
+                            this.ready()
+                    }
+                </Container>
+            </Root>
+        )
+       
     }
    
 }
