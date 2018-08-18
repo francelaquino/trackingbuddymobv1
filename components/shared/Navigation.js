@@ -22,7 +22,6 @@ import Home from '../places/Home';
 import CreatePlace from '../places/CreatePlace';
 import EditCreatePlace from '../places/EditCreatePlace';
 import PlaceList from '../places/PlaceList';
-import EditPlace from '../places/EditPlace';
 import PlaceView from '../places/PlaceView';
 import LocationPlaces from '../places/LocationPlaces';
 import LocationView from '../places/LocationView';
@@ -282,14 +281,6 @@ export const Stack = createStackNavigator({
  
     LocationView: { 
         screen: LocationView,
-        headerMode: 'none',
-        navigationOptions: {
-            header: null
-        }
-    },
-
-    EditPlace: { 
-        screen: EditPlace,
         headerMode: 'none',
         navigationOptions: {
             header: null

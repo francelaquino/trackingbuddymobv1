@@ -58,16 +58,18 @@ class LocationView extends Component {
 
    
     async componentDidMount() {
-        
-        this.setState({
-            region:{
-                longitude:this.props.navigation.state.params.location.longitude,
-                latitude:this.props.navigation.state.params.location.latitude
-            },
-            placename: this.props.navigation.state.params.location.address,
-            dateadded: this.props.navigation.state.params.location.datemovement,
-            loading:false
-        })
+
+        setTimeout(() => {
+            this.setState({
+                region: {
+                    longitude: this.props.navigation.state.params.location.longitude,
+                    latitude: this.props.navigation.state.params.location.latitude
+                },
+                placename: this.props.navigation.state.params.location.address,
+                dateadded: this.props.navigation.state.params.location.datemovement,
+                loading: false
+            })
+        }, 500);
     }
 
     
@@ -76,41 +78,17 @@ class LocationView extends Component {
    
     loading(){
         return (
-          <Root>
-          <Container style={globalStyle.containerWrapper}>
           <Loading/>
-          </Container>
-          </Root>
         )
     }
 
     
     ready(){
 
-        const { region } = this.state;
-        
-
-
 
         return (
-            <Root>
-                <Container style={globalStyle.containerWrapper}>
-                <Loader loading={this.state.loading} />
-                <OfflineNotice/>
                 <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
                    
-                        <Header style={globalStyle.header}>
-                            <Left style={globalStyle.headerLeft} >
-                                <Button transparent onPress={()=> {this.props.navigation.goBack()}} >
-                                    <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
-                                </Button> 
-                            </Left>
-                            <Body style={globalStyle.headerBody}>
-                                <Title>POSITION</Title>
-                            </Body>
-                            <Right style={globalStyle.headerRight}>
-                            </Right>
-                        </Header>
                         <View style={styles.mainContainer}>
                             <View style={styles.mapContainer}>
                                 <Image style={globalStyle.marker}
@@ -157,8 +135,6 @@ class LocationView extends Component {
 
                         </ScrollView  >
 
-                </Container>
-        </Root>
             
         )
     }
@@ -166,11 +142,35 @@ class LocationView extends Component {
 
 
     render() {
-            if(this.state.loading){
-                return this.loading();
-            }else{
-                return this.ready();
-            }
+
+        return (
+            <Root>
+                <Container style={globalStyle.containerWrapper}>
+                    <OfflineNotice />
+                        <Header style={globalStyle.header}>
+                            <Left style={globalStyle.headerLeft} >
+                                <Button transparent onPress={() => { this.props.navigation.goBack() }} >
+                                    <Ionicons size={30} style={{ color: 'white' }} name='ios-arrow-back' />
+                                </Button>
+                            </Left>
+                            <Body style={globalStyle.headerBody}>
+                                <Title>POSITION</Title>
+                            </Body>
+                            <Right style={globalStyle.headerRight}>
+                            </Right>
+                        </Header>
+                    {
+                        this.state.loading ? this.loading() :
+                            this.ready()
+                    }
+
+
+
+                </Container>
+            </Root>
+
+        )
+
         
 
   }

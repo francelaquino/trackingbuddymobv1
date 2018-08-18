@@ -9,7 +9,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MapView, { ProviderPropType, Marker, AnimatedRegion, Animated, Polyline } from 'react-native-maps';
 import { connect } from 'react-redux';
-import { savePlace, displayPlaces } from '../../redux/actions/locationActions';
+import {  displayPlaces, updatePlace } from '../../redux/actions/locationActions';
 import Loader from '../shared/Loader';
 import OfflineNotice  from '../shared/OfflineNotice';
 const LATITUDE_DELTA = 0.01;
@@ -28,7 +28,8 @@ class SavePlace extends Component {
         this.map = null;
 
         this.state = {
-            loading:true,
+            loading: true,
+            id: '',
             placename: '',
             address: '',
             region: {
@@ -72,12 +73,12 @@ class SavePlace extends Component {
                 latitudeDelta: this.state.region.latitudeDelta,
                 longitudeDelta: this.state.region.longitudeDelta
         }
-        this.props.savePlace(this.state.placename, this.state.address, region).then(res => {
+        this.props.updatePlace(this.state.id,this.state.placename, this.state.address, region).then(res => {
             this.setState({ loading: false })
             if (res == true) {
                 this.setState({ placename: ''})
                 this.props.displayPlaces();
-                this.props.navigation.pop(1);
+                this.props.navigation.pop(3);
             }
 
         });
@@ -242,6 +243,6 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
 })
 
-SavePlace = connect(mapStateToProps, { displayPlaces, savePlace })(SavePlace);
+SavePlace = connect(mapStateToProps, { displayPlaces, updatePlace })(SavePlace);
 
 export default SavePlace;

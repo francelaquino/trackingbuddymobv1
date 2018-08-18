@@ -72,6 +72,7 @@ export const saveLocationOffline = () => async dispatch => {
                         }
                         
                     }
+                    console.log(location);
 
 
 
@@ -373,6 +374,8 @@ export const updatePlace = (id, place,address, coordinate) => dispatch => {
                 place: place,
                 latitude: coordinate.latitude,
                 longitude: coordinate.longitude,
+                latitudedelta: coordinate.latitudeDelta,
+                longitudedelta: coordinate.longitudeDelta,
                 address: address,
                 owner: userdetails.userid,
             }).then(function (res) {
@@ -388,7 +391,7 @@ export const updatePlace = (id, place,address, coordinate) => dispatch => {
                     resolve(false)
                     ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                 }
-            }).catch(function (error) {
+                }).catch(function (error) {
                 resolve(false)
                 ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
             });
