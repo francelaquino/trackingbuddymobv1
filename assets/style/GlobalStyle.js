@@ -82,17 +82,14 @@ module.exports = StyleSheet.create({
     },
     cancelButton: {
         backgroundColor: 'gray',
-        marginTop: 10,
         marginBottom: 10,
-        width: '90%',
+        width: '100%',
         alignSelf: "center",
         borderRadius: 15,
-        marginLeft: '5%',
     },
     secondaryButtonDisabled: {
         backgroundColor: theme.lightColor,
         marginBottom:10,
-        marginTop:10,
         width: '100%',
         alignSelf: "center",
         borderRadius: 15,
@@ -379,12 +376,12 @@ module.exports = StyleSheet.create({
     },
     modalContainer: {
         borderRadius: 6, 
-        marginTop: 50,
         backgroundColor:'white',
         width:340,
         alignSelf: "center",
-        paddingLeft: 5,
-        paddingRight: 5,
+        padding:10,
+       
+        
     },
     modalAvatar:{
         marginLeft:0,
@@ -396,14 +393,28 @@ module.exports = StyleSheet.create({
         width:55,
         justifyContent: 'center',
         alignItems: 'center'
-    },modalAvatarIcon:{
+    },
+    modalAvatarIcon: {
         color:'#818181'
     },
-    modalCancel:{
-        width:100,
-        color:'#009da3',
-        padding:15,
-        fontSize:17
+    modalHeader: {
+        width: '100%',
+        color: theme.primaryColor,
+        fontSize: 15,
+        padding: 10,
+        marginBottom: 10,
+        marginRight: 15,
+
+    },
+    modalCancel: {
+        textAlign:'right',
+        width: '100%',
+        color: theme.lightColor,
+        fontSize: 15,
+        padding:10,
+        marginBottom: 15,
+        marginRight: 15,
+         
     },
     callOut: {
         width: 200,
@@ -471,7 +482,7 @@ module.exports = StyleSheet.create({
         height: 200,
         top: 10,
         padding: 5,
-        marginLeft:5,
+        marginLeft: 5,
     },
     mapMenuCircle: {
         width: 40,

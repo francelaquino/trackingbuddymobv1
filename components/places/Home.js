@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { BackHandler, AsyncStorage, NetInfo, TouchableOpacity, Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, Dimensions, FlatList } from 'react-native';
+import { Modal, BackHandler, AsyncStorage, NetInfo, TouchableOpacity, Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, Dimensions, FlatList } from 'react-native';
 import { Drawer,Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Switch, Thumbnail,Card,CardItem } from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -15,7 +15,7 @@ import OfflineNotice  from '../shared/OfflineNotice';
 import LeftDrawer from '../shared/LeftDrawer'
 import { connect } from 'react-redux';
 import Moment from 'moment';
-import { displayHomeMember } from '../../redux/actions/memberActions';
+import { displayHomeMember, displayMember, addMember } from '../../redux/actions/memberActions';
 import { saveLocationOnline, pushLocationOnline, saveLocationOffline } from '../../redux/actions/locationActions';
 import firebase from 'react-native-firebase';
 import type { Notification } from 'react-native-firebase';
@@ -150,7 +150,7 @@ BackgroundJob.register(updateToken);
 var trackPositionSchedule = {
     jobKey: "trackPositionJob",
     //period: 90000,
-    period: 60000,
+    period: 30000,
     exact: true,
     allowExecutionInForeground: true
 }
@@ -158,7 +158,7 @@ var trackPositionSchedule = {
 
 var refreshTokenSchedule = {
     jobKey: "refreshTokenJob",
-    period: 90000,
+    period: 50000,
     exact: true,
     allowExecutionInForeground: true
 }
@@ -181,22 +181,28 @@ refreshToken = function () {
 class HomePlaces extends Component {
     constructor(props) {
         super(props)
-        this.map = null;
+        let watchID = navigator.geolocation.watchPosition((position) => {
+        }, null, { distanceFilter: 10 });
 
+        this.map = null;
+        this.markers=[];
         this.state = {
             mapMode:'standard',
             groupname: '',
+            invitationcode:'',
             isLoading: false,
             memberReady: false,
+            watchID: watchID,
+            modal:false,
             region: {
                 latitude: LATITUDE,
                 longitude: LONGITUDE,
                 latitudeDelta: LATITUDE_DELTA,
                 longitudeDelta: LONGITUDE_DELTA,
             },
-            centerMarker: [],
-            markers: [],
         };
+
+        
 
     }
 
@@ -205,7 +211,8 @@ class HomePlaces extends Component {
 
     componentWillUnmount() {
         //BackgroundJob.cancelAll();
-        this.notificationListener();
+    this.notificationListener();
+    navigator.geolocation.stopWatch(this.state.watchID)
         
     }
 
@@ -281,7 +288,7 @@ class HomePlaces extends Component {
                 }
                 coordinates = coordinates.concat(coord.coordinates);
             }
-                this.map.fitToCoordinates(coordinates, { edgePadding: { top: 200, right: 100, bottom: 200, left: 100 }, animated: true })
+            this.map.fitToCoordinates(coordinates, { edgePadding: { top: 200, right: 100, bottom: 200, left: 100 }, animated: false })
            
 
 
@@ -309,7 +316,7 @@ class HomePlaces extends Component {
 
     }
 
-    async centerToMarker(latitude, longitude) {
+    async centerToMarker(latitude, longitude,uid) {
 
         let center = [{
             latitude: latitude,
@@ -324,8 +331,41 @@ class HomePlaces extends Component {
             latitudeDelta: 0.005,
             longitudeDelta: 0.005
         })
+        this.markers[uid].showCallout();
+
 
     }
+
+    async centerToUserMarker() {
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                this.map.animateToRegion({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    latitudeDelta: 0.005,
+                    longitudeDelta: 0.005
+                })
+
+            },
+            (err) => {
+            },
+            { enableHighAccuracy: false, timeout: 10000 }
+        );
+
+    }
+    async allMembers() {
+        let self = this;
+        userdetails.group = "";
+        this.setState({ isLoading: true, groupname:'' })
+        await self.props.displayHomeMember().then(res => {
+            setTimeout(async () => {
+                await self.fitToMap();
+                this.setState({ isLoading: false })
+            }, 10);
+        });
+    }
+
+   
     changeGroup = (groupname) => {
         this.reload();
         this.setState({ groupname: groupname });
@@ -372,13 +412,21 @@ class HomePlaces extends Component {
 
 
 
-
-    closeDrawer = () => {
-        this.drawer._root.close()
-    };
-    openDrawer = () => {
-        this.drawer._root.open()
-    };
+    onSubmitCode() {
+        if (this.state.invitationcode == "") {
+            return false;
+        }
+        this.setState({ loading: true })
+        this.props.addMember(this.state.invitationcode).then(async res => {
+            if (res == true) {
+                await this.props.displayMember();
+                await this.props.displayHomeMember();
+                this.setState({ invitationcode: '', loading: false, modal:false })
+            } else {
+                this.setState({ invitationcode: '', loading: false })
+            }
+        });
+    }
 
     renderMember() {
         return (
@@ -387,7 +435,7 @@ class HomePlaces extends Component {
                 horizontal={true}
                 data={this.props.members}
                 renderItem={({ item }) => (
-                    <TouchableOpacity key={item.uid.toString()} onPress={() => this.centerToMarker(item.coordinates.latitude, item.coordinates.longitude)}>
+                    <TouchableOpacity key={item.uid.toString()} onPress={() => this.centerToMarker(item.coordinates.latitude, item.coordinates.longitude,item.uid)}>
                         <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', width: 80, height: 60, margin: 2, backgroundColor: '#2c3e50', borderRadius:10, }}>
                             <View style={globalStyle.listAvatarContainerSmall} >
                                 {item.emptyphoto === "1" ? <Ionicons size={46} style={{ color: '#2c3e50' }} name="ios-person" /> :
@@ -408,6 +456,8 @@ class HomePlaces extends Component {
 
         const markers = this.props.members.map(marker => (
             <MapView.Marker key={marker.uid}
+                identifier={marker.uid}
+                ref={ref => { this.markers[marker.uid] = ref }}
                 coordinate={marker.coordinates}
                 title={marker.firstname}>
                 <Image style={styles.marker}
@@ -434,11 +484,6 @@ class HomePlaces extends Component {
 
 
         return (
-            <Drawer leftDrawerWidth={40}
-                tapToClose={true}
-                ref={(ref) => { this.drawer = ref; }}
-                content={<LeftDrawer closeDrawer={this.closeDrawer} navigation={this.props.navigation} />}
-                onClose={() => this.closeDrawer()} >
                 <Root>
                     <Loader loading={this.state.isLoading} />
                     <OfflineNotice />
@@ -447,7 +492,7 @@ class HomePlaces extends Component {
 
                         <Header style={globalStyle.header}>
                             <Left style={globalStyle.headerLeft} >
-                                <Button transparent onPress={() => this.openDrawer()} >
+                            <Button transparent onPress={() => this.props.navigation.navigate('Menu')} >
                                     <SimpleLineIcons size={20} name='menu' style={globalStyle.headerLeftMenuIcon} />
                                 </Button>
                             </Left>
@@ -475,7 +520,9 @@ class HomePlaces extends Component {
                                     provider={PROVIDER_GOOGLE}
                                     customMapStyle={settings.retro}
                                     mapType={this.state.mapMode}
-                                        followsUserLocation={false}
+                                    showsUserLocation={true}
+                                    showsMyLocationButton={false}
+                                    followsUserLocation={true}
                                     loadingEnabled={true}
                                     zoomEnabled={true}
                                     style={styles.map}
@@ -492,15 +539,30 @@ class HomePlaces extends Component {
 
 
                             <View style={globalStyle.mapMenu} >
+                            <TouchableOpacity onPress={() => this.setState({ modal: true })}>
+                                    <View style={globalStyle.mapMenuCircle} >
+                                        <Ionicons size={30} style={{ color: '#2c3e50' }} name="ios-person-add" />
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.allMembers()}>
+                                    <View style={globalStyle.mapMenuCircle} >
+                                        <Ionicons size={30} style={{ color: '#2c3e50' }} name="ios-person" />
+                                    </View>
+                                </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('SelectGroup', { changeGroup: this.changeGroup })}>
                                 <View style={globalStyle.mapMenuCircle} >
                                         <Ionicons size={30} style={{ color: '#2c3e50' }} name="ios-people" />
                                 </View>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity onPress={() => this.fitToMap()}>
+                                <TouchableOpacity onPress={() => this.centerToUserMarker()}>
                                     <View style={globalStyle.mapMenuCircle} >
                                         <MaterialIcons size={25} style={{ color: '#2c3e50' }} name="my-location" />
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.fitToMap()}>
+                                    <View style={globalStyle.mapMenuCircle} >
+                                        <MaterialIcons size={25} style={{ color: '#2c3e50' }} name="zoom-out-map" />
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.changeMapMode()}>
@@ -524,10 +586,43 @@ class HomePlaces extends Component {
 
 
 
+                        <Modal
+                        transparent={true}
+                        onRequestClose={() => null}
+                            visible={this.state.modal}>
+                        <View style={globalStyle.modalWrapper}>
+                            <View style={[globalStyle.modalContainer, { height: 230 }]}>
+                                <Text style={globalStyle.modalHeader}>
+                                        ADD MEMBER
+                                </Text>
+                                      
+                                <Item style={globalStyle.regularitem}  >
+                                    <Input style={globalStyle.textinput} name="invitationcode" autoCorrect={false}
+                                         placeholder="Enter member invitation code"
+                                                    value={this.state.invitationcode} maxLength={20} autoCapitalize="characters"
+                                                    onChangeText={invitationcode => this.setState({ invitationcode })} />
+                                            </Item>
 
+
+
+                                            
+                                    <Button disabled={!this.state.invitationcode}
+                                        onPress={() => this.onSubmitCode()}
+                                        bordered light full rounded style={ globalStyle.secondaryButton }>
+                                        <Text style={{ color: 'white' }}>Submit</Text>
+                                    </Button>
+                                    <Button
+                                    onPress={() => this.setState({ modal: false })}
+                                        bordered light full rounded style={globalStyle.cancelButton}>
+                                        <Text style={{ color: 'white' }}>Cancel</Text>
+                                    </Button>
+                               
+
+                                    </View>
+                            </View>
+                        </Modal>
                     </Container>
                 </Root>
-            </Drawer>
 
         )
     }
@@ -615,6 +710,6 @@ const mapStateToProps = state => ({
   
   
   
-HomePlaces = connect(mapStateToProps, { displayHomeMember, saveLocationOffline,  saveLocationOnline, pushLocationOnline})(HomePlaces);
+HomePlaces = connect(mapStateToProps, { displayHomeMember, displayMember, addMember,  saveLocationOffline,  saveLocationOnline, pushLocationOnline})(HomePlaces);
   
 export default HomePlaces;

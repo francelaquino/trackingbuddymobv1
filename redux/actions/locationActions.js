@@ -112,7 +112,7 @@ export const saveLocationOnline=()=> async dispatch=> {
                                     payload: res.data
                                 });
                             }).catch(function (error) {
-                                console.log(error)
+                                //console.log(error)
                                /* dispatch({
                                    type: SAVE_LOCATION_ONLINE,
                                    // payload: ""

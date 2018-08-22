@@ -24,13 +24,13 @@ class Register extends Component {
           longitude: '',
           address: '',
           isLoading: true,
-          email: '',
-          password: '',
-          retypepassword: '',
-          mobileno: '',
-          firstname: '',
-          middlename: '',
-          lastname: '',
+          email: 'jarred@rchsp.med.sa',
+          password: '111111',
+          retypepassword: '111111',
+          mobileno: '111111111',
+          firstname: 'Jarred',
+          middlename: 'G',
+          lastname: 'Aquino',
           avatar: '',
           avatarsource: ''
 
@@ -69,12 +69,12 @@ class Register extends Component {
 
 
 
-  onValueChange(value: string) {
+  /*onValueChange(value: string) {
     this.setState({
       selected: value
     });
   }
-  
+  */
   
     async onSubmit() {
 

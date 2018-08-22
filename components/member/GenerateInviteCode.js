@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ToastAndroid, Share } from 'react-native';
+import { Clipboard, Platform, StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ToastAndroid, Share } from 'react-native';
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right, Content } from 'native-base';
 import Loading  from '../shared/Loading';
 import { connect } from 'react-redux';
@@ -52,6 +52,11 @@ class GenerateInviteCode extends Component {
         });
     }
 
+    onCopy() {
+        Clipboard.setString(this.props.invitationcode.code)
+        ToastAndroid.showWithGravityAndOffset("Copied to clipboard", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+    }
+
 
    
     loading(){
@@ -78,8 +83,18 @@ class GenerateInviteCode extends Component {
                                     onPress={()=>this.onGenerate()}
                                     bordered light full style={globalStyle.secondaryButton}>
                                     <Text style={{color:'white'}}>Generate Code</Text>
-                                    </Button>
-                                   
+                                </Button>
+                                <Button
+                                    onPress={() => this.onCopy()}
+                                    bordered light full style={[globalStyle.secondaryButton, { marginTop:5 }]}>
+                                    <Text style={{ color: 'white' }}>Copy Invitation Code</Text>
+                                </Button>
+                                <Button
+                                    
+                                    onPress={() => this.onShare()}
+                                    bordered light full style={[globalStyle.secondaryButton, { marginTop: 5 }]}>
+                                    <Text style={{ color: 'white' }}>Send Invitation Code</Text>
+                                </Button>
                             </View>
                             </Content>
 
@@ -109,9 +124,7 @@ class GenerateInviteCode extends Component {
                             <Title>INVITATION CODE</Title>
                         </Body>
                         <Right style={globalStyle.headerRight}  >
-                            <Button transparent onPress={() => this.onShare()}>
-                                <MaterialIcons size={28} style={{ color: 'white' }} name='share' />
-                            </Button>
+                          
 
                         </Right>
                     </Header>

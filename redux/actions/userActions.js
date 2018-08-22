@@ -1,8 +1,8 @@
-import { SIGNIN_USER,REGISTRATION_USER, NO_CONNECTION, GET_PROFILE } from './types';
+import { SIGNIN_USER, REGISTRATION_USER, NO_CONNECTION, GET_PROFILE, SAVE_LOCATION_ONLINE } from './types';
 import { ToastAndroid, AsyncStorage } from 'react-native';
 import axios from 'axios';
 import firebase from 'react-native-firebase';
-import Moment from 'moment';    
+import Moment from 'moment';
 var settings = require('../../components/shared/Settings');
 var userdetails = require('../../components/shared/userDetails');
 
@@ -28,6 +28,20 @@ export const submitSignUp=(user)=> dispatch=> {
 
 
 
+const savelocation = async (useruid, latitude, longitude) => {
+    try {
+
+        await axios.post(settings.baseURL + 'place/saveloginlocation', {
+            latitude: latitude,
+            longitude: longitude,
+            useruid: useruid,
+            dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
+        }).then(async function (res) {
+        }).catch(function (error) {
+        })
+    } catch (e) {
+    }
+}
 
 export const userLogin = (email, password) => async dispatch => {
     
@@ -49,6 +63,33 @@ export const userLogin = (email, password) => async dispatch => {
                                     AsyncStorage.setItem("firstname", userdetails.firstname);
                                     AsyncStorage.setItem("lastname", userdetails.lastname);
                                     AsyncStorage.setItem("offlineLocation", "");
+                                    try {
+                                        navigator.geolocation.getCurrentPosition(
+                                            async (position) => {
+
+
+                                                await savelocation(res.user.uid, position.coords.latitude, position.coords.longitude);
+
+                                                await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
+                                                    .then(function (res) {
+                                                        console.log(res.data);
+                                                        dispatch({
+                                                            type: SAVE_LOCATION_ONLINE,
+                                                            payload: res.data
+                                                        });
+                                                    }).catch(function (error) {
+                                                    });
+
+                                            },
+                                            (err) => {
+                                                console.log(err)
+                                            },
+                                            { enableHighAccuracy: false, timeout: 10000 }
+                                        );
+                                    } catch (e) {
+                                        console.log(e)
+                                    }
+
                                     resolve(true);
 
                                 }
@@ -57,10 +98,6 @@ export const userLogin = (email, password) => async dispatch => {
                                 }
 
                             }).catch(function (error) {
-                                dispatch({
-                                    type: GET_INVITATIONCODE,
-                                    payload: []
-                                });
                                 resolve(false)
                                 ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
                             });
@@ -249,6 +286,7 @@ export const registerUser = (profile) => async dispatch => {
                                 mobileno: profile.mobileno,
                                 latitude: profile.latitude,
                                 longitude: profile.longitude,
+                                dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
                                 avatar: avatar,
                             }).then(function (res) {
                                 if (res.data.status == "202") {
@@ -273,6 +311,7 @@ export const registerUser = (profile) => async dispatch => {
                         mobileno: profile.mobileno,
                         latitude: profile.latitude,
                         longitude: profile.longitude,
+                        dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
                         avatar: avatar,
                     }).then(function (res) {
                         if (res.data.status == "202") {

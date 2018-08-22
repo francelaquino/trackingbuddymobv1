@@ -92,16 +92,7 @@ class SelectGroup extends Component {
                     <View style={globalStyle.container}>
                     
                         <List>
-                        <ListItem  avatar style={globalStyle.listItem} onPress={()=>this.allMembers()}>
-                            <Left style={globalStyle.listLeft}>
-                                <View style={globalStyle.listAvatarContainer} >
-                                                <Ionicons size={46} style={{ color: '#2c3e50' }} name="ios-person" />
-                                </View>
-                            </Left>
-                            <Body style={globalStyle.listBody} >
-                                <Text style={globalStyle.listHeading}>All Members</Text>
-                            </Body>
-                        </ListItem>
+                        
                             {groups}
                         </List>
 
