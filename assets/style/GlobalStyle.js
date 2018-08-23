@@ -1,6 +1,7 @@
 'use strict';
 import { theme } from '../style/Theme'
 var React = require('react-native');
+import { Dimensions} from 'react-native';
 
 var { StyleSheet} = React;
 module.exports = StyleSheet.create({
@@ -478,13 +479,32 @@ module.exports = StyleSheet.create({
     /*Model Design End*/
     mapMenu: {
         position: 'absolute',
-        width: 50,
+        width: 60,
+        //height: Dimensions.get('window').height ,
+        alignItems: 'center',
+        flexDirection: 'column',
+        justifyContent: 'space-around',
+        //backgroundColor: '#00000040'
+        
+    },
+    mapTopMenu: {
+        position: 'absolute',
+        width: 60,
         height: 200,
         top: 10,
+        padding: 5,
+
+    },
+    mapBottomMenu: {
+        position: 'absolute',
+        width: 50,
+        height: 200,
+        bottom: 150,
         padding: 5,
         marginLeft: 5,
     },
     mapMenuCircle: {
+        marginLeft: 10,
         width: 40,
         height: 40,
         backgroundColor: 'white',
@@ -493,8 +513,18 @@ module.exports = StyleSheet.create({
         alignItems: 'center',
         borderColor: '#2c3e50',
         borderWidth: 1,
-        marginTop:5,
+        marginTop: 5,
     },
+    mapMenuLabel: {
+        color: 'white',
+        fontSize: 9,
+        fontWeight: 'bold' ,
+        width: 60,
+        textAlign: 'center',
+        textShadowColor: '#2c3e50',
+        textShadowOffset: { width:1, height: 1 },
+        textShadowRadius: 5,
+    }
   
 
 });

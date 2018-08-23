@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOpacity, ToastAndroid, Alert, Image, Picker } from 'react-native';
+import {  AsyncStorage, Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOpacity, ToastAndroid, Alert, Image, Picker } from 'react-native';
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right, List, ListItem, Content } from 'native-base';
 import { connect } from 'react-redux';
 import { getProfile, updateProfile } from '../../redux/actions/userActions';
@@ -14,7 +14,7 @@ import Loader from '../shared/Loader';
 import OfflineNotice from '../shared/OfflineNotice';
 var globalStyle = require('../../assets/style/GlobalStyle');
 var registrationStyle = require('../../assets/style/Registration');
-
+var userdetails = require('../../components/shared/userDetails');
 
 class UserProfile extends Component {
     constructor(props) {
@@ -57,7 +57,25 @@ class UserProfile extends Component {
 
     }
 
-     
+    onLogout() {
+        refreshToken();
+        userdetails.userid = "";
+        userdetails.email = "";
+        userdetails.firstname = "";
+        userdetails.lastname = "";
+        userdetails.group = "";
+        userdetails.avatar = "";
+        userdetails.userid = "";
+        userdetails.emptyphoto = "1";
+        AsyncStorage.setItem("userid", "");
+        AsyncStorage.setItem("email", "");
+        AsyncStorage.setItem("firstname", "");
+        AsyncStorage.setItem("lastname", "");
+
+        setTimeout(() => {
+            this.props.navigation.navigate("Login");
+        }, 1000);
+    }
     onSubmit() {
         if (this.state.firstname.trim() === "") {
             ToastAndroid.showWithGravityAndOffset("Please enter first name", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
@@ -213,6 +231,10 @@ class UserProfile extends Component {
                     <Button onPress={() => this.onSubmit()}
                         bordered light full style={globalStyle.secondaryButton}>
                         <Text style={{ color: 'white' }}>Update</Text>
+                    </Button>
+                    <Button onPress={() => this.onLogout()}
+                        bordered light full style={globalStyle.cancelButton}>
+                        <Text style={{ color: 'white' }}>Logout</Text>
                     </Button>
                 </Content>
             </ScrollView>

@@ -58,6 +58,8 @@ export const userLogin = (email, password) => async dispatch => {
                                     userdetails.email = response.data.results.email;
                                     userdetails.firstname = response.data.results.firstname;
                                     userdetails.lastname = response.data.results.lastname;
+                                    userdetails.emptyphoto = response.data.results.emptyphoto;
+                                    userdetails.avatar = response.data.results.avatar;
                                     AsyncStorage.setItem("userid", userdetails.userid);
                                     AsyncStorage.setItem("email", userdetails.email);
                                     AsyncStorage.setItem("firstname", userdetails.firstname);

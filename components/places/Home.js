@@ -181,8 +181,10 @@ refreshToken = function () {
 class HomePlaces extends Component {
     constructor(props) {
         super(props)
+        
         let watchID = navigator.geolocation.watchPosition((position) => {
         }, null, { distanceFilter: 10 });
+        AsyncStorage.setItem("watchID", watchID.toString());
 
         this.map = null;
         this.markers=[];
@@ -192,7 +194,6 @@ class HomePlaces extends Component {
             invitationcode:'',
             isLoading: false,
             memberReady: false,
-            watchID: watchID,
             modal:false,
             region: {
                 latitude: LATITUDE,
@@ -212,7 +213,7 @@ class HomePlaces extends Component {
     componentWillUnmount() {
         //BackgroundJob.cancelAll();
     this.notificationListener();
-    navigator.geolocation.stopWatch(this.state.watchID)
+        navigator.geolocation.stopWatch(AsyncStorage.getItem("watchID"));
         
     }
 
@@ -501,8 +502,12 @@ class HomePlaces extends Component {
                             </Body>
                             <Right style={globalStyle.headerRight} >
                                
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('Menu')}>
-                                    <SimpleLineIcons size={20} style={{ color: 'white' }} name="options-vertical" />
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('UserProfile')}>
+                                <View style={[globalStyle.listAvatarContainerSmall, {height:40,width:40,marginTop:2}]} >
+                                    {userdetails.emptyphoto === "1" ? <Ionicons size={36} style={{ color: '#2c3e50' }} name="ios-person" /> :
+                                        <Thumbnail style={[globalStyle.listAvatar, { height: 36, width: 36 }]} source={{ uri: userdetails.avatar }} />
+                                    }
+                                </View>
                                 </TouchableOpacity>
 
 
@@ -521,7 +526,7 @@ class HomePlaces extends Component {
                                     customMapStyle={settings.retro}
                                     mapType={this.state.mapMode}
                                     showsUserLocation={true}
-                                    showsMyLocationButton={false}
+                                    showsMyLocationButton={true}
                                     followsUserLocation={true}
                                     loadingEnabled={true}
                                     zoomEnabled={true}
@@ -537,39 +542,55 @@ class HomePlaces extends Component {
 
 
 
+                        <View style={globalStyle.mapMenu}>
 
-                            <View style={globalStyle.mapMenu} >
                             <TouchableOpacity onPress={() => this.setState({ modal: true })}>
-                                    <View style={globalStyle.mapMenuCircle} >
-                                        <Ionicons size={30} style={{ color: '#2c3e50' }} name="ios-person-add" />
-                                    </View>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.allMembers()}>
-                                    <View style={globalStyle.mapMenuCircle} >
-                                        <Ionicons size={30} style={{ color: '#2c3e50' }} name="ios-person" />
-                                    </View>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('SelectGroup', { changeGroup: this.changeGroup })}>
                                 <View style={globalStyle.mapMenuCircle} >
-                                        <Ionicons size={30} style={{ color: '#2c3e50' }} name="ios-people" />
+                                    <Ionicons size={30} style={{ color: '#2c3e50' }} name="ios-person-add" />
                                 </View>
-                                </TouchableOpacity>
+                                <Text style={globalStyle.mapMenuLabel}>Add Member</Text>
+
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.allMembers()}>
+                                <View style={globalStyle.mapMenuCircle} >
+                                    <Ionicons size={30} style={{ color: '#2c3e50' }} name="ios-person" />
+                                </View>
+                                <Text style={globalStyle.mapMenuLabel}>Members</Text>
+
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{ marginBottom:30 }} onPress={() => this.props.navigation.navigate('SelectGroup', { changeGroup: this.changeGroup })}>
+                                <View style={globalStyle.mapMenuCircle} >
+                                    <Ionicons size={30} style={{ color: '#2c3e50' }} name="ios-people" />
+                                </View>
+                                <Text style={globalStyle.mapMenuLabel}>Groups</Text>
+
+                            </TouchableOpacity>
+
 
                                 <TouchableOpacity onPress={() => this.centerToUserMarker()}>
                                     <View style={globalStyle.mapMenuCircle} >
                                         <MaterialIcons size={25} style={{ color: '#2c3e50' }} name="my-location" />
-                                    </View>
+                                        
+                                </View>
+                                
+                                <Text style={globalStyle.mapMenuLabel} >My Location</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.fitToMap()}>
                                     <View style={globalStyle.mapMenuCircle} >
                                         <MaterialIcons size={25} style={{ color: '#2c3e50' }} name="zoom-out-map" />
-                                    </View>
+                                </View>
+                                <Text style={globalStyle.mapMenuLabel}>Center Map</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.changeMapMode()}>
                                     <View style={globalStyle.mapMenuCircle} >
                                         <Entypo size={25} style={{ color: '#2c3e50' }} name="globe" />
-                                    </View>
-                                </TouchableOpacity>
+                                </View>
+                                <Text style={globalStyle.mapMenuLabel}>Map Style</Text>
+                            </TouchableOpacity>
+
+                           
+
+                           
                             </View>
                             {this.state.groupname !== '' &&
                                 <View style={{ flexDirection: 'column', marginVertical: 5, width: '100%', alignItems: 'center', position: 'absolute', bottom: 80 }}>

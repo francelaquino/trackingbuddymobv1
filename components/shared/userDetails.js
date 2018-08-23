@@ -4,7 +4,8 @@ module.exports = {
     firstname :'',
     lastname : '',
     group :'',
-    avatar:''  
+    avatar: '',
+    emptyphoto:'1',
 };/*
 module.exports = {
     userid: 'xtglGuqjBSgelajUUFg2ePhUymC3',
