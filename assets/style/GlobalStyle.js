@@ -405,6 +405,7 @@ module.exports = StyleSheet.create({
         padding: 10,
         marginBottom: 10,
         marginRight: 15,
+        textAlign:'center'
 
     },
     modalCancel: {

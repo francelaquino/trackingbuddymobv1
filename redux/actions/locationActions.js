@@ -88,6 +88,26 @@ export const saveLocationOffline = () => async dispatch => {
     }
 };
 
+export const saveLocation = (coords) => async dispatch => {
+    try {
+        console.log("watching location")
+
+        await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + coords.latitude + "&lon=" + coords.longitude)
+            .then(function (res) {
+                dispatch({
+                    type: SAVE_LOCATION_ONLINE,
+                    payload: res.data
+                });
+            }).catch(function (error) {
+            });
+
+        await savelocation(userdetails.userid, coords.latitude, coords.longitude);
+
+    } catch (e) {
+        console.log(e)
+    }
+};
+
 export const saveLocationOnline=()=> async dispatch=> {
     let userid = await AsyncStorage.getItem("userid");
    
@@ -120,7 +140,7 @@ export const saveLocationOnline=()=> async dispatch=> {
                             });
 
                         await savelocation(userid, position.coords.latitude, position.coords.longitude);
-
+                    console.log("location changed")
                    
 
                 },
@@ -502,17 +522,47 @@ export const getPlaceNotification = (placeid, userid) => async dispatch => {
 
 
 
-export const displayLocations = (useruid) => dispatch => {
-
+export const displayLocations = (useruid,date) => dispatch => {
+    let locations = [];
+    let count = 0;
+    let cnt = 0;
+    let x = 1;
     return new Promise(async (resolve) => {
         try {
-            await axios.get(settings.baseURL + 'place/getLocationHistory/' + useruid )
+            await axios.get(settings.baseURL + 'place/getLocationHistory/' + useruid +'/'+date)
                 .then(function (res) {
+                    count = res.data.results.length;
+                    if (count > 0) {
+                        res.data.results.forEach(data => {
+
+                            locations.push({
+                                id: x,
+                                address: data.address,
+                                datemovement: data.datemovement,
+                                coordinates: {
+                                    longitude: data.longitude,
+                                    latitude: data.latitude
+                                },
+                            });
+
+                            cnt++;
+                            x++;
+                            if (cnt >= count) {
+                                dispatch({
+                                    type: DISPLAY_LOCATION,
+                                    payload: locations
+                                });
+                                resolve(true)
+                            }
+                        })
+                    } else {
                         dispatch({
                             type: DISPLAY_LOCATION,
-                            payload: res.data.results
+                            payload: []
                         });
                         resolve(true)
+                    }
+                        
                 }).catch(function (error) {
 
                     dispatch({

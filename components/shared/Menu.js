@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ToastAndroid, } from 'react-native';
+import { AsyncStorage, Platform, StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, ToastAndroid, } from 'react-native';
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Left, Right, Content, List, ListItem } from 'native-base';
 import OfflineNotice from '../shared/OfflineNotice';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -9,7 +9,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 var globalStyle = require('../../assets/style/GlobalStyle');
-
+var userdetails = require('../../components/shared/userDetails');
 
 class Menu extends Component {
     constructor(props) {
@@ -17,9 +17,25 @@ class Menu extends Component {
         
       }
 
-    componentWillMount() {
-    }
-            
+    onLogout() {
+        refreshToken();
+        userdetails.userid = "";
+        userdetails.email = "";
+        userdetails.firstname = "";
+        userdetails.lastname = "";
+        userdetails.group = "";
+        userdetails.avatar = "";
+        userdetails.userid = "";
+        userdetails.emptyphoto = "1";
+        AsyncStorage.setItem("userid", "");
+        AsyncStorage.setItem("email", "");
+        AsyncStorage.setItem("firstname", "");
+        AsyncStorage.setItem("lastname", "");
+
+        setTimeout(() => {
+            this.props.navigation.navigate("Login");
+        }, 1000);
+    }    
   
 
 
@@ -59,7 +75,7 @@ class Menu extends Component {
 
                                 <ListItem icon button avatar style={globalStyle.listItem} onPress={() => this.props.navigation.navigate('GenerateInviteCode')}>
                                     <Left >
-                                        <SimpleLineIcons style={{ fontSize: 25, width: 30, color: '#16a085', marginLeft: 20 }} name="people" />
+                                        <SimpleLineIcons style={{ fontSize: 25, width: 30, color: '#16a085', marginLeft: 20 }} name="user-following" />
                                     </Left>
                                     <Body style={globalStyle.listBody} >
                                         <Text style={{ color: '#454444', fontSize: 18, }}>INVITE MEMBER</Text>
@@ -121,6 +137,39 @@ class Menu extends Component {
                                     <Right style={{ borderBottomWidth: 0 }}>
                                         <SimpleLineIcons style={{ fontSize: 20, color: '#16a085', margin: 0 }} name='arrow-right' />
                                     </Right>
+                                </ListItem>
+                                <ListItem icon button avatar style={globalStyle.listItem} onPress={() => this.props.navigation.navigate('HomeSettings')}>
+                                    <Left >
+                                        <SimpleLineIcons style={{ fontSize: 25, width: 30, color: '#16a085', marginLeft: 20 }} name="info" />
+                                    </Left>
+                                    <Body style={globalStyle.listBody} >
+                                        <Text style={{ color: '#454444', fontSize: 18, }}>ABOUT</Text>
+                                    </Body>
+
+                                    <Right style={{ borderBottomWidth: 0 }}>
+                                        <SimpleLineIcons style={{ fontSize: 20, color: '#16a085', margin: 0 }} name='arrow-right' />
+                                    </Right>
+                                </ListItem>
+                                <ListItem icon button avatar style={globalStyle.listItem} onPress={() => this.props.navigation.navigate('HomeSettings')}>
+                                    <Left >
+                                        <SimpleLineIcons style={{ fontSize: 25, width: 30, color: '#16a085', marginLeft: 20 }} name="question" />
+                                    </Left>
+                                    <Body style={globalStyle.listBody} >
+                                        <Text style={{ color: '#454444', fontSize: 18, }}>FAQs</Text>
+                                    </Body>
+
+                                    <Right style={{ borderBottomWidth: 0 }}>
+                                        <SimpleLineIcons style={{ fontSize: 20, color: '#16a085', margin: 0 }} name='arrow-right' />
+                                    </Right>
+                                </ListItem>
+                                <ListItem icon button avatar style={globalStyle.listItem} onPress={() => this.onLogout()}>
+                                    <Left >
+                                        <SimpleLineIcons style={{ fontSize: 25, width: 30, color: '#16a085', marginLeft: 20 }} name="logout" />
+                                    </Left>
+                                    <Body style={globalStyle.listBody} >
+                                        <Text style={{ color: '#454444', fontSize: 18, }}>LOGOUT</Text>
+                                    </Body>
+
                                 </ListItem>
 
                                 </List>

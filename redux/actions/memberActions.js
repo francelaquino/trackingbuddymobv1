@@ -554,29 +554,37 @@ export const displayHomeMember = () => async dispatch => {
                         if (res.data.status == "202") {
                             count = res.data.results.length;
                             let x = 0;
-                            res.data.results.forEach(data => {
-                               
-                                members.push({
-                                    uid: data.uid,
-                                    firstname: data.firstname,
-                                    avatar: data.avatar,
-                                    emptyphoto: data.emptyphoto,
-                                    coordinates: {
-                                        longitude: data.longitude,
-                                        latitude: data.latitude
-                                    },
-                                    address: data.address,
-                                });
+                            if (count > 0) {
+                                res.data.results.forEach(data => {
 
-                                cnt++;
-                                if (cnt >= count) {
-                                    dispatch({
-                                        type: DISPLAY_HOME_MEMBER,
-                                        payload: members
+                                    members.push({
+                                        uid: data.uid,
+                                        firstname: data.firstname,
+                                        avatar: data.avatar,
+                                        emptyphoto: data.emptyphoto,
+                                        coordinates: {
+                                            longitude: data.longitude,
+                                            latitude: data.latitude
+                                        },
+                                        address: data.address,
                                     });
-                                    resolve(true)
-                                }
-                            })
+
+                                    cnt++;
+                                    if (cnt >= count) {
+                                        dispatch({
+                                            type: DISPLAY_HOME_MEMBER,
+                                            payload: members
+                                        });
+                                        resolve(true)
+                                    }
+                                })
+                            } else {
+                                dispatch({
+                                    type: DISPLAY_HOME_MEMBER,
+                                    payload: []
+                                });
+                                resolve(true)
+                            }
                         } else {
                             dispatch({
                                 type: DISPLAY_HOME_MEMBER,
