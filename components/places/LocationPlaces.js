@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import { TouchableOpacity,  Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, FlatList, Dimensions } from 'react-native';
-import { DatePickerIOS, Separator, Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, Left, Right, ListItem, Footer, FooterTab } from 'native-base';
+import { DatePicker, Separator, Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, Left, Right, ListItem, Footer, FooterTab } from 'native-base';
 import { connect } from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { displayLocations  } from '../../redux/actions/locationActions' ;
@@ -29,7 +29,7 @@ class LocationPlaces extends Component {
         this.map = null;
         this.state = {
             polyline:[],
-            pageStyle:'list',
+            pageStyle:'map',
             loading: true,
             busy:false,
             dateFilter: Moment().format("YYYY-MM-DD"),
@@ -197,22 +197,22 @@ class LocationPlaces extends Component {
         
         return (
             <View style={styles.mainContainer}>
-                <DatePickerIOS
-                    date={this.state.chosenDate}
-                />
+               
                 <View style={{
-                    height: 50, width: '100%', backgroundColor: '#16a085', borderTopColor: 'white', borderTopWidth: 1, alignItems: 'center', padding: 5
+                    height: 50, width: '100%', backgroundColor: '#16a085', borderTopColor: 'white', borderTopWidth: 1, padding: 5
                 }}>
-                    <View style={{ height: 35, width: 250, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
+                    <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
+                        <View style={{ alignItems: 'center',marginRight:10, }} >
+                            <Text style={{ fontSize: 17, color: 'white' }} >{this.state.dateDisplay}</Text>
+                        </View >
                         <TouchableOpacity onPress={() => this.subDate()}>
                             <Ionicons style={{ fontSize: 38, marginRight: 5, color: 'white' }} name='ios-arrow-dropleft' />
                         </TouchableOpacity>
-                        <View style={{ width: 164, alignItems: 'center' }} >
-                            <Text style={{ fontSize: 17, color: 'white' }} >{this.state.dateDisplay}</Text>
-                        </View >
+                        
                         <TouchableOpacity onPress={() => this.addDate()}>
                             <Ionicons style={{ fontSize: 38, color: 'white', marginLeft: 5 }} name='ios-arrow-dropright' />
                         </TouchableOpacity>
+                       
 
                     </View >
                     
@@ -225,13 +225,14 @@ class LocationPlaces extends Component {
                 
                 <Footer >
                     <FooterTab style={{ backgroundColor: '#16a085' }}>
-                        <Button vertical onPress={() => this.changePageStyle('list')}>
-                            <Icon style={{ color: 'white' }} name="list" />
-                            <Text style={{color:'white'}}>List</Text>
-                        </Button>
+                        
                         <Button vertical onPress={() => this.changePageStyle('map')}>
                             <Icon style={{ color: 'white' }} name="map" />
                             <Text style={{ color: 'white' }} >Map</Text>
+                        </Button>
+                        <Button vertical onPress={() => this.changePageStyle('list')}>
+                            <Icon style={{ color: 'white' }} name="list" />
+                            <Text style={{ color: 'white' }}>List</Text>
                         </Button>
                     </FooterTab>
                 </Footer>          

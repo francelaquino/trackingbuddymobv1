@@ -212,7 +212,7 @@ class HomePlaces extends Component {
                 }
             });
            
-        }, null, { distanceFilter: 20 });
+        }, null, { distanceFilter: 10 });
 
         AsyncStorage.setItem("watchID", watchID.toString());
 
