@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
-import { TouchableOpacity, Modal, Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, FlatList, Dimensions } from 'react-native';
-import { Separator, Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, Left, Right, ListItem, Footer, FooterTab } from 'native-base';
+import { TouchableOpacity,  Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, FlatList, Dimensions } from 'react-native';
+import { DatePickerIOS, Separator, Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, Left, Right, ListItem, Footer, FooterTab } from 'native-base';
 import { connect } from 'react-redux';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { displayLocations  } from '../../redux/actions/locationActions' ;
@@ -197,6 +197,9 @@ class LocationPlaces extends Component {
         
         return (
             <View style={styles.mainContainer}>
+                <DatePickerIOS
+                    date={this.state.chosenDate}
+                />
                 <View style={{
                     height: 50, width: '100%', backgroundColor: '#16a085', borderTopColor: 'white', borderTopWidth: 1, alignItems: 'center', padding: 5
                 }}>
@@ -212,15 +215,16 @@ class LocationPlaces extends Component {
                         </TouchableOpacity>
 
                     </View >
-
+                    
                 </View>
+
                 {
                     this.state.pageStyle == 'list' ?  this.renderLocation() :
                         this.renderMap()
                 }
                 
                 <Footer >
-                    <FooterTab style={{ backgroundColor: '#2c3e50' }}>
+                    <FooterTab style={{ backgroundColor: '#16a085' }}>
                         <Button vertical onPress={() => this.changePageStyle('list')}>
                             <Icon style={{ color: 'white' }} name="list" />
                             <Text style={{color:'white'}}>List</Text>

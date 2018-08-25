@@ -191,7 +191,6 @@ class HomePlaces extends Component {
             isLoading: false,
             memberReady: false,
             memberModal: false,
-            markerUID:'',
             locationModal:false,
             region: {
                 latitude: LATITUDE,
@@ -222,12 +221,6 @@ class HomePlaces extends Component {
     }
 
 
-
-    openLocation() {
-        this.setState({ locationModal: false, markerUID:'' })
-        let markerUID = this.state.markerUID;
-        this.props.navigation.navigate("LocationPlaces", { uid: markerUID });
-    }
     componentWillUnmount() {
        
         this.notificationListener();
@@ -497,7 +490,7 @@ class HomePlaces extends Component {
                     source={require('../../images/marker.png')} />
                 <Text style={styles.markerText}>{marker.firstname}</Text>
 
-                <MapView.Callout tooltip={true} onPress={() => this.setState({ locationModal: true, markerUID: marker.uid })} >
+                <MapView.Callout tooltip={true} onPress={() => this.props.navigation.navigate("LocationPlaces", { uid: marker.uid })} >
                         <View style={globalStyle.callOutFix} >
                             <View style={globalStyle.callOutContainerFix} >
                                 <Text numberOfLines={2} style={globalStyle.callOutText}>{marker.address}</Text>
@@ -675,36 +668,7 @@ class HomePlaces extends Component {
                             </View>
                         </Modal>
 
-                        <Modal
-                            transparent={true}
-                            onRequestClose={() => null}
-                            visible={this.state.locationModal}>
-                            <View style={globalStyle.modalWrapper}>
-                                <View style={[globalStyle.modalContainer, { height: 250 }]}>
-                                    <Text style={globalStyle.modalHeader}>
-                                        SELECT OPTION
-                                </Text>
-                                    <Button 
-                                    onPress={() => this.openLocation()}
-                                    bordered light full rounded style={[globalStyle.secondaryButton, { marginBottom:0, }]}>
-                                        <Text style={{ color: 'white' }}>Locations</Text>
-                                    </Button>
-                                    <Button 
-                                    onPress={() => this.openLocation()}
-                                        bordered light full rounded style={globalStyle.secondaryButton}>
-                                        <Text style={{ color: 'white' }}>Track Member</Text>
-                                    </Button>
-                                   
-                                    <Button
-                                    onPress={() => this.setState({ locationModal: false,markerUID:'' })}
-                                        bordered light full rounded style={globalStyle.cancelButton}>
-                                        <Text style={{ color: 'white' }}>Cancel</Text>
-                                    </Button>
-
-
-                                </View>
-                            </View>
-                        </Modal>
+                        
                     </Container>
                 </Root>
 
