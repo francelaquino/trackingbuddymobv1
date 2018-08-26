@@ -73,7 +73,6 @@ const saveBackGround = async () => {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                 NetInfo.isConnected.fetch().done(async (isConnected) => {
-                    console.log(isConnected)
                     if (isConnected) {
                         try {
                             await axios.post(settings.baseURL + 'place/savelocation', {
@@ -102,12 +101,12 @@ const saveBackGround = async () => {
                             location = [];
                         }
                         console.log("saving offline")
-                        if (location.length <= 200) {
+                        if (location.length <= 500) {
 
                             if (location.length >= 1) {
                                 var loc = location[location.length - 1];
                                 let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
-                                if (distance > 150) {
+                                if (distance > 10) {
                                     location.push(coords)
                                     await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
                                 }
@@ -148,7 +147,7 @@ BackgroundJob.register(updateToken);
 var trackPositionSchedule = {
     jobKey: "trackPositionJob",
     //period: 90000,
-    period: 10000,
+    period: 15000,
     exact: true,
     allowExecutionInForeground: true
 }
@@ -242,6 +241,7 @@ class HomePlaces extends Component {
     }
    
     async componentDidMount() {
+
         BackgroundJob.cancelAll(); 
         AppState.addEventListener('change', this._handleAppStateChange);
 
@@ -554,7 +554,8 @@ class HomePlaces extends Component {
                                     showsMyLocationButton={false}
                                     followsUserLocation={true}
                                     loadingEnabled={true}
-                                    zoomEnabled={true}
+                                zoomEnabled={true}
+                                pitchEnabled={true}
                                     style={styles.map}
                             >
                                    

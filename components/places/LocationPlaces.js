@@ -1,10 +1,11 @@
 
 import React, { Component } from 'react';
 import { TouchableOpacity,  Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, FlatList, Dimensions } from 'react-native';
-import { DatePicker, Separator, Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, Left, Right, ListItem, Footer, FooterTab } from 'native-base';
+import {  Separator, Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, Left, Right, ListItem, Footer, FooterTab } from 'native-base';
 import { connect } from 'react-redux';
+import DatePicker from 'react-native-datepicker'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { displayLocations  } from '../../redux/actions/locationActions' ;
+import { displayLocationsList, displayLocationsMap } from '../../redux/actions/locationActions';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MapView, { Marker, Polyline,  PROVIDER_GOOGLE } from 'react-native-maps';
@@ -31,56 +32,53 @@ class LocationPlaces extends Component {
             polyline:[],
             pageStyle:'map',
             loading: true,
-            busy:false,
-            dateFilter: Moment().format("YYYY-MM-DD"),
-            dateDisplay: Moment().format('DD-MMM-YYYY'),
+            busy: false,
+            dateFilter: Moment().format("YYYY-MM-DD").toString(),
+            dateDisplay: Moment().format('ddd, DD MMM YYYY'),
         };
-    
+
+        this.setDate = this.setDate.bind(this);
     }
    
     componentWillMount() {
+        this.setState({  busy: true })
         this.initialize();
     }
         
     initialize() {
 
-        this.props.displayLocations(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
-            if (res == true) {
+        this.props.displayLocationsMap(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
                 this.setState({ loading: false, busy: false })
-                setTimeout(() => {
-                    if (this.state.pageStyle != "list") {
+            setTimeout(() => {
+                console.log(this.props.locationsmap)
                         this.fitToMap();
-                    }
-
                 }, 100);
-            }
         })
 
+    }
+
+    async onDateChange(date) {
+        await this.setState({ dateFilter: date, dateDisplay: Moment(date).format('ddd, DD MMM YYYY'), busy: true }) 
+        await this.initialize();
     }
     async changePageStyle(style) {
         await this.setState({ pageStyle: style, busy: true });
-        this.props.displayLocations(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
-            if (res == true) {
-                this.setState({  busy: false })
-                setTimeout(() => {
-                    if (this.state.pageStyle != "list") {
-                        this.fitToMap();
-                    }
+        if (style == "list") {
+            this.props.displayLocationsList(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
+                this.setState({ busy: false })
+            })
+        } else {
+            this.props.displayLocationsMap(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
+                    this.setState({ busy: false })
+                    setTimeout(() => {
+                            this.fitToMap();
 
-                }, 100);
-            }
-        })
+                    }, 100);
+            })
+        }
     }
-    async addDate() {
-        await this.setState({ dateFilter: Moment(this.state.dateFilter).add(1, 'days').format("YYYY-MM-DD"),busy:true });
-        await this.setState({ dateDisplay: Moment(this.state.dateFilter).format("DD-MMM-YYYY") });
-        await this.initialize();
-    }
-    async subDate() {
-        await this.setState({ dateFilter: Moment(this.state.dateFilter).add(-1, 'days').format("YYYY-MM-DD"), busy: true});
-        await this.setState({ dateDisplay: Moment(this.state.dateFilter).format("DD-MMM-YYYY") });
-        await this.initialize();
-    }
+    
+    
     loading(){
         return (
           <Loading/>
@@ -88,35 +86,37 @@ class LocationPlaces extends Component {
     }
      fitToMap() {
          let coordinates = [];
-        if (this.props.locations.length == 1) {
-            this.map.animateToRegion({
-                latitude: this.props.locations[0].coordinates.latitude,
-                longitude: this.props.locations[0].coordinates.longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005
-            })
+         if (this.props.locationsmap.length == 1) {
+             this.map.animateToRegion({
+                 latitude: this.props.locationsmap[0].coordinates.latitude,
+                 longitude: this.props.locationsmap[0].coordinates.longitude,
+                 latitudeDelta: 0.005,
+                 longitudeDelta: 0.005
+             })
 
-        } else if (this.props.locations.length > 1) {
+         } else if (this.props.locationsmap.length > 1) {
 
-            for (let i = 0; i < this.props.locations.length; i++) {
-                const coord = {
-                    coordinates: {
-                        latitude: this.props.locations[i].coordinates.latitude,
-                        longitude: this.props.locations[i].coordinates.longitude,
-                        latitudeDelta: LATITUDE_DELTA,
-                        longitudeDelta: LONGITUDE_DELTA,
-                    }
-                }
+             for (let i = 0; i < this.props.locationsmap.length; i++) {
+                 const coord = {
+                     coordinates: {
+                         latitude: this.props.locationsmap[i].coordinates.latitude,
+                         longitude: this.props.locationsmap[i].coordinates.longitude,
+                         latitudeDelta: LATITUDE_DELTA,
+                         longitudeDelta: LONGITUDE_DELTA,
+                     }
+                 }
 
-                coordinates = coordinates.concat(coord.coordinates);
-            }
-            this.setState({ polyline: coordinates })
-            this.map.fitToCoordinates(coordinates, { edgePadding: { top: 200, right: 100, bottom: 200, left: 100 }, animated: false })
-
-
+                 coordinates = coordinates.concat(coord.coordinates);
+             }
+             this.setState({ polyline: coordinates })
+             this.map.fitToCoordinates(coordinates, { edgePadding: { top: 10, right: 10, bottom: 10, left: 10 }, animated: false })
 
 
-        }
+
+
+         } else {
+             this.setState({ polyline: [] })
+         }
 
     }
 
@@ -129,9 +129,9 @@ class LocationPlaces extends Component {
             <FlatList
             style={{flex:1}}
                 keyExtractor={item => item.id.toString()}
-                data={this.props.locations}
-                renderItem={({ item }) => (
-                    <ListItem key={item.id.toString()} avatar style={globalStyle.listItem} button onPress={() => { this.props.navigation.navigate("LocationView", { location: item }) }}>
+                                data={this.props.locationslist}
+                renderItem={({ item}) => (
+                    <ListItem key={item.id.toString()} avatar style={globalStyle.listItem} >
                     <Left style={globalStyle.listLeft}>
                             <SimpleLineIcons size={30} style={{ color:'#16a085'}}    name='location-pin' />
                            </Left>
@@ -139,9 +139,6 @@ class LocationPlaces extends Component {
                         <Text numberOfLines={1} style={globalStyle.listHeading}>{item.address}</Text>
                             <Text note numberOfLines={1} >{item.datemovement}</Text>
                     </Body>
-                    <Right style={globalStyle.listRight}>
-                            <SimpleLineIcons  style={globalStyle.listRightOptionIcon}   name='arrow-right' />
-                    </Right>
                 </ListItem>
                 ) }
             />
@@ -154,7 +151,7 @@ class LocationPlaces extends Component {
      }
 
     renderMap() {
-        const markers = this.props.locations.map((marker) => (
+        const markers = this.props.locationsmap.map((marker) => (
             <MapView.Marker
                 key={marker.id}
                 coordinate={marker.coordinates}>
@@ -181,42 +178,28 @@ class LocationPlaces extends Component {
                     source={require('../../images/markercircle.png')} />
                 <MapView ref={map => { this.map = map }}
                     style={styles.map}>
-                    {markers}
-                    <MapView.Polyline
+                    
+                    <MapView.Polyline 
+                        style={{ zIndex: 99999 }}
                         coordinates={this.state.polyline}
-                        strokeWidth={3}
+                        strokeWidth={2}
                         strokeColor="#932424" />
-
+                    {markers}
                    
 
                 </MapView>
             </View>
             )
     }
+    setDate(newDate) {
+        this.setState({ chosenDate: Moment(newDate).format('DD-MMM-YYYY')  });
+    }
     ready(){
         
         return (
             <View style={styles.mainContainer}>
                
-                <View style={{
-                    height: 50, width: '100%', backgroundColor: '#16a085', borderTopColor: 'white', borderTopWidth: 1, padding: 5
-                }}>
-                    <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
-                        <View style={{ alignItems: 'center',marginRight:10, }} >
-                            <Text style={{ fontSize: 17, color: 'white' }} >{this.state.dateDisplay}</Text>
-                        </View >
-                        <TouchableOpacity onPress={() => this.subDate()}>
-                            <Ionicons style={{ fontSize: 38, marginRight: 5, color: 'white' }} name='ios-arrow-dropleft' />
-                        </TouchableOpacity>
-                        
-                        <TouchableOpacity onPress={() => this.addDate()}>
-                            <Ionicons style={{ fontSize: 38, color: 'white', marginLeft: 5 }} name='ios-arrow-dropright' />
-                        </TouchableOpacity>
-                       
-
-                    </View >
-                    
-                </View>
+                
 
                 {
                     this.state.pageStyle == 'list' ?  this.renderLocation() :
@@ -255,10 +238,28 @@ class LocationPlaces extends Component {
                             </Button>
                         </Left>
                         <Body style={globalStyle.headerBody}>
-                            <Title>LOCATIONS</Title>
+                            <Title>{this.state.dateDisplay}</Title>
                         </Body>
                         <Right style={globalStyle.headerRight}>
-
+                            <DatePicker
+                                style={{}}
+                                date={this.state.dateFilter}
+                                mode="date"
+                                placeholder="select date"
+                                confirmBtnText="Confirm"
+                                cancelBtnText="Cancel"
+                                iconSource={require('../../images/today.png')}
+                                hideText={true}
+                                customStyles={{
+                                    dateIcon: {
+                                        position: 'absolute',
+                                        top: 4,
+                                        right: 0,
+                                        marginLeft: 0
+                                    },
+                                }}
+                                onDateChange={(date) => this.onDateChange(date) }
+                            />
                         </Right>
                     </Header>
                     {
@@ -323,11 +324,12 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-    locations: state.fetchLocation.locations,
+    locationslist: state.fetchLocation.locationslist,
+    locationsmap: state.fetchLocation.locationsmap,
     isLoading: state.fetchLocation.isLoading,
   })
   
-  LocationPlaces=connect(mapStateToProps,{displayLocations})(LocationPlaces);
+LocationPlaces = connect(mapStateToProps, { displayLocationsList, displayLocationsMap})(LocationPlaces);
   
 export default LocationPlaces;
 

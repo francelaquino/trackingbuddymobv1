@@ -1,4 +1,4 @@
-import { DISPLAY_LOCATION, GET_LOCATIONDETAILS, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES,GET_PLACE_ALERT } from './types';
+import { DISPLAY_LOCATION, DISPLAY_LOCATION_MAP, DISPLAY_LOCATION_LIST, GET_LOCATIONDETAILS, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES,GET_PLACE_ALERT } from './types';
 import firebase from 'react-native-firebase';
 import Moment from 'moment';
 import Geocoder from 'react-native-geocoder';
@@ -101,7 +101,18 @@ export const saveLocation = (coords) => async dispatch => {
             }).catch(function (error) {
             });
 
-        await savelocation(userdetails.userid, coords.latitude, coords.longitude);
+
+        await axios.post(settings.baseURL + 'place/saveloginlocation', {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            useruid: userdetails.userid,
+            dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
+        }).then(async function (res) {
+            console.log(res)
+            }).catch(function (error) {
+                console.log(error)
+        })
+
 
     } catch (e) {
         console.log(e)
@@ -522,14 +533,51 @@ export const getPlaceNotification = (placeid, userid) => async dispatch => {
 
 
 
-export const displayLocations = (useruid,date) => dispatch => {
+export const displayLocationsList = (useruid,date) => dispatch => {
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'place/getLocationHistoryList/' + useruid +'/'+date)
+                .then(function (res) {
+                                dispatch({
+                                    type: DISPLAY_LOCATION_LIST,
+                                    payload: res.data.results
+                                });
+                                resolve(true)
+                    
+                        
+                }).catch(function (error) {
+
+                    dispatch({
+                        type: DISPLAY_LOCATION_LIST,
+                        payload: []
+                    });
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+
+            dispatch({
+                type: DISPLAY_LOCATION_LIST,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
+
+
+
+};
+
+export const displayLocationsMap = (useruid, date) => dispatch => {
     let locations = [];
     let count = 0;
     let cnt = 0;
     let x = 1;
     return new Promise(async (resolve) => {
         try {
-            await axios.get(settings.baseURL + 'place/getLocationHistory/' + useruid +'/'+date)
+            await axios.get(settings.baseURL + 'place/getLocationHistory/' + useruid + '/' + date)
                 .then(function (res) {
                     count = res.data.results.length;
                     if (count > 0) {
@@ -549,7 +597,7 @@ export const displayLocations = (useruid,date) => dispatch => {
                             x++;
                             if (cnt >= count) {
                                 dispatch({
-                                    type: DISPLAY_LOCATION,
+                                    type: DISPLAY_LOCATION_MAP,
                                     payload: locations
                                 });
                                 resolve(true)
@@ -557,16 +605,16 @@ export const displayLocations = (useruid,date) => dispatch => {
                         })
                     } else {
                         dispatch({
-                            type: DISPLAY_LOCATION,
+                            type: DISPLAY_LOCATION_MAP,
                             payload: []
                         });
                         resolve(true)
                     }
-                        
+
                 }).catch(function (error) {
 
                     dispatch({
-                        type: DISPLAY_LOCATION,
+                        type: DISPLAY_LOCATION_MAP,
                         payload: []
                     });
                     resolve(false)
@@ -576,7 +624,7 @@ export const displayLocations = (useruid,date) => dispatch => {
         } catch (e) {
 
             dispatch({
-                type: DISPLAY_LOCATION,
+                type: DISPLAY_LOCATION_MAP,
                 payload: []
             });
             resolve(false)
