@@ -92,14 +92,26 @@ export const saveLocation = (coords) => async dispatch => {
     try {
         console.log("watching location")
 
-        await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + coords.latitude + "&lon=" + coords.longitude)
+        await axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + coords.latitude + "," + coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
+            .then(function (res) {
+                console.log(res.data)
+                if (res.data.status == "OK") {
+                    dispatch({
+                        type: SAVE_LOCATION_ONLINE,
+                        payload: res.data.results[0].formatted_address
+                    });
+                }
+            }).catch(function (error) {
+            });
+
+       /* await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + coords.latitude + "&lon=" + coords.longitude)
             .then(function (res) {
                 dispatch({
                     type: SAVE_LOCATION_ONLINE,
                     payload: res.data
                 });
             }).catch(function (error) {
-            });
+            });*/
 
 
         await axios.post(settings.baseURL + 'place/saveloginlocation', {
@@ -134,20 +146,16 @@ export const saveLocationOnline=()=> async dispatch=> {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
 
-                        await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon="+position.coords.longitude)
-                         //axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false")
+                        //await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon="+position.coords.longitude)
+                    await axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
                             .then(function (res) {
-                              
-                                dispatch({
-                                    type: SAVE_LOCATION_ONLINE,
-                                    payload: res.data
-                                });
+                                if (res.data.status == "OK") {
+                                    dispatch({
+                                        type: SAVE_LOCATION_ONLINE,
+                                        payload: res.data.results[0].formatted_address
+                                    });
+                                }
                             }).catch(function (error) {
-                                //console.log(error)
-                               /* dispatch({
-                                   type: SAVE_LOCATION_ONLINE,
-                                   // payload: ""
-                                });*/
                             });
 
                         await savelocation(userid, position.coords.latitude, position.coords.longitude);
@@ -176,7 +184,7 @@ export const getUserLocation = () => async dispatch => {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                
-                await axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false")
+                await axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
                     .then(async function (res) {
                         userdetails.address = res.data.results[0].formatted_address;
                     }).catch(function (error) {
@@ -577,7 +585,7 @@ export const displayLocationsMap = (useruid, date) => dispatch => {
     let x = 1;
     return new Promise(async (resolve) => {
         try {
-            await axios.get(settings.baseURL + 'place/getLocationHistory/' + useruid + '/' + date)
+            await axios.get(settings.baseURL + 'place/getLocationHistoryMap/' + useruid + '/' + date)
                 .then(function (res) {
                     count = res.data.results.length;
                     if (count > 0) {
@@ -586,7 +594,7 @@ export const displayLocationsMap = (useruid, date) => dispatch => {
                             locations.push({
                                 id: x,
                                 address: data.address,
-                                datemovement: data.datemovement,
+                                //datemovement: data.datemovement,
                                 coordinates: {
                                     longitude: data.longitude,
                                     latitude: data.latitude

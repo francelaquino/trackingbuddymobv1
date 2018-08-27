@@ -190,7 +190,8 @@ class HomePlaces extends Component {
             isLoading: false,
             memberReady: false,
             memberModal: false,
-            locationModal:false,
+            locationModal: false,
+            fitToMap:true,
             region: {
                 latitude: LATITUDE,
                 longitude: LONGITUDE,
@@ -320,6 +321,7 @@ class HomePlaces extends Component {
 
 
         }
+        this.setState({ fitToMap:false})
 
     }
 
@@ -417,7 +419,9 @@ class HomePlaces extends Component {
                 if (userdetails.userid !== "" && userdetails.userid !== null) {
                     self.props.displayHomeMember().then(res => {
                         setTimeout(async () => {
-                            await self.fitToMap();
+                            if (self.state.fitToMap == true) {
+                                await self.fitToMap();
+                            }
                             self.setState({ memberReady: true, isLoading: false })
                         }, 10);
                     });

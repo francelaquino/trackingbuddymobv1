@@ -84,7 +84,8 @@ class LocationPlaces extends Component {
           <Loading/>
         )
     }
-     fitToMap() {
+    fitToMap() {
+        this.setState({ polyline: [] })
          let coordinates = [];
          if (this.props.locationsmap.length == 1) {
              this.map.animateToRegion({
@@ -110,9 +111,6 @@ class LocationPlaces extends Component {
              }
              this.setState({ polyline: coordinates })
              this.map.fitToCoordinates(coordinates, { edgePadding: { top: 10, right: 10, bottom: 10, left: 10 }, animated: false })
-
-
-
 
          } else {
              this.setState({ polyline: [] })
@@ -159,10 +157,9 @@ class LocationPlaces extends Component {
                     source={require('../../images/markercircle.png')} />
                 <Text style={styles.markerText}>{marker.id}</Text>
                 <MapView.Callout tooltip={true} >
-                    <View style={[globalStyle.callOutFix, { height: 80 }]} >
+                    <View style={[globalStyle.callOutFix, { height: 40 }]} >
                         <View style={globalStyle.callOutContainerFix} >
                             <Text numberOfLines={2} style={globalStyle.callOutText}>{marker.address}</Text>
-                            <Text numberOfLines={2} style={globalStyle.callOutText}>{marker.datemovement}</Text>
                         </View>
 
                     </View>
