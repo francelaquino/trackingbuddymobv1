@@ -72,7 +72,7 @@ class LocationPlaces extends Component {
             this.props.displayLocationsList(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
                 this.setState({ busy: false })
             })
-        } else {
+        }else if (style == "map") {
             this.props.displayLocationsMap(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
                     this.setState({ busy: false })
                     setTimeout(() => {
@@ -279,6 +279,39 @@ class LocationPlaces extends Component {
 
             )
     }
+
+    renderTrack() {
+        
+        return (
+            <View >
+                <View style={styles.mapContainer}>
+                    <MapView mapType={this.state.mapMode}
+                        style={styles.map}>
+
+                        
+
+                    </MapView>
+
+                </View>
+                
+                <View style={styles.addressContainer} >
+                    <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('B')}>
+                            <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropleft' />
+                        </TouchableOpacity>
+                        <View style={{ alignItems: 'center', flex: 3 }} >
+                            <Text numberOfLines={2} style={{ fontSize: 12, color: '#2c3e50', textAlign: 'center' }} >{this.state.address}</Text>
+                        </View >
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('N')}>
+                            <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropright' />
+                        </TouchableOpacity>
+
+                    </View >
+                </View>
+            </View >
+
+        )
+    }
     setDate(newDate) {
         this.setState({ chosenDate: Moment(newDate).format('DD-MMM-YYYY')  });
     }
@@ -291,7 +324,8 @@ class LocationPlaces extends Component {
 
                 {
                     this.state.pageStyle == 'list' ?  this.renderLocation() :
-                        this.renderMap()
+                        this.state.pageStyle == 'map' ? this.renderMap() :
+                            this.renderTrack()
                 }
                 
                 <Footer >
@@ -300,6 +334,10 @@ class LocationPlaces extends Component {
                         <Button vertical onPress={() => this.changePageStyle('map')}>
                             <Icon style={{ color: 'white' }} name="map" />
                             <Text style={{ color: 'white' }} >Map</Text>
+                        </Button>
+                        <Button vertical onPress={() => this.changePageStyle('map')}>
+                            <Icon style={{ color: 'white' }} name="list" />
+                            <Text style={{ color: 'white' }} >Track</Text>
                         </Button>
                         <Button vertical onPress={() => this.changePageStyle('list')}>
                             <Icon style={{ color: 'white' }} name="list" />
@@ -393,8 +431,8 @@ const styles = StyleSheet.create({
     },
     marker: {
         alignSelf: 'center',
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
         margin: 0, padding: 0
     },
 
@@ -402,9 +440,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         flex: 1,
         color: 'black',
-        fontSize: 12,
-        width: 40,
-        marginTop: 10,
+        fontSize: 10,
+        width: 30,
+        marginTop: 5,
         position: 'absolute',
 
 
