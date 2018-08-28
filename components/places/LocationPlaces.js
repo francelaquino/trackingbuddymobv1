@@ -1,4 +1,4 @@
-
+﻿
 import React, { Component } from 'react';
 import { TouchableOpacity,  Platform, StyleSheet, Text, View, ScrollView, TextInput, ToastAndroid, Image, FlatList, Dimensions } from 'react-native';
 import {  Separator, Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, Left, Right, ListItem, Footer, FooterTab } from 'native-base';
@@ -28,10 +28,14 @@ class LocationPlaces extends Component {
     constructor(props) {
         super(props)
         this.map = null;
+        this.markers = [];
         this.state = {
-            polyline:[],
+            polyline: [],
+            index:0,
+            address: '',
             pageStyle:'map',
             loading: true,
+            mapMode: 'standard',
             busy: false,
             dateFilter: Moment().format("YYYY-MM-DD").toString(),
             dateDisplay: Moment().format('ddd, DD MMM YYYY'),
@@ -50,8 +54,9 @@ class LocationPlaces extends Component {
         this.props.displayLocationsMap(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
                 this.setState({ loading: false, busy: false })
             setTimeout(() => {
-                console.log(this.props.locationsmap)
-                        this.fitToMap();
+                this.fitToMap();
+                this.setState({index: this.props.locationsmap.length })
+                this.centerToMarker("");
                 }, 100);
         })
 
@@ -71,7 +76,9 @@ class LocationPlaces extends Component {
             this.props.displayLocationsMap(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
                     this.setState({ busy: false })
                     setTimeout(() => {
-                            this.fitToMap();
+                        this.fitToMap();
+                        this.setState({ index: this.props.locationsmap.length })
+                        this.centerToMarker("");
 
                     }, 100);
             })
@@ -84,9 +91,38 @@ class LocationPlaces extends Component {
           <Loading/>
         )
     }
+     centerToMarker(mode) {
+         if (mode == "N") {
+             if (this.state.index == this.props.locationsmap.length) {
+                 this.setState({ index: 1 });
+             } else {
+                 this.setState({ index: this.state.index + 1 });
+             }
+         }else if (mode == "B") {
+             if (this.state.index == 1) {
+                 this.setState({ index: this.props.locationsmap.length });
+             } else {
+                 this.setState({ index: this.state.index - 1 });
+             }
+            
+         }
+        
+         setTimeout(() => {
+             this.map.animateToRegion({
+                 latitude: this.props.locationsmap[this.state.index - 1].coordinates.latitude,
+                 longitude: this.props.locationsmap[this.state.index - 1].coordinates.longitude,
+                 latitudeDelta: 0.005,
+                 longitudeDelta: 0.005
+             })
+             this.setState({ address: this.props.locationsmap[this.state.index - 1].address})
+             this.markers[this.state.index].showCallout();
+         }, 500);
+
+    }
+
     fitToMap() {
         this.setState({ polyline: [] })
-         let coordinates = [];
+        let coordinates = [];
          if (this.props.locationsmap.length == 1) {
              this.map.animateToRegion({
                  latitude: this.props.locationsmap[0].coordinates.latitude,
@@ -95,6 +131,7 @@ class LocationPlaces extends Component {
                  longitudeDelta: 0.005
              })
 
+             this.setState({ address: this.props.locationsmap[this.props.locationsmap.length-1].address})
          } else if (this.props.locationsmap.length > 1) {
 
              for (let i = 0; i < this.props.locationsmap.length; i++) {
@@ -109,14 +146,18 @@ class LocationPlaces extends Component {
 
                  coordinates = coordinates.concat(coord.coordinates);
              }
-             this.setState({ polyline: coordinates })
-             this.map.fitToCoordinates(coordinates, { edgePadding: { top: 10, right: 10, bottom: 10, left: 10 }, animated: false })
+             this.setState({ polyline: coordinates , address: this.props.locationsmap[this.props.locationsmap.length - 1].address })
+             this.map.fitToCoordinates(coordinates, { edgePadding: { top: 10, right: 10, bottom: 100, left: 10 }, animated: false })
+            
 
          } else {
              this.setState({ polyline: [] })
-         }
+        }
+
 
     }
+
+    
 
     renderLocation(){
         return (
@@ -147,19 +188,33 @@ class LocationPlaces extends Component {
                 </Content>
             </ScrollView>)
      }
+    async changeMapMode() {
+        if (this.state.mapMode == "standard") {
+            this.setState({
+                mapMode: 'satellite'
+            });
+        } else {
+            this.setState({
+                mapMode: 'standard'
+            });
+        }
 
+    }
     renderMap() {
         const markers = this.props.locationsmap.map((marker) => (
             <MapView.Marker
                 key={marker.id}
+                ref={ref => { this.markers[marker.id] = ref }}
                 coordinate={marker.coordinates}>
+
                 <Image style={styles.marker}
                     source={require('../../images/markercircle.png')} />
                 <Text style={styles.markerText}>{marker.id}</Text>
                 <MapView.Callout tooltip={true} >
-                    <View style={[globalStyle.callOutFix, { height: 40 }]} >
+                    <View style={[globalStyle.callOutFix, { height: 60 }]} >
                         <View style={globalStyle.callOutContainerFix} >
                             <Text numberOfLines={2} style={globalStyle.callOutText}>{marker.address}</Text>
+                            <Text style={globalStyle.callOutText}>{marker.datemovement}</Text>
                         </View>
 
                     </View>
@@ -170,10 +225,11 @@ class LocationPlaces extends Component {
 
         ));
         return (
+            <View style={styles.mainContainer}>
             <View style={styles.mapContainer}>
                 <Image style={{opacity:0}}
                     source={require('../../images/markercircle.png')} />
-                <MapView ref={map => { this.map = map }}
+                <MapView ref={map => { this.map = map }} mapType={this.state.mapMode}
                     style={styles.map}>
                     
                     <MapView.Polyline 
@@ -185,7 +241,42 @@ class LocationPlaces extends Component {
                    
 
                 </MapView>
+                
+                </View>
+                <View style={globalStyle.mapMenu}>
+                    <TouchableOpacity onPress={() => this.fitToMap()}>
+                        <View style={globalStyle.mapMenuCircle} >
+                            <MaterialIcons size={25} style={{ color: '#2c3e50' }} name="zoom-out-map" />
+                        </View>
+                        <Text style={globalStyle.mapMenuLabel}>Center Map</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.changeMapMode()}>
+                        <View style={globalStyle.mapMenuCircle} >
+                            <Entypo size={25} style={{ color: '#2c3e50' }} name="globe" />
+                        </View>
+                        <Text style={globalStyle.mapMenuLabel}>Map Style</Text>
+                    </TouchableOpacity>
+
+
+
+
+                </View>
+                <View style={styles.addressContainer} >
+                    <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('B')}>
+                            <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropleft' />
+                        </TouchableOpacity>
+                        <View style={{ alignItems: 'center', flex: 3 }} >
+                            <Text numberOfLines={2} style={{ fontSize: 12, color: '#2c3e50', textAlign: 'center' }} >{this.state.address}</Text>
+                        </View >
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('N')}>
+                            <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropright' />
+                        </TouchableOpacity>
+
+                    </View >
             </View>
+            </View >
+
             )
     }
     setDate(newDate) {
@@ -276,6 +367,7 @@ class LocationPlaces extends Component {
 
 
 const styles = StyleSheet.create({
+
     mainContainer: {
         display: 'flex',
         flex: 1,
@@ -315,6 +407,19 @@ const styles = StyleSheet.create({
         marginTop: 10,
         position: 'absolute',
 
+
+    },
+    addressContainer: {
+        height: 50,
+        width: '100%',
+        paddingTop: 2,
+        alignItems: 'center',
+        bottom: 0,
+        position: 'absolute',
+        backgroundColor: 'white',
+        alignItems: 'center', padding: 5,
+        borderTopWidth: 1,
+        borderTopColor:'#ecf0f1',
 
     },
 

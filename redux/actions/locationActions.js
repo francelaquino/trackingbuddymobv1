@@ -590,11 +590,11 @@ export const displayLocationsMap = (useruid, date) => dispatch => {
                     count = res.data.results.length;
                     if (count > 0) {
                         res.data.results.forEach(data => {
-
+                            
                             locations.push({
                                 id: x,
                                 address: data.address,
-                                //datemovement: data.datemovement,
+                                datemovement: data.datemovement,
                                 coordinates: {
                                     longitude: data.longitude,
                                     latitude: data.latitude

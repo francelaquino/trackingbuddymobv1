@@ -346,13 +346,7 @@ class HomePlaces extends Component {
 
     async centerToMarker(latitude, longitude,uid) {
 
-        let center = [{
-            latitude: latitude,
-            longitude: longitude,
-            latitudeDelta: 0.00522,
-            longitudeDelta: 0.00522 * ASPECT_RATIO
-        }
-        ];
+       
         this.map.animateToRegion({
             latitude: latitude,
             longitude: longitude,
