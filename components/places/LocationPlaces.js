@@ -5,11 +5,12 @@ import {  Separator, Root, Container, Header, Body, Title, Item, Input, Label, B
 import { connect } from 'react-redux';
 import DatePicker from 'react-native-datepicker'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { displayLocationsList, displayLocationsMap } from '../../redux/actions/locationActions';
+import { displayLocationsList, displayLocationsMap, displayLocationsTrack } from '../../redux/actions/locationActions';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MapView, { Marker, Polyline,  PROVIDER_GOOGLE } from 'react-native-maps';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Loading from '../shared/Loading';
 import Loader from '../shared/Loader';
@@ -28,9 +29,11 @@ class LocationPlaces extends Component {
     constructor(props) {
         super(props)
         this.map = null;
+        this.maptrack = null;
         this.markers = [];
         this.state = {
             polyline: [],
+            trackpolyline: [],
             index:0,
             address: '',
             pageStyle:'map',
@@ -55,8 +58,6 @@ class LocationPlaces extends Component {
                 this.setState({ loading: false, busy: false })
             setTimeout(() => {
                 this.fitToMap();
-                this.setState({index: this.props.locationsmap.length })
-                this.centerToMarker("");
                 }, 100);
         })
 
@@ -67,20 +68,62 @@ class LocationPlaces extends Component {
         await this.initialize();
     }
     async changePageStyle(style) {
+       
         await this.setState({ pageStyle: style, busy: true });
         if (style == "list") {
             this.props.displayLocationsList(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
                 this.setState({ busy: false })
             })
-        }else if (style == "map") {
+        } else if (style == "map") {
             this.props.displayLocationsMap(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
-                    this.setState({ busy: false })
-                    setTimeout(() => {
-                        this.fitToMap();
-                        this.setState({ index: this.props.locationsmap.length })
-                        this.centerToMarker("");
+                this.setState({ busy: false })
+                setTimeout(() => {
+                    this.fitToMap();
 
-                    }, 100);
+
+                }, 100);
+            })
+        } else if (style == "track") {
+            this.setState({ busy: false })
+            this.props.displayLocationsTrack(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
+                this.setState({ busy: false });
+                let i = 0;
+                var coordinates = [];
+                let self = this;
+                setTimeout(() => {
+                    let plot = setInterval(function myTimer() {
+                       
+                        const coord = {
+                            coordinates: {
+                                latitude: self.props.locationstrack[i].latitude,
+                                longitude: self.props.locationstrack[i].longitude,
+                                latitudeDelta: LATITUDE_DELTA,
+                                longitudeDelta: LONGITUDE_DELTA,
+                            }
+                        }
+                        coordinates = coordinates.concat(coord.coordinates);
+
+                        self.setState({ trackpolyline: coordinates })
+
+                        self.maptrack.animateToRegion({
+                            latitude: self.props.locationstrack[i].latitude,
+                            longitude: self.props.locationstrack[i].longitude,
+                            latitudeDelta: 0.005,
+                            longitudeDelta: 0.005
+                        })
+
+                        i++;
+                        if (i >= self.props.locationstrack.length) {
+                            clearInterval(plot);
+                        }
+                    }, 1500);
+                }, 500);
+
+                
+
+                
+                
+
             })
         }
     }
@@ -92,36 +135,40 @@ class LocationPlaces extends Component {
         )
     }
      centerToMarker(mode) {
-         if (mode == "N") {
+         if (mode == "B") {
              if (this.state.index == this.props.locationsmap.length) {
                  this.setState({ index: 1 });
              } else {
                  this.setState({ index: this.state.index + 1 });
              }
-         }else if (mode == "B") {
+         } else if (mode == "N") {
              if (this.state.index == 1) {
                  this.setState({ index: this.props.locationsmap.length });
              } else {
                  this.setState({ index: this.state.index - 1 });
              }
-            
+
+         } else if (mode == "S") {
+             this.setState({ index: this.props.locationsmap.length});
          }
         
+
          setTimeout(() => {
+             this.setState({ address: this.props.locationsmap[this.state.index - 1].address });
              this.map.animateToRegion({
                  latitude: this.props.locationsmap[this.state.index - 1].coordinates.latitude,
                  longitude: this.props.locationsmap[this.state.index - 1].coordinates.longitude,
                  latitudeDelta: 0.005,
                  longitudeDelta: 0.005
              })
-             this.setState({ address: this.props.locationsmap[this.state.index - 1].address})
              this.markers[this.state.index].showCallout();
          }, 500);
 
     }
 
     fitToMap() {
-        this.setState({ polyline: [] })
+        
+        this.setState({ polyline: [],address:'' })
         let coordinates = [];
          if (this.props.locationsmap.length == 1) {
              this.map.animateToRegion({
@@ -131,7 +178,6 @@ class LocationPlaces extends Component {
                  longitudeDelta: 0.005
              })
 
-             this.setState({ address: this.props.locationsmap[this.props.locationsmap.length-1].address})
          } else if (this.props.locationsmap.length > 1) {
 
              for (let i = 0; i < this.props.locationsmap.length; i++) {
@@ -146,13 +192,15 @@ class LocationPlaces extends Component {
 
                  coordinates = coordinates.concat(coord.coordinates);
              }
-             this.setState({ polyline: coordinates , address: this.props.locationsmap[this.props.locationsmap.length - 1].address })
-             this.map.fitToCoordinates(coordinates, { edgePadding: { top: 10, right: 10, bottom: 100, left: 10 }, animated: false })
+             this.setState({ polyline: coordinates })
+             this.map.fitToCoordinates(coordinates, { edgePadding: { top: 100, right: 100, bottom: 100, left: 100 }, animated: false })
             
 
          } else {
              this.setState({ polyline: [] })
         }
+
+       
 
 
     }
@@ -205,11 +253,11 @@ class LocationPlaces extends Component {
             <MapView.Marker
                 key={marker.id}
                 ref={ref => { this.markers[marker.id] = ref }}
-                coordinate={marker.coordinates}>
-
+                coordinate={marker.coordinates}
+                >
                 <Image style={styles.marker}
                     source={require('../../images/markercircle.png')} />
-                <Text style={styles.markerText}>{marker.id}</Text>
+                <Text style={styles.markerText}>{marker.label}</Text>
                 <MapView.Callout tooltip={true} >
                     <View style={[globalStyle.callOutFix, { height: 60 }]} >
                         <View style={globalStyle.callOutContainerFix} >
@@ -261,20 +309,33 @@ class LocationPlaces extends Component {
 
 
                 </View>
-                <View style={styles.addressContainer} >
-                    <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
-                        <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('B')}>
-                            <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropleft' />
-                        </TouchableOpacity>
-                        <View style={{ alignItems: 'center', flex: 3 }} >
-                            <Text numberOfLines={2} style={{ fontSize: 12, color: '#2c3e50', textAlign: 'center' }} >{this.state.address}</Text>
-                        </View >
-                        <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('N')}>
-                            <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropright' />
-                        </TouchableOpacity>
+                {this.props.locationsmap.length > 0 &&
+                    <View style={styles.addressContainer} >
+                        <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
+                            {this.state.address != '' &&
+                                <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('B')}>
+                                    <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropleft' />
+                                    <Text>Back</Text>
+                                </TouchableOpacity>
+                            }
+                            {this.state.address == '' &&
+                                <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('S')}>
+                                    <EvilIcons style={{ fontSize: 48, color: '#16a085' }} name='play' />
+                                    <Text>Start</Text>
+                                </TouchableOpacity>
+                            }
 
-                    </View >
-            </View>
+                            {this.state.address != '' &&
+                                <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('N')}>
+                                    <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropright' />
+                                    <Text>Next</Text>
+                                </TouchableOpacity>
+                            }
+
+
+                        </View >
+                    </View>
+                }
             </View >
 
             )
@@ -283,11 +344,15 @@ class LocationPlaces extends Component {
     renderTrack() {
         
         return (
-            <View >
+            <View style={styles.mainContainer}>
                 <View style={styles.mapContainer}>
-                    <MapView mapType={this.state.mapMode}
+                    <MapView mapType={this.state.mapMode} ref={map => { this.maptrack = map }} 
                         style={styles.map}>
-
+                        <MapView.Polyline
+                            style={{ zIndex: 99999 }}
+                            coordinates={this.state.trackpolyline}
+                            strokeWidth={2}
+                            strokeColor="#932424" />
                         
 
                     </MapView>
@@ -295,18 +360,7 @@ class LocationPlaces extends Component {
                 </View>
                 
                 <View style={styles.addressContainer} >
-                    <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
-                        <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('B')}>
-                            <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropleft' />
-                        </TouchableOpacity>
-                        <View style={{ alignItems: 'center', flex: 3 }} >
-                            <Text numberOfLines={2} style={{ fontSize: 12, color: '#2c3e50', textAlign: 'center' }} >{this.state.address}</Text>
-                        </View >
-                        <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('N')}>
-                            <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropright' />
-                        </TouchableOpacity>
-
-                    </View >
+                        
                 </View>
             </View >
 
@@ -335,7 +389,7 @@ class LocationPlaces extends Component {
                             <Icon style={{ color: 'white' }} name="map" />
                             <Text style={{ color: 'white' }} >Map</Text>
                         </Button>
-                        <Button vertical onPress={() => this.changePageStyle('map')}>
+                        <Button vertical onPress={() => this.changePageStyle('track')}>
                             <Icon style={{ color: 'white' }} name="list" />
                             <Text style={{ color: 'white' }} >Track</Text>
                         </Button>
@@ -442,15 +496,15 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 10,
         width: 30,
-        marginTop: 5,
+        marginTop: 7,
         position: 'absolute',
 
 
     },
     addressContainer: {
-        height: 50,
+        height: 65,
         width: '100%',
-        paddingTop: 2,
+        paddingTop: 6,
         alignItems: 'center',
         bottom: 0,
         position: 'absolute',
@@ -466,10 +520,11 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
     locationslist: state.fetchLocation.locationslist,
     locationsmap: state.fetchLocation.locationsmap,
+    locationstrack: state.fetchLocation.locationstrack,
     isLoading: state.fetchLocation.isLoading,
   })
   
-LocationPlaces = connect(mapStateToProps, { displayLocationsList, displayLocationsMap})(LocationPlaces);
+LocationPlaces = connect(mapStateToProps, { displayLocationsList, displayLocationsMap, displayLocationsTrack})(LocationPlaces);
   
 export default LocationPlaces;
 

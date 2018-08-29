@@ -1,4 +1,4 @@
-import { DISPLAY_LOCATION, DISPLAY_LOCATION_MAP, DISPLAY_LOCATION_LIST, GET_LOCATIONDETAILS, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES,GET_PLACE_ALERT } from './types';
+import { DISPLAY_LOCATION_TRACK, DISPLAY_LOCATION, DISPLAY_LOCATION_MAP, DISPLAY_LOCATION_LIST, GET_LOCATIONDETAILS, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES,GET_PLACE_ALERT } from './types';
 import firebase from 'react-native-firebase';
 import Moment from 'moment';
 import Geocoder from 'react-native-geocoder';
@@ -583,16 +583,19 @@ export const displayLocationsMap = (useruid, date) => dispatch => {
     let count = 0;
     let cnt = 0;
     let x = 1;
+    let label = 0;
     return new Promise(async (resolve) => {
         try {
             await axios.get(settings.baseURL + 'place/getLocationHistoryMap/' + useruid + '/' + date)
                 .then(function (res) {
                     count = res.data.results.length;
+                    label = res.data.results.length;
                     if (count > 0) {
                         res.data.results.forEach(data => {
                             
                             locations.push({
                                 id: x,
+                                label: label,
                                 address: data.address,
                                 datemovement: data.datemovement,
                                 coordinates: {
@@ -603,6 +606,7 @@ export const displayLocationsMap = (useruid, date) => dispatch => {
 
                             cnt++;
                             x++;
+                            label--;
                             if (cnt >= count) {
                                 dispatch({
                                     type: DISPLAY_LOCATION_MAP,
@@ -633,6 +637,45 @@ export const displayLocationsMap = (useruid, date) => dispatch => {
 
             dispatch({
                 type: DISPLAY_LOCATION_MAP,
+                payload: []
+            });
+            resolve(false)
+            ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+        }
+    });
+
+
+
+};
+
+
+export const displayLocationsTrack = (useruid, date) => dispatch => {
+    return new Promise(async (resolve) => {
+        try {
+            await axios.get(settings.baseURL + 'place/getLocationHistoryTrack/' + useruid + '/' + date)
+                .then(function (res) {
+                        res.data.results.forEach(data => {
+                                dispatch({
+                                    type: DISPLAY_LOCATION_TRACK,
+                                    payload: res.data.results
+                                });
+                                resolve(true)
+                        })
+                   
+                }).catch(function (error) {
+
+                    dispatch({
+                        type: DISPLAY_LOCATION_TRACK,
+                        payload: []
+                    });
+                    resolve(false)
+                    ToastAndroid.showWithGravityAndOffset("Something went wrong. Please try again.", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                });
+
+        } catch (e) {
+
+            dispatch({
+                type: DISPLAY_LOCATION_TRACK,
                 payload: []
             });
             resolve(false)

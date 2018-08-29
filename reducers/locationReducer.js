@@ -1,4 +1,4 @@
-import { DISPLAY_LOCATION_MAP,DISPLAY_LOCATION_LIST,DISPLAY_LOCATION, GET_LOCATIONDETAILS, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES, GET_PLACE_ALERT } from '../redux/actions/types';
+import { DISPLAY_LOCATION_MAP, DISPLAY_LOCATION_TRACK ,DISPLAY_LOCATION_LIST,DISPLAY_LOCATION, GET_LOCATIONDETAILS, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES, GET_PLACE_ALERT } from '../redux/actions/types';
 
 const initialState = {
     coordinates:[],
@@ -6,6 +6,7 @@ const initialState = {
     locations: [],
     locationslist: [],
     locationsmap: [],
+    locationstrack: [],
     location: [],
     details:[],
     alerts: [],
@@ -23,6 +24,12 @@ export default function(state=initialState,action){
                 ...state,
                 locationsmap: action.payload,
                 isLoading:false,
+            };
+        case DISPLAY_LOCATION_TRACK:
+            return {
+                ...state,
+                locationstrack: action.payload,
+                isLoading: false,
             };
         case DISPLAY_LOCATION_LIST:
             return {
