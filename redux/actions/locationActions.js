@@ -94,7 +94,6 @@ export const saveLocation = (coords) => async dispatch => {
 
         await axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + coords.latitude + "," + coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
             .then(function (res) {
-                console.log(res.data)
                 if (res.data.status == "OK") {
                     dispatch({
                         type: SAVE_LOCATION_ONLINE,
@@ -104,14 +103,7 @@ export const saveLocation = (coords) => async dispatch => {
             }).catch(function (error) {
             });
 
-       /* await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + coords.latitude + "&lon=" + coords.longitude)
-            .then(function (res) {
-                dispatch({
-                    type: SAVE_LOCATION_ONLINE,
-                    payload: res.data
-                });
-            }).catch(function (error) {
-            });*/
+        
 
 
         await axios.post(settings.baseURL + 'place/saveloginlocation', {
@@ -120,9 +112,7 @@ export const saveLocation = (coords) => async dispatch => {
             useruid: userdetails.userid,
             dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
         }).then(async function (res) {
-            console.log(res)
-            }).catch(function (error) {
-                console.log(error)
+        }).catch(function (error) {
         })
 
 

@@ -74,6 +74,7 @@ const saveBackGround = async () => {
             async (position) => {
                 NetInfo.isConnected.fetch().done(async (isConnected) => {
                     if (isConnected) {
+                        console.log("saving online")
                         try {
                             await axios.post(settings.baseURL + 'place/savelocation', {
                                 latitude: position.coords.latitude,
@@ -230,11 +231,12 @@ class HomePlaces extends Component {
     }
 
     _handleAppStateChange = (nextAppState) => {
+        console.log(nextAppState)
         if (nextAppState === 'active') {
-            console.log(nextAppState)
             BackgroundJob.cancelAll(); 
             BackgroundJob.schedule(refreshTokenSchedule);
         } else {
+
             BackgroundJob.cancelAll(); 
             BackgroundJob.schedule(trackPositionSchedule);
             BackgroundJob.schedule(refreshTokenSchedule);

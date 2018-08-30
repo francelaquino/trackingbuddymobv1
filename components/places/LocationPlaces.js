@@ -12,9 +12,11 @@ import MapView, { Marker, Polyline,  PROVIDER_GOOGLE } from 'react-native-maps';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import Loading from '../shared/Loading';
 import Loader from '../shared/Loader';
 import OfflineNotice from '../shared/OfflineNotice';
+
 import Moment from 'moment';
 var userdetails = require('../shared/userDetails');
 
@@ -29,16 +31,20 @@ class LocationPlaces extends Component {
     constructor(props) {
         super(props)
         this.map = null;
+        let plot;
         this.maptrack = null;
         this.markers = [];
         this.state = {
             polyline: [],
             trackpolyline: [],
+            route: [],
             index:0,
             address: '',
+            routestart:'',
             pageStyle:'map',
             loading: true,
             mapMode: 'standard',
+            mapTrackMode: 'standard',
             busy: false,
             dateFilter: Moment().format("YYYY-MM-DD").toString(),
             dateDisplay: Moment().format('ddd, DD MMM YYYY'),
@@ -53,7 +59,6 @@ class LocationPlaces extends Component {
     }
         
     initialize() {
-
         this.props.displayLocationsMap(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
                 this.setState({ loading: false, busy: false })
             setTimeout(() => {
@@ -65,7 +70,7 @@ class LocationPlaces extends Component {
 
     async onDateChange(date) {
         await this.setState({ dateFilter: date, dateDisplay: Moment(date).format('ddd, DD MMM YYYY'), busy: true }) 
-        await this.initialize();
+        await this.changePageStyle(this.state.pageStyle);
     }
     async changePageStyle(style) {
        
@@ -86,49 +91,53 @@ class LocationPlaces extends Component {
         } else if (style == "track") {
             this.setState({ busy: false })
             this.props.displayLocationsTrack(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
-                this.setState({ busy: false });
-                let i = 0;
-                var coordinates = [];
-                let self = this;
-                setTimeout(() => {
-                    let plot = setInterval(function myTimer() {
-                       
-                        const coord = {
-                            coordinates: {
-                                latitude: self.props.locationstrack[i].latitude,
-                                longitude: self.props.locationstrack[i].longitude,
-                                latitudeDelta: LATITUDE_DELTA,
-                                longitudeDelta: LONGITUDE_DELTA,
-                            }
-                        }
-                        coordinates = coordinates.concat(coord.coordinates);
-
-                        self.setState({ trackpolyline: coordinates })
-
-                        self.maptrack.animateToRegion({
-                            latitude: self.props.locationstrack[i].latitude,
-                            longitude: self.props.locationstrack[i].longitude,
-                            latitudeDelta: 0.005,
-                            longitudeDelta: 0.005
-                        })
-
-                        i++;
-                        if (i >= self.props.locationstrack.length) {
-                            clearInterval(plot);
-                        }
-                    }, 1500);
-                }, 500);
-
-                
-
-                
-                
-
+                this.setState({ busy: false, routestart:'' });
             })
         }
     }
     
-    
+    startRoute() {
+        let i = 0;
+        var coordinates = [];
+        var coords = [];
+        let self = this;
+        this.setState({  routestart: '0' });
+            plot = setInterval(function myTimer() {
+
+                const coord = {
+                    id: i,
+                    coordinates: {
+                        latitude: self.props.locationstrack[i].latitude,
+                        longitude: self.props.locationstrack[i].longitude,
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA,
+                    }
+                }
+                coordinates = coordinates.concat(coord.coordinates);
+                coords = coords.concat(coord);
+
+                self.setState({ trackpolyline: coordinates, route: coords })
+
+                self.maptrack.animateToRegion({
+                    latitude: self.props.locationstrack[i].latitude,
+                    longitude: self.props.locationstrack[i].longitude,
+                    latitudeDelta: 0.005,
+                    longitudeDelta: 0.005
+                })
+
+                i++;
+                if (i >= self.props.locationstrack.length) {
+                    clearInterval(plot);
+                    self.setState({ routestart: '' });
+                }
+            }, 1500);
+        
+    }
+
+    stopRoute() {
+        clearInterval(plot);
+        this.setState({ routestart: '' });
+    }
     loading(){
         return (
           <Loading/>
@@ -205,6 +214,44 @@ class LocationPlaces extends Component {
 
     }
 
+
+    fitToMapTrack() {
+
+        let coordinates = [];
+        if (this.props.locationstrack.length == 1) {
+            this.map.animateToRegion({
+                latitude: this.props.locationstrack[0].latitude,
+                longitude: this.props.locationstrack[0].longitude,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005
+            })
+
+        } else if (this.props.locationstrack.length > 1) {
+
+            for (let i = 0; i < this.props.locationstrack.length; i++) {
+                const coord = {
+                    coordinates: {
+                        latitude: this.props.locationstrack[i].latitude,
+                        longitude: this.props.locationstrack[i].longitude,
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA,
+                    }
+                }
+
+                coordinates = coordinates.concat(coord.coordinates);
+            }
+            this.setState({ polyline: coordinates })
+            this.maptrack.fitToCoordinates(coordinates, { edgePadding: { top: 100, right: 100, bottom: 100, left: 100 }, animated: false })
+
+
+       
+        }
+
+
+
+
+    }
+
     
 
     renderLocation(){
@@ -248,6 +295,19 @@ class LocationPlaces extends Component {
         }
 
     }
+
+    async changeMapModeTrack() {
+        if (this.state.mapTrackMode == "standard") {
+            this.setState({
+                mapTrackMode: 'satellite'
+            });
+        } else {
+            this.setState({
+                mapTrackMode: 'standard'
+            });
+        }
+
+    }
     renderMap() {
         const markers = this.props.locationsmap.map((marker) => (
             <MapView.Marker
@@ -279,13 +339,13 @@ class LocationPlaces extends Component {
                     source={require('../../images/markercircle.png')} />
                 <MapView ref={map => { this.map = map }} mapType={this.state.mapMode}
                     style={styles.map}>
-                    
+                        {markers}
                     <MapView.Polyline 
                         style={{ zIndex: 99999 }}
                         coordinates={this.state.polyline}
-                        strokeWidth={2}
+                        strokeWidth={1}
                         strokeColor="#932424" />
-                    {markers}
+                   
                    
 
                 </MapView>
@@ -340,28 +400,85 @@ class LocationPlaces extends Component {
 
             )
     }
+    async renderRoute() {
+        console.log(this.props.locationsmap)
+        return this.props.locationsmap.map((r) => (
+            <MapView.Marker
+                key={r.id}
+                coordinate={r.coordinates}
+            >
 
+            </MapView.Marker>
+        ));
+
+
+    }
     renderTrack() {
-        
+        const route = this.state.route.map((r) => (
+            <MapView.Marker
+                key={r.id}
+                coordinate={r.coordinates}
+            >
+                <Image style={styles.markertransparent}
+                    source={require('../../images/icons8-marker-16.png')} />
+            </MapView.Marker>
+        ));
         return (
             <View style={styles.mainContainer}>
                 <View style={styles.mapContainer}>
-                    <MapView mapType={this.state.mapMode} ref={map => { this.maptrack = map }} 
+                    <MapView mapType={this.state.mapTrackMode} ref={map => { this.maptrack = map }} 
                         style={styles.map}>
                         <MapView.Polyline
                             style={{ zIndex: 99999 }}
                             coordinates={this.state.trackpolyline}
-                            strokeWidth={2}
+                            strokeWidth={1}
                             strokeColor="#932424" />
-                        
+                        {
+                            route
+                        }
+
+
 
                     </MapView>
 
                 </View>
-                
-                <View style={styles.addressContainer} >
-                        
+                <View style={globalStyle.mapMenu}>
+                    <TouchableOpacity onPress={() => this.fitToMapTrack()}>
+                        <View style={globalStyle.mapMenuCircle} >
+                            <MaterialIcons size={25} style={{ color: '#2c3e50' }} name="zoom-out-map" />
+                        </View>
+                        <Text style={globalStyle.mapMenuLabel}>Center Map</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.changeMapModeTrack()}>
+                        <View style={globalStyle.mapMenuCircle} >
+                            <Entypo size={25} style={{ color: '#2c3e50' }} name="globe" />
+                        </View>
+                        <Text style={globalStyle.mapMenuLabel}>Map Style</Text>
+                    </TouchableOpacity>
+
+
+
+
                 </View>
+                {this.props.locationstrack.length > 0 &&
+                    <View style={styles.addressContainer} >
+                    <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
+                        {this.state.routestart == '' &&
+                            <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.startRoute()}>
+                                <EvilIcons style={{ fontSize: 48, color: '#16a085' }} name='play' />
+                                <Text>Start</Text>
+                            </TouchableOpacity>
+                        }
+
+                        {this.state.routestart != '' &&
+                            <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.stopRoute()}>
+                            <Feather style={{ fontSize: 37, color: '#16a085' }} name='stop-circle' />
+                                <Text>Stop</Text>
+                            </TouchableOpacity>
+                        }
+                    </View>
+                </View>
+                }
             </View >
 
         )
@@ -390,8 +507,8 @@ class LocationPlaces extends Component {
                             <Text style={{ color: 'white' }} >Map</Text>
                         </Button>
                         <Button vertical onPress={() => this.changePageStyle('track')}>
-                            <Icon style={{ color: 'white' }} name="list" />
-                            <Text style={{ color: 'white' }} >Track</Text>
+                            <Icon style={{ color: 'white' }} name="navigate" />
+                            <Text style={{ color: 'white' }} >Route</Text>
                         </Button>
                         <Button vertical onPress={() => this.changePageStyle('list')}>
                             <Icon style={{ color: 'white' }} name="list" />
@@ -485,18 +602,24 @@ const styles = StyleSheet.create({
     },
     marker: {
         alignSelf: 'center',
-        width: 30,
-        height: 30,
-        margin: 0, padding: 0
+        width: 20,
+        height: 20,
+        margin: 0, padding: 0,
+    },
+    markertransparent: {
+        alignSelf: 'center',
+        width: 20,
+        height: 20,
+        margin: 0, padding: 0,
     },
 
     markerText: {
         textAlign: 'center',
         flex: 1,
-        color: 'black',
-        fontSize: 10,
-        width: 30,
-        marginTop: 7,
+        color: '#932424',
+        fontSize: 7,
+        width: 20,
+        marginTop: 4,
         position: 'absolute',
 
 
