@@ -2,18 +2,16 @@
   "ExpandedNodes": [
     "",
     "\\actions",
-    "\\android",
-    "\\android\\app",
-    "\\android\\app\\src",
-    "\\android\\app\\src\\main",
-    "\\assets",
-    "\\assets\\style",
     "\\components",
-    "\\components\\group",
+    "\\components\\member",
+    "\\components\\places",
+    "\\components\\settings",
+    "\\components\\shared",
     "\\components\\user",
+    "\\reducers",
     "\\redux",
     "\\redux\\actions"
   ],
-  "SelectedNode": "\\redux\\actions\\locationActions.js",
+  "SelectedNode": "\\components\\places\\LocationPlaces.js",
   "PreviewInSolutionExplorer": false
 }
