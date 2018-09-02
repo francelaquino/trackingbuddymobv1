@@ -59,6 +59,8 @@ class LocationPlaces extends Component {
     }
         
     initialize() {
+       
+
         this.props.displayLocationsMap(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
                 this.setState({ loading: false, busy: false })
             setTimeout(() => {
@@ -69,9 +71,11 @@ class LocationPlaces extends Component {
     }
 
     async onDateChange(date) {
-        await this.setState({ dateFilter: date, dateDisplay: Moment(date).format('ddd, DD MMM YYYY'), busy: true }) 
+        await this.setState({ dateDisplay: date, dateFilter: Moment(new Date(date)).format('YYYY-MM-DD') , busy: true}) 
         await this.changePageStyle(this.state.pageStyle);
     }
+
+    
     async changePageStyle(style) {
        
         await this.setState({ pageStyle: style, busy: true });
@@ -202,8 +206,7 @@ class LocationPlaces extends Component {
                  coordinates = coordinates.concat(coord.coordinates);
              }
              this.setState({ polyline: coordinates })
-             this.map.fitToCoordinates(coordinates, { edgePadding: { top: 100, right: 100, bottom: 100, left: 100 }, animated: false })
-            
+             this.map.fitToCoordinates(coordinates, { edgePadding: { top: 100, right: 10, bottom: 100, left: 10 }, animated: false })
 
          } else {
              this.setState({ polyline: [] })
@@ -241,7 +244,7 @@ class LocationPlaces extends Component {
                 coordinates = coordinates.concat(coord.coordinates);
             }
             this.setState({ polyline: coordinates })
-            this.maptrack.fitToCoordinates(coordinates, { edgePadding: { top: 100, right: 100, bottom: 100, left: 100 }, animated: false })
+            this.maptrack.fitToCoordinates(coordinates, { edgePadding: { top: 200, right: 200, bottom: 200, left: 200 }, animated: false })
 
 
        
@@ -351,7 +354,7 @@ class LocationPlaces extends Component {
                 </MapView>
                 
                 </View>
-                <View style={globalStyle.mapMenu}>
+                <View style={[globalStyle.mapMenu, {top:50}]}>
                     <TouchableOpacity onPress={() => this.fitToMap()}>
                         <View style={globalStyle.mapMenuCircle} >
                             <MaterialIcons size={25} style={{ color: '#2c3e50' }} name="zoom-out-map" />
@@ -369,26 +372,57 @@ class LocationPlaces extends Component {
 
 
                 </View>
+                <View style={styles.searchContainer} >
+                    <View style={{ left: '1%', height: 45, width: '98%', flex: 1, flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: 'silver', position: 'absolute' }} >
+                        <DatePicker
+                            style={{ flex: 1 }}
+                            mode="date"
+                            date={this.state.dateDisplay}
+                            format="ddd, DD MMM YYYY"
+                            placeholder="Provide date history"
+                            confirmBtnText="Confirm"
+                            cancelBtnText="Cancel"
+                            iconSource={require('../../images/today.png')}
+                            customStyles={{
+                                dateInput: {
+                                    borderWidth: 0,
+
+                                    
+                                },
+                                dateText: {
+                                    fontSize:17
+                                },
+                                placeholderText: {
+                                    fontSize: 17
+                                }
+                            }}
+                            onDateChange={(date) => this.onDateChange(date)}
+                            
+                        />
+                        
+                    </View>
+                </View>
+            
                 {this.props.locationsmap.length > 0 &&
                     <View style={styles.addressContainer} >
                         <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
                             {this.state.address != '' &&
                                 <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('B')}>
-                                    <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropleft' />
-                                    <Text>Back</Text>
+                            <Ionicons style={{ fontSize: 38, color: 'white' }} name='ios-arrow-dropleft' />
+                            <Text style={{ color: 'white' }}>Back</Text>
                                 </TouchableOpacity>
                             }
                             {this.state.address == '' &&
                                 <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('S')}>
-                                    <EvilIcons style={{ fontSize: 48, color: '#16a085' }} name='play' />
-                                    <Text>Start</Text>
+                            <EvilIcons style={{ fontSize: 48, color: 'white' }} name='play' />
+                            <Text style={{color:'white'}}>Start</Text>
                                 </TouchableOpacity>
                             }
 
                             {this.state.address != '' &&
                                 <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('N')}>
-                                    <Ionicons style={{ fontSize: 38, color: '#16a085' }} name='ios-arrow-dropright' />
-                                    <Text>Next</Text>
+                            <Ionicons style={{ fontSize: 38, color: 'white' }} name='ios-arrow-dropright' />
+                            <Text style={{ color: 'white' }}>Next</Text>
                                 </TouchableOpacity>
                             }
 
@@ -442,7 +476,7 @@ class LocationPlaces extends Component {
                     </MapView>
 
                 </View>
-                <View style={globalStyle.mapMenu}>
+                <View style={[globalStyle.mapMenu, { top: 50 }]}>
                     <TouchableOpacity onPress={() => this.fitToMapTrack()}>
                         <View style={globalStyle.mapMenuCircle} >
                             <MaterialIcons size={25} style={{ color: '#2c3e50' }} name="zoom-out-map" />
@@ -465,15 +499,15 @@ class LocationPlaces extends Component {
                     <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
                         {this.state.routestart == '' &&
                             <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.startRoute()}>
-                                <EvilIcons style={{ fontSize: 48, color: '#16a085' }} name='play' />
-                                <Text>Start</Text>
+                            <EvilIcons style={{ fontSize: 48, color: 'white' }} name='play' />
+                            <Text style={{ color: 'white' }}>Start</Text>
                             </TouchableOpacity>
                         }
 
                         {this.state.routestart != '' &&
                             <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.stopRoute()}>
-                            <Feather style={{ fontSize: 37, color: '#16a085' }} name='stop-circle' />
-                                <Text>Stop</Text>
+                            <Feather style={{ fontSize: 37, color: 'white' }} name='stop-circle' />
+                            <Text style={{ color: 'white' }}>Stop</Text>
                             </TouchableOpacity>
                         }
                     </View>
@@ -535,28 +569,10 @@ class LocationPlaces extends Component {
                             </Button>
                         </Left>
                         <Body style={globalStyle.headerBody}>
-                            <Title>{this.state.dateDisplay}</Title>
+                            <Title>Location History</Title>
                         </Body>
                         <Right style={globalStyle.headerRight}>
-                            <DatePicker
-                                style={{}}
-                                date={this.state.dateFilter}
-                                mode="date"
-                                placeholder="select date"
-                                confirmBtnText="Confirm"
-                                cancelBtnText="Cancel"
-                                iconSource={require('../../images/today.png')}
-                                hideText={true}
-                                customStyles={{
-                                    dateIcon: {
-                                        position: 'absolute',
-                                        top: 4,
-                                        right: 0,
-                                        marginLeft: 0
-                                    },
-                                }}
-                                onDateChange={(date) => this.onDateChange(date) }
-                            />
+                            
                         </Right>
                     </Header>
                     {
@@ -624,6 +640,15 @@ const styles = StyleSheet.create({
 
 
     },
+    searchContainer: {
+        height: 48,
+        width: '100%',
+        position: 'absolute',
+        backgroundColor: 'white',
+        top: 0,
+        flex: 1,
+        
+    },
     addressContainer: {
         height: 65,
         width: '100%',
@@ -631,7 +656,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         bottom: 0,
         position: 'absolute',
-        backgroundColor: 'white',
+        backgroundColor: '#2c3e50',
         alignItems: 'center', padding: 5,
         borderTopWidth: 1,
         borderTopColor:'#ecf0f1',

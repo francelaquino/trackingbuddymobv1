@@ -540,7 +540,11 @@ export const displayLocationsList = (useruid,date) => dispatch => {
                                     type: DISPLAY_LOCATION_LIST,
                                     payload: res.data.results
                                 });
-                                resolve(true)
+                    resolve(true)
+
+                    if (res.data.results.length <= 0) {
+                        ToastAndroid.showWithGravityAndOffset("No location history found", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
                     
                         
                 }).catch(function (error) {
@@ -613,6 +617,10 @@ export const displayLocationsMap = (useruid, date) => dispatch => {
                         resolve(true)
                     }
 
+                    if (res.data.results.length <= 0) {
+                        ToastAndroid.showWithGravityAndOffset("No location history found", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
+
                 }).catch(function (error) {
 
                     dispatch({
@@ -650,7 +658,11 @@ export const displayLocationsTrack = (useruid, date) => dispatch => {
                                     payload: res.data.results
                                 });
                                 resolve(true)
-                        })
+                    })
+
+                    if (res.data.results.length <= 0) {
+                        ToastAndroid.showWithGravityAndOffset("No location history found", ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+                    }
                    
                 }).catch(function (error) {
 
