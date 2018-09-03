@@ -24,13 +24,14 @@ const getDistance=(lat1,long1,lat2,long2) => {
     return d; 
 };
 
-const savelocation = async (useruid, latitude, longitude) => {
+const savelocation = async (useruid, latitude, longitude,source) => {
     try {
         
         await axios.post(settings.baseURL + 'place/savelocation', {
             latitude: latitude,
             longitude: longitude,
             useruid: useruid,
+            source: source,
             dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
         }).then(async function (res) {
             }).catch(function (error) {
@@ -48,6 +49,7 @@ export const saveLocationOffline = () => async dispatch => {
                     const coords = {
                         latitude: position.coords.latitude,
                         useruid: userid,
+                        source : 'background offline',
                         longitude: position.coords.longitude,
                         dateadded: Moment().format('YYYY-MM-DD HH:mm:ss')
                     }
@@ -62,7 +64,7 @@ export const saveLocationOffline = () => async dispatch => {
                         if (location.length >= 1) {
                             var loc = location[location.length - 1];
                             let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
-                            if (distance > 150) {
+                            if (distance >= 10) {
                                 location.push(coords)
                                 await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
                             }
@@ -137,7 +139,7 @@ export const saveLocationOnline=()=> async dispatch=> {
                 async (position) => {
 
                         //await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon="+position.coords.longitude)
-                    await axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
+                     axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
                             .then(function (res) {
                                 if (res.data.status == "OK") {
                                     dispatch({
@@ -148,7 +150,7 @@ export const saveLocationOnline=()=> async dispatch=> {
                             }).catch(function (error) {
                             });
 
-                        await savelocation(userid, position.coords.latitude, position.coords.longitude);
+                        await savelocation(userid, position.coords.latitude, position.coords.longitude,"foreground online");
                     console.log("location changed")
                    
 
