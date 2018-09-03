@@ -31,7 +31,6 @@ class Menu extends Component {
         AsyncStorage.setItem("email", "");
         AsyncStorage.setItem("firstname", "");
         AsyncStorage.setItem("lastname", "");
-
         setTimeout(() => {
             this.props.navigation.navigate("Login");
         }, 1000);
@@ -112,7 +111,7 @@ class Menu extends Component {
                                     </Right>
                                 </ListItem>
 
-                                <ListItem icon button avatar style={globalStyle.listItem} onPress={() => this.props.navigation.navigate("LocationPlaces", { uid: userdetails.userid })}>
+                                <ListItem icon button avatar style={globalStyle.listItem} onPress={() => this.props.navigation.navigate("LocationPlaces", { uid: userdetails.userid, name: userdetails.firstname })}>
                                     <Left >
                                         <SimpleLineIcons style={{ fontSize: 25, width: 30, color: '#16a085', marginLeft: 20 }} name="map" />
                                     </Left>

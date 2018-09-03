@@ -35,8 +35,10 @@ const savelocation = async (useruid, latitude, longitude) => {
             latitude: latitude,
             longitude: longitude,
             useruid: useruid,
+            source: 'login',
             dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
         }).then(async function (res) {
+            console.log(res)
         }).catch(function (error) {
         })
     } catch (e) {
@@ -71,18 +73,17 @@ export const userLogin = (email, password) => async dispatch => {
                                         navigator.geolocation.getCurrentPosition(
                                             async (position) => {
 
-
+                                                console.log(position);
                                                 await savelocation(res.user.uid, position.coords.latitude, position.coords.longitude);
 
-                                                await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
+                                                /*await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
                                                     .then(function (res) {
-                                                        console.log(res.data);
                                                         dispatch({
                                                             type: SAVE_LOCATION_ONLINE,
                                                             payload: res.data
                                                         });
                                                     }).catch(function (error) {
-                                                    });
+                                                    });*/
 
                                             },
                                             (err) => {

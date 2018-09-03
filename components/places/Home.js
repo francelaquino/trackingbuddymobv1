@@ -67,7 +67,6 @@ const getDistance = (lat1, long1, lat2, long2) => {
 const saveBackGround = async () => {
     let userid = await AsyncStorage.getItem("userid");
     if (userid !== "" & userid !== null) {
-        console.log("saving background");
 
 
         navigator.geolocation.getCurrentPosition(
@@ -94,28 +93,26 @@ const saveBackGround = async () => {
                         const coords = {
                             latitude: position.coords.latitude,
                             useruid: userid,
-                            source: 'background offline',
+                            source: 'background closed app',
                             longitude: position.coords.longitude,
                             dateadded: Moment().format('YYYY-MM-DD HH:mm:ss')
                         }
                         const offlineLocation = await AsyncStorage.getItem('offlineLocation');
                         let location = JSON.parse(offlineLocation);
-                        consolelog(location);
                         if (!location) {
                             location = [];
                         }
                         
-                        if (location.length <= 500) {
+                        if (location.length <= 5000) {
 
                             if (location.length >= 1) {
                                 var loc = location[location.length - 1];
                                 let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
-                                //if (distance >= 10) {
+                                if (distance >= 10) {
                                     console.log("saving offline")
                                     location.push(coords)
                                     await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
-                                //}
-                                //}
+                                }
                             } else {
                                 console.log("saving offline")
                                 location.push(coords)
@@ -209,6 +206,7 @@ class HomePlaces extends Component {
         };
 
         let watchID = navigator.geolocation.watchPosition((position) => {
+            console.log("watching");
             NetInfo.isConnected.fetch().done((isConnected) => {
                 if (isConnected) {
                     self.props.pushLocationOnline();
@@ -250,8 +248,6 @@ class HomePlaces extends Component {
     }
    
     async componentDidMount() {
-        let d = getDistance("27.141707", "49.563248", "27.141659", "49.563446");
-        console.log("distance : " + d);
         BackgroundJob.cancelAll(); 
         AppState.addEventListener('change', this._handleAppStateChange);
 

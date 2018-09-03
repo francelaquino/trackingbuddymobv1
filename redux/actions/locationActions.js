@@ -59,7 +59,7 @@ export const saveLocationOffline = () => async dispatch => {
                         location = [];
                     }
                     console.log("saving offline")
-                    if (location.length <= 200) {
+                    if (location.length <= 5000) {
 
                         if (location.length >= 1) {
                             var loc = location[location.length - 1];
@@ -92,7 +92,6 @@ export const saveLocationOffline = () => async dispatch => {
 
 export const saveLocation = (coords) => async dispatch => {
     try {
-        console.log("watching location")
 
         await axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + coords.latitude + "," + coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
             .then(function (res) {
@@ -112,6 +111,7 @@ export const saveLocation = (coords) => async dispatch => {
             latitude: coords.latitude,
             longitude: coords.longitude,
             useruid: userdetails.userid,
+            source : 'foreground online',
             dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
         }).then(async function (res) {
         }).catch(function (error) {
@@ -134,7 +134,6 @@ export const saveLocationOnline=()=> async dispatch=> {
     } else {
                 
         try {
-            console.log("saving foreground location")
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
 
@@ -151,16 +150,12 @@ export const saveLocationOnline=()=> async dispatch=> {
                             });
 
                         await savelocation(userid, position.coords.latitude, position.coords.longitude,"foreground online");
-                    console.log("location changed")
+                        console.log("foreground online")
                    
 
                 },
                 (err) => {
                     console.log(err)
-                   /* dispatch({
-                        type: SAVE_LOCATION_ONLINE,
-                        payload: ""
-                    });*/
                 },
                 { enableHighAccuracy: false, timeout: 10000}
             );
@@ -196,7 +191,7 @@ export const pushLocationOnline = () => async dispatch => {
         let location = JSON.parse(offlineLocation);
         
 
-        await AsyncStorage.setItem("offlineLocation", "");
+       
         if (!location) {
             location = [];
         }
@@ -207,6 +202,7 @@ export const pushLocationOnline = () => async dispatch => {
                 await axios.post(settings.baseURL + 'place/saveofflinelocation', {
                     locations: location,
                 }).then(function (res) {
+                    AsyncStorage.setItem("offlineLocation", "");
                 }).catch(function (error) {
                     console.log(error)
                 });

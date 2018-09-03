@@ -71,7 +71,7 @@ class LocationPlaces extends Component {
     }
 
     async onDateChange(date) {
-        await this.setState({ dateDisplay: Moment(date).format('MMMM DD, YYYY'), dateFilter: date , busy: true}) 
+        await this.setState({ dateDisplay: Moment(date).format('MMMM DD, YYYY'), dateFilter: date }) 
         await this.changePageStyle(this.state.pageStyle);
     }
 
@@ -93,7 +93,6 @@ class LocationPlaces extends Component {
                 }, 100);
             })
         } else if (style == "track") {
-            this.setState({ busy: false })
             this.props.displayLocationsTrack(this.props.navigation.state.params.uid, this.state.dateFilter).then(res => {
                 this.setState({ busy: false, routestart:'' });
             })
@@ -259,6 +258,8 @@ class LocationPlaces extends Component {
 
     renderLocation(){
         return (
+            <View>
+           
             <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
                 <Content padder>
                     <View style={globalStyle.container}>
@@ -284,7 +285,7 @@ class LocationPlaces extends Component {
 
                     </View>
                 </Content>
-            </ScrollView>)
+            </ScrollView></View>)
      }
     async changeMapMode() {
         if (this.state.mapMode == "standard") {
@@ -337,31 +338,7 @@ class LocationPlaces extends Component {
         ));
         return (
             <View style={styles.mainContainer}>
-                <View style={styles.searchContainer} >
-                    <View style={{ height: 40, width: 50 }} >
-                        <DatePicker
-                            style={{}}
-                            mode="date"
-                            date={this.state.dateFilter}
-                            confirmBtnText="Confirm"
-                            hideText={true}
-                            cancelBtnText="Cancel"
-                            iconSource={require('../../images/today.png')}
-                            customStyles={{
-                                dateIcon: {
-                                    position: 'absolute', left: 0
-                                }
-                            }}
-                            onDateChange={(date) => this.onDateChange(date)}
-
-                        />
-                    </View>
-                    <View style={{ flex: 3, height: 40 }} >
-                        <Text style={{ fontSize: 17, color: '#2c3e50' }}>{this.state.dateDisplay}</Text>
-                        <Text style={{ fontSize: 12 }}>Member Name</Text>
-                    </View>
-
-                </View>
+               
             <View style={styles.mapContainer}>
                 <Image style={{opacity:0}}
                     source={require('../../images/markercircle.png')} />
@@ -398,26 +375,27 @@ class LocationPlaces extends Component {
                 </View>
                
                 
-            
-                    <View style={styles.addressContainer} >
+            {this.props.locationsmap.length > 0 &&
+                <View style={styles.addressContainer} >
                     <View style={{ height: 30, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
-                        <TouchableOpacity style={{ flex: 1, alignItems: 'center', borderRightWidth: 1, borderRightColor:'#eff0f1',width:50 }} onPress={() => this.centerToMarker('B')}>
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'center', borderRightWidth: 1, borderRightColor: '#eff0f1', width: 50 }} onPress={() => this.centerToMarker('B')}>
                             <Ionicons style={{ fontSize: 30, color: '#16a085' }} name='ios-arrow-dropleft' />
                             <Text style={{ color: '#434343', fontSize: 13 }}>Back</Text>
-                                </TouchableOpacity>
+                        </TouchableOpacity>
                         <TouchableOpacity style={{ flex: 1, alignItems: 'center', borderRightWidth: 1, borderRightColor: '#eff0f1', width: 50 }} onPress={() => this.centerToMarker('S')}>
                             <EvilIcons style={{ fontSize: 40, color: '#16a085' }} name='play' />
-                            <Text style={{ color: '#434343', fontSize: 13}}>Start</Text>
-                                </TouchableOpacity>
+                            <Text style={{ color: '#434343', fontSize: 13 }}>Start</Text>
+                        </TouchableOpacity>
 
-                                <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('N')}>
+                        <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.centerToMarker('N')}>
                             <Ionicons style={{ fontSize: 30, color: '#16a085' }} name='ios-arrow-dropright' />
-                            <Text style={{ color: '#434343', fontSize: 13}}>Next</Text>
-                                </TouchableOpacity>
+                            <Text style={{ color: '#434343', fontSize: 13 }}>Next</Text>
+                        </TouchableOpacity>
 
 
-                        </View >
-                    </View>
+                    </View >
+                </View>
+            }
             </View >
 
             )
@@ -464,7 +442,7 @@ class LocationPlaces extends Component {
                     </MapView>
 
                 </View>
-                <View style={[globalStyle.mapMenu, { top: 50 }]}>
+                <View style={[globalStyle.mapMenu, { top: 1 }]}>
                     <TouchableOpacity onPress={() => this.fitToMapTrack()}>
                         <View style={globalStyle.mapMenuCircle} >
                             <MaterialIcons size={25} style={{ color: '#2c3e50' }} name="zoom-out-map" />
@@ -483,19 +461,21 @@ class LocationPlaces extends Component {
 
                 </View>
                 {this.props.locationstrack.length > 0 &&
+                    
+
                     <View style={styles.addressContainer} >
-                    <View style={{ height: 35, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
+                    <View style={{ height: 30, flex: 1, flexDirection: 'row', alignItems: 'center' }} >
                         {this.state.routestart == '' &&
-                            <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.startRoute()}>
-                            <EvilIcons style={{ fontSize: 48, color: 'white' }} name='play' />
-                            <Text style={{ color: 'white' }}>Start</Text>
+                            <TouchableOpacity style={{ flex: 1, alignItems: 'center' ,width: 50 }} onPress={() => this.startRoute()}>
+                            <EvilIcons style={{ fontSize: 38, color: '#16a085' }} name='play' />
+                            <Text style={{ color: '#434343', fontSize: 13 }}>Start</Text>
                             </TouchableOpacity>
                         }
 
                         {this.state.routestart != '' &&
-                            <TouchableOpacity style={{ flex: 1, alignItems: 'center' }} onPress={() => this.stopRoute()}>
-                            <Feather style={{ fontSize: 37, color: 'white' }} name='stop-circle' />
-                            <Text style={{ color: 'white' }}>Stop</Text>
+                            <TouchableOpacity style={{ flex: 1, alignItems: 'center', width: 50 }} onPress={() => this.stopRoute()}>
+                            <Feather style={{ fontSize: 37, color: '#16a085' }} name='stop-circle' />
+                            <Text style={{ color: '#434343', fontSize: 13 }}>Stop</Text>
                             </TouchableOpacity>
                         }
                     </View>
@@ -523,7 +503,36 @@ class LocationPlaces extends Component {
                         <Text style={{ width: 90, textAlign: 'center' }}>List</Text>
                     </Button>
                 </Segment>
-                
+
+                <View style={styles.searchContainer} >
+                    <View style={{ height: 40, width: 50 }} >
+                        <DatePicker
+                            style={{}}
+                            mode="date"
+                            date={this.state.dateFilter}
+                            confirmBtnText="Confirm"
+                            hideText={true}
+                            cancelBtnText="Cancel"
+                            iconSource={require('../../images/today.png')}
+                            customStyles={{
+                                dateIcon: {
+                                    position: 'absolute', left: 0
+                                }
+                            }}
+                            onDateChange={(date) => this.onDateChange(date)}
+
+                        />
+                    </View>
+                    <View style={{ flex: 3, height: 40 }} >
+                        <Text style={{ fontSize: 17, color: '#2c3e50' }}>{this.state.dateDisplay}</Text>
+                        <Text style={{ fontSize: 12 }}>{this.props.navigation.state.params.name}'s Location History</Text>
+                    </View>
+
+                </View>
+                <View style={{
+                    height: 5, backgroundColor: '#ecf0f1', width: '100%', borderBottomWidth: 1,
+                    borderBottomColor: '#efebef' }}>
+                </View>
 
                 {
                     this.state.pageStyle == 'list' ?  this.renderLocation() :
@@ -551,7 +560,7 @@ class LocationPlaces extends Component {
                             </Button>
                         </Left>
                         <Body style={globalStyle.headerBody}>
-                            <Title>Location History</Title>
+                            <Title>Locations</Title>
                         </Body>
                         <Right style={globalStyle.headerRight}>
                             

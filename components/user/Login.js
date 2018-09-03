@@ -49,7 +49,7 @@ class Login extends Component {
           
             if (res == true) {
                 setTimeout(() => {
-                    this.props.saveLocationOnline();
+                    //this.props.saveLocationOnline();
                     setTimeout(() => {
                         this.props.displayHomeMember();
                         this.props.navigation.navigate('Home');

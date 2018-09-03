@@ -12,6 +12,6 @@
     "\\redux",
     "\\redux\\actions"
   ],
-  "SelectedNode": "\\components\\places\\LocationPlaces.js",
+  "SelectedNode": "\\redux\\actions\\locationActions.js",
   "PreviewInSolutionExplorer": false
 }
