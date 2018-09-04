@@ -107,12 +107,12 @@ const saveBackGround = async () => {
 
                             if (location.length >= 1) {
                                 var loc = location[location.length - 1];
-                                let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
-                                if (distance >= 10) {
+                                //let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
+                                //if (distance >= 10) {
                                     console.log("saving offline")
                                     location.push(coords)
                                     await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
-                                }
+                               // }
                             } else {
                                 console.log("saving offline")
                                 location.push(coords)
@@ -205,7 +205,7 @@ class HomePlaces extends Component {
             appState: AppState.currentState
         };
 
-        let watchID = navigator.geolocation.watchPosition((position) => {
+        /*let watchID = navigator.geolocation.watchPosition((position) => {
             console.log("watching");
             NetInfo.isConnected.fetch().done((isConnected) => {
                 if (isConnected) {
@@ -216,10 +216,10 @@ class HomePlaces extends Component {
                     self.props.saveLocationOffline();
                 }
             });
-           
-        }, null, { distanceFilter: 10 });
 
-        AsyncStorage.setItem("watchID", watchID.toString());
+        }, null, { enableHighAccuracy: false,distanceFilter: 10 });
+
+        AsyncStorage.setItem("watchID", watchID.toString());*/
 
         
 
@@ -229,11 +229,11 @@ class HomePlaces extends Component {
     componentWillUnmount() {
        
         this.notificationListener();
-        navigator.geolocation.stopWatch(AsyncStorage.getItem("watchID"));
+        //navigator.geolocation.stopWatch(AsyncStorage.getItem("watchID"));
         AppState.removeEventListener('change', this._handleAppStateChange);
         
     }
-
+    /*
     _handleAppStateChange = (nextAppState) => {
         console.log(nextAppState)
         if (nextAppState === 'active') {
@@ -245,11 +245,11 @@ class HomePlaces extends Component {
             BackgroundJob.schedule(trackPositionSchedule);
             BackgroundJob.schedule(refreshTokenSchedule);
         }
-    }
+    }*/
    
     async componentDidMount() {
         BackgroundJob.cancelAll(); 
-        AppState.addEventListener('change', this._handleAppStateChange);
+        //AppState.addEventListener('change', this._handleAppStateChange);
 
         BackHandler.addEventListener('hardwareBackPress', function () {
             return true;
@@ -290,6 +290,8 @@ class HomePlaces extends Component {
             });
         }
 
+        BackgroundJob.schedule(trackPositionSchedule);
+        BackgroundJob.schedule(refreshTokenSchedule);
 
         
        

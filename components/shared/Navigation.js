@@ -22,6 +22,7 @@ import Home from '../places/Home';
 import CreatePlace from '../places/CreatePlace';
 import EditCreatePlace from '../places/EditCreatePlace';
 import PlaceList from '../places/PlaceList';
+import LocationsMember from '../places/LocationsMember';
 import PlaceView from '../places/PlaceView';
 import LocationPlaces from '../places/LocationPlaces';
 import LocationView from '../places/LocationView';
@@ -86,7 +87,15 @@ export const Stack = createStackNavigator({
             header: null
         }
     },
+    
 
+    LocationsMember: {
+        screen: LocationsMember,
+        headerMode: 'none',
+        navigationOptions: {
+            header: null
+        }
+    },
 
     LocationPlaces: {
         screen: LocationPlaces,
@@ -95,7 +104,6 @@ export const Stack = createStackNavigator({
             header: null
         }
     },
-
     PlaceList: {
         screen: PlaceList,
         headerMode: 'none',

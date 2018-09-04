@@ -18,11 +18,11 @@ class Splash extends Component {
         let avatar = await AsyncStorage.getItem("avatar");
         let emptyphoto = await AsyncStorage.getItem("emptyphoto");
         
-       /* await NetInfo.isConnected.fetch().done(async (isConnected) => {
+        await NetInfo.isConnected.fetch().done(async (isConnected) => {
             if (isConnected) {
                 this.props.saveLocationOnline();
             }
-        });*/
+        });
 
         await setTimeout(async () => {
             if (userid === "" || userid === null) {

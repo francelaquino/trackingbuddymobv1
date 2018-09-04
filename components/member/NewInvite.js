@@ -74,7 +74,7 @@ class NewInvite extends Component {
                             <View style={{justifyContent: 'center',alignItems: 'center'}}>
                                 <Button disabled={!this.state.invitationcode}
                                     onPress={()=>this.onSubmit()}
-                                    bordered light full rounded style={this.state.invitationcode ? globalStyle.secondaryButton : globalStyle.secondaryButtonDisabled}>
+                                    bordered light full rounded style={globalStyle.secondaryButton}>
                                     <Text style={{color:'white'}}>Submit</Text>
                                 </Button>
                             </View>
