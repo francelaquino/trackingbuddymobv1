@@ -26,16 +26,34 @@ const getDistance=(lat1,long1,lat2,long2) => {
 
 const savelocation = async (useruid, latitude, longitude,source) => {
     try {
-        
-        await axios.post(settings.baseURL + 'place/savelocation', {
+        /*axios({
+            method: 'post',
+            url: settings.baseURL + 'place/savelocation',
+            timeout: 20000, 
+            data: {
+                latitude: latitude,
+                longitude: longitude,
+                useruid: useruid,
+                source: source,
+                dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
+            }
+        })
+            .then(function (response) {
+            })
+            .catch(function (error) {
+                console.log(error);
+            });*/
+
+       /* await axios.post(settings.baseURL + 'place/savelocation', timeout: 1000, {
             latitude: latitude,
             longitude: longitude,
             useruid: useruid,
             source: source,
             dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
         }).then(async function (res) {
-            }).catch(function (error) {
-            })
+        }).catch(function (error) {
+        })*/
+
     } catch (e) {
     }
 }
@@ -82,7 +100,7 @@ export const saveLocationOffline = () => async dispatch => {
                 },
                 (err) => {
                 },
-                { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
+                { enableHighAccuracy: true, timeout: 20000 }
             );
         }catch (e) {
             console.log(e)
@@ -105,7 +123,7 @@ export const saveLocation = (coords) => async dispatch => {
             });
 
         
-
+       
 
         await axios.post(settings.baseURL + 'place/saveloginlocation', {
             latitude: coords.latitude,
@@ -137,8 +155,7 @@ export const saveLocationOnline=()=> async dispatch=> {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
 
-                        //await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon="+position.coords.longitude)
-                     axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
+                   /*  axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
                             .then(function (res) {
                                 if (res.data.status == "OK") {
                                     dispatch({
@@ -146,18 +163,23 @@ export const saveLocationOnline=()=> async dispatch=> {
                                         payload: res.data.results[0].formatted_address
                                     });
                                 }
-                            }).catch(function (error) {
+                         }).catch(function (error) {
+                             dispatch({
+                                 type: SAVE_LOCATION_ONLINE,
+                                 payload: "",
+                             });
                             });
-
-                        await savelocation(userid, position.coords.latitude, position.coords.longitude,"foreground online");
-                        console.log("foreground online")
+                   */
+                        //await savelocation(userid, position.coords.latitude, position.coords.longitude,"foreground online");
+                    console.log("foreground online")
+                    console.log(position.coords)
                    
 
                 },
                 (err) => {
                     console.log(err)
                 },
-                { enableHighAccuracy: false, timeout: 10000}
+                { enableHighAccuracy: true, timeout: 20000}
             );
         } catch (e) {
             console.log(e)
@@ -180,7 +202,7 @@ export const getUserLocation = () => async dispatch => {
             },
             (err) => {
             },
-            { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
+            { enableHighAccuracy: true, timeout: 20000 }
         );
 };
 
@@ -228,7 +250,7 @@ export const saveLocationOnLogin=()=> async dispatch=> {
             },
             (err) => {
             },
-            { enableHighAccuracy: false, timeout: 10000, maximumAge: 3000 }
+            { enableHighAccuracy: true, timeout: 20000 }
         );
 
     }).then(function(position){

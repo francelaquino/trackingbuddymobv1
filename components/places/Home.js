@@ -17,9 +17,9 @@ import Moment from 'moment';
 import { displayHomeMember, displayMember, addMember } from '../../redux/actions/memberActions';
 import { saveLocationOnline, pushLocationOnline, saveLocationOffline, saveLocation } from '../../redux/actions/locationActions';
 import firebase from 'react-native-firebase';
-import type { Notification } from 'react-native-firebase';
+//import type { Notification } from 'react-native-firebase';
 import axios from 'axios';
-var PushNotification = require('react-native-push-notification');
+//var PushNotification = require('react-native-push-notification');
 var settings = require('../../components/shared/Settings');
 var screenHeight = Dimensions.get('window').height; 
 
@@ -133,7 +133,7 @@ const saveBackGround = async () => {
             },
             (err) => {
             },
-            { enableHighAccuracy: false, timeout: 10000}
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
         );
     }
 }
@@ -202,54 +202,22 @@ class HomePlaces extends Component {
                 latitudeDelta: LATITUDE_DELTA,
                 longitudeDelta: LONGITUDE_DELTA,
             },
-            appState: AppState.currentState
         };
 
-        /*let watchID = navigator.geolocation.watchPosition((position) => {
-            console.log("watching");
-            NetInfo.isConnected.fetch().done((isConnected) => {
-                if (isConnected) {
-                    self.props.pushLocationOnline();
-                    self.props.saveLocation(position.coords);
-
-                } else {
-                    self.props.saveLocationOffline();
-                }
-            });
-
-        }, null, { enableHighAccuracy: false,distanceFilter: 10 });
-
-        AsyncStorage.setItem("watchID", watchID.toString());*/
-
+        
         
 
     }
 
 
     componentWillUnmount() {
-       
-        this.notificationListener();
-        //navigator.geolocation.stopWatch(AsyncStorage.getItem("watchID"));
-        AppState.removeEventListener('change', this._handleAppStateChange);
+       // this.notificationListener();
         
     }
-    /*
-    _handleAppStateChange = (nextAppState) => {
-        console.log(nextAppState)
-        if (nextAppState === 'active') {
-            BackgroundJob.cancelAll(); 
-            BackgroundJob.schedule(refreshTokenSchedule);
-        } else {
-
-            BackgroundJob.cancelAll(); 
-            BackgroundJob.schedule(trackPositionSchedule);
-            BackgroundJob.schedule(refreshTokenSchedule);
-        }
-    }*/
+   
    
     async componentDidMount() {
-        BackgroundJob.cancelAll(); 
-        //AppState.addEventListener('change', this._handleAppStateChange);
+       
 
         BackHandler.addEventListener('hardwareBackPress', function () {
             return true;
@@ -257,7 +225,7 @@ class HomePlaces extends Component {
 
       
 
-        this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
+       /* this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
 
             PushNotification.localNotification({
                 id: "1",
@@ -273,7 +241,7 @@ class HomePlaces extends Component {
             });
 
 
-        });
+        });*/
 
 
 
@@ -290,8 +258,8 @@ class HomePlaces extends Component {
             });
         }
 
-        BackgroundJob.schedule(trackPositionSchedule);
-        BackgroundJob.schedule(refreshTokenSchedule);
+        //BackgroundJob.schedule(trackPositionSchedule);
+        //BackgroundJob.schedule(refreshTokenSchedule);
 
         
        
@@ -346,8 +314,9 @@ class HomePlaces extends Component {
     }
 
 
-     componentWillMount() {
-        this.initialize();
+    componentWillMount() {
+        BackgroundJob.cancelAll(); 
+        //this.initialize();
 
     }
 
@@ -378,7 +347,7 @@ class HomePlaces extends Component {
             },
             (err) => {
             },
-            { enableHighAccuracy: false, timeout: 10000 }
+            { enableHighAccuracy: true, timeout: 20000}
         );
 
     }
@@ -560,7 +529,6 @@ class HomePlaces extends Component {
                                     followsUserLocation={true}
                                     loadingEnabled={true}
                                 zoomEnabled={true}
-                                pitchEnabled={true}
                                     style={styles.map}
                             >
                                    

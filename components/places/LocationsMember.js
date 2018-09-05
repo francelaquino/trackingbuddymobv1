@@ -11,7 +11,7 @@ import { displayMember  } from '../../redux/actions/memberActions' ;
 import Loading  from '../shared/Loading';
 import OfflineNotice  from '../shared/OfflineNotice';
 var globalStyle = require('../../assets/style/GlobalStyle');
-
+var userdetails = require('../shared/userDetails');
 
 
 class LocationsMember extends Component {
@@ -90,7 +90,7 @@ class LocationsMember extends Component {
                         <ScrollView  contentContainerStyle={{flexGrow: 1}} keyboardShouldPersistTaps={"always"}>
                             <View style={globalStyle.container}>
                         <List>
-                            <ListItembutton avatar style={globalStyle.listItem} onPress={() => { this.props.navigation.navigate("LocationPlaces", { uid: userdetails.userid, name: userdetails.firstname }) }}>
+                            <ListItem button avatar style={globalStyle.listItem} onPress={() => { this.props.navigation.navigate("LocationPlaces", { uid: userdetails.userid, name: userdetails.firstname }) }}>
                                 <Left style={globalStyle.listLeft}>
                                     <View style={globalStyle.listAvatarContainer} >
 
@@ -106,7 +106,6 @@ class LocationsMember extends Component {
                                     <SimpleLineIcons style={globalStyle.listRightOptionIcon} name='arrow-right' />
                                 </Right>
                             </ListItem>
-                        ) }
                                 {this.renderMember()}
                             </List>
                             

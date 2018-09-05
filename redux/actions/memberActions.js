@@ -541,7 +541,6 @@ export const displayGroupMember=(groupid)=> dispatch=> {
 
 export const displayHomeMember = () => async dispatch => {
     let members = [];
-    
     let count = 0;
     let cnt = 0;
     if (userdetails.group == "") {
