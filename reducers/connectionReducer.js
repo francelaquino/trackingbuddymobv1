@@ -1,4 +1,4 @@
-import { CONNECTION_STATE, GET_CONNECTION } from '../actions/types';
+import { CONNECTION_STATE, GET_CONNECTION } from '../redux/actions/types';
 
 const initialState = {
     isConnected:true,

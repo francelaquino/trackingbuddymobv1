@@ -10,7 +10,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
 import MapView, { ProviderPropType, Marker, AnimatedRegion, Animated, Polyline } from 'react-native-maps';
-import Geocoder from 'react-native-geocoder';
 import Loading  from '../shared/Loading';
 import Loader from '../shared/Loader';
 import OfflineNotice from '../shared/OfflineNotice';
@@ -104,7 +103,7 @@ class CreatePlace extends Component {
                       lng: position.coords.longitude,
               };
                   let self = this;
-                  await axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false")
+                  await axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
                       .then(async function (res) {
                           if (res.data.results.length > 0) {
                               self.setState({
@@ -153,7 +152,7 @@ class CreatePlace extends Component {
     }
     onRegionChangeComplete = region => {
         let self = this;
-        axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + region.latitude + "," + region.longitude + "&sensor=false")
+        axios.get("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + region.latitude + "," + region.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
             .then(async function (res) {
                 if (res.data.results.length > 0) {
                     self.setState({

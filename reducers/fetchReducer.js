@@ -1,4 +1,4 @@
-import { FETCH_COUNTRY , FETCHING_DATA, NO_CONNECTION } from '../actions/types';
+import { FETCH_COUNTRY , FETCHING_DATA, NO_CONNECTION } from '../redux/actions/types';
 
 const initialState = {
     items:[],

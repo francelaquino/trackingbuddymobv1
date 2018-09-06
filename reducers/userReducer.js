@@ -1,4 +1,4 @@
-import {  GET_PROFILE, POST_DATA, SIGNIN_USER, NO_CONNECTION } from '../actions/types';
+import {  GET_PROFILE, POST_DATA, SIGNIN_USER, NO_CONNECTION } from '../redux/actions/types';
 
 const initialState = {
     items:[],

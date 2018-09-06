@@ -5,7 +5,7 @@ import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon,
 import { connect } from 'react-redux';
 import OfflineNotice  from '../shared/OfflineNotice';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { displayGroup  } from '../../actions/groupActions' ;
+import { displayGroup  } from '../../redux/actions/groupActions' ;
 
 var globalStyle = require('../../assets/style/GlobalStyle');
 

@@ -1,4 +1,4 @@
-import {  CREATE_GROUP, DISPLAY_GROUP, DELETE_GROUP, UPDATE_GROUP } from '../actions/types';
+import {  CREATE_GROUP, DISPLAY_GROUP, DELETE_GROUP, UPDATE_GROUP } from '../redux/actions/types';
 
 const initialState = {
     groups:[],

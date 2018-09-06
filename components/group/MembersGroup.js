@@ -4,7 +4,7 @@ import {  Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOp
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon, Content, List, ListItem,Left, Right,Switch, Separator } from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { connect } from 'react-redux';
-import { displayGroup  } from '../../actions/groupActions' ;
+import { displayGroup  } from '../../redux/actions/groupActions' ;
 import OfflineNotice  from '../shared/OfflineNotice';
 var globalStyle = require('../../assets/style/GlobalStyle');
 

@@ -73,17 +73,21 @@ export const userLogin = (email, password) => async dispatch => {
                                         navigator.geolocation.getCurrentPosition(
                                             async (position) => {
 
-                                                console.log(position);
+                                                await axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
+                                                    .then(function (res) {
+                                                        if (res.data.status == "OK") {
+                                                            dispatch({
+                                                                type: SAVE_LOCATION_ONLINE,
+                                                                payload: res.data.results[0].formatted_address
+                                                            });
+                                                        }
+                                                    }).catch(function (error) {
+                                                    });
                                                 await savelocation(res.user.uid, position.coords.latitude, position.coords.longitude);
 
-                                                /*await axios.get("https://us-central1-trackingbuddy-5598a.cloudfunctions.net/api/getAddress?lat=" + position.coords.latitude + "&lon=" + position.coords.longitude)
-                                                    .then(function (res) {
-                                                        dispatch({
-                                                            type: SAVE_LOCATION_ONLINE,
-                                                            payload: res.data
-                                                        });
-                                                    }).catch(function (error) {
-                                                    });*/
+                                                
+
+
 
                                             },
                                             (err) => {

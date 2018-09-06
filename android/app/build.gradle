@@ -142,7 +142,6 @@ dependencies {
   exclude group: "com.google.android.gms"
 }
 
-    compile project(':react-native-geocoder')
     compile project(':react-native-background-job')
     implementation(project(':react-native-firebase')) {
         transitive = false

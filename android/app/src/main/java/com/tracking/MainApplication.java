@@ -17,7 +17,6 @@ import com.airbnb.android.react.maps.MapsPackage;
 import io.invertase.firebase.storage.RNFirebaseStoragePackage;
 import io.invertase.firebase.database.RNFirebaseDatabasePackage; 
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
-import com.devfd.RNGeocoder.RNGeocoderPackage; 
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +40,6 @@ public class MainApplication extends Application implements ReactApplication {
             new MapsPackage(),
             new RNFirebaseDatabasePackage(),
             new RNFirebaseAuthPackage(),
-            new RNGeocoderPackage(),
             new RNFirebaseMessagingPackage(),
             new RNFirebaseNotificationsPackage() 
       );

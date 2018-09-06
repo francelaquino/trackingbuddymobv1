@@ -1,7 +1,6 @@
 import { DISPLAY_LOCATION_TRACK, DISPLAY_LOCATION, DISPLAY_LOCATION_MAP, DISPLAY_LOCATION_LIST, GET_LOCATIONDETAILS, SAVE_LOCATION_OFFLINE, SAVE_LOCATION_ONLINE, DISPLAY_PLACES,GET_PLACE_ALERT } from './types';
 import firebase from 'react-native-firebase';
 import Moment from 'moment';
-import Geocoder from 'react-native-geocoder';
 import { ToastAndroid,AsyncStorage } from 'react-native';
 import axios from 'axios';
 var settings = require('../../components/shared/Settings');
@@ -26,7 +25,7 @@ const getDistance=(lat1,long1,lat2,long2) => {
 
 const savelocation = async (useruid, latitude, longitude,source) => {
     try {
-        /*axios({
+        axios({
             method: 'post',
             url: settings.baseURL + 'place/savelocation',
             timeout: 20000, 
@@ -41,62 +40,54 @@ const savelocation = async (useruid, latitude, longitude,source) => {
             .then(function (response) {
             })
             .catch(function (error) {
-                console.log(error);
-            });*/
+                appendOfflineLocation(latitude, longitude);
+            });
 
-       /* await axios.post(settings.baseURL + 'place/savelocation', timeout: 1000, {
-            latitude: latitude,
-            longitude: longitude,
-            useruid: useruid,
-            source: source,
-            dateadded: Moment().format('YYYY-MM-DD HH:mm:ss'),
-        }).then(async function (res) {
-        }).catch(function (error) {
-        })*/
+       
 
     } catch (e) {
     }
 }
 
+const appendOfflineLocation = async (latitude, longitude) => {
+    let userid = await AsyncStorage.getItem("userid");
+    const coords = {
+        latitude: latitude,
+        useruid: userid,
+        source: 'background offline',
+        longitude: longitude,
+        dateadded: Moment().format('YYYY-MM-DD HH:mm:ss')
+    }
+    const offlineLocation = await AsyncStorage.getItem('offlineLocation');
+    let location = JSON.parse(offlineLocation);
+    if (!location) {
+        location = [];
+    }
+    console.log("saving offline")
+    if (location.length <= 5000) {
+
+        if (location.length >= 1) {
+            var loc = location[location.length - 1];
+            //let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
+            //if (distance >= 10) {
+            location.push(coords)
+            await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+            //}
+        } else {
+            location.push(coords)
+            await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
+        }
+
+    }
+    console.log(location);
+}
 export const saveLocationOffline = () => async dispatch => {
     let userid = await AsyncStorage.getItem("userid");
     if (userid !== "" & userid !== null) {
         try {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
-                    const coords = {
-                        latitude: position.coords.latitude,
-                        useruid: userid,
-                        source : 'background offline',
-                        longitude: position.coords.longitude,
-                        dateadded: Moment().format('YYYY-MM-DD HH:mm:ss')
-                    }
-                    const offlineLocation = await AsyncStorage.getItem('offlineLocation');
-                    let location = JSON.parse(offlineLocation);
-                    if (!location) {
-                        location = [];
-                    }
-                    console.log("saving offline")
-                    if (location.length <= 5000) {
-
-                        if (location.length >= 1) {
-                            var loc = location[location.length - 1];
-                            //let distance = getDistance(loc.latitude, loc.longitude, coords.latitude, coords.longitude)
-                            //if (distance >= 10) {
-                                location.push(coords)
-                                await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
-                            //}
-                        } else {
-                            location.push(coords)
-                            await AsyncStorage.setItem("offlineLocation", JSON.stringify(location))
-                        }
-                        
-                    }
-                    console.log(location);
-
-
-
-
+                    appendOfflineLocation(position.coords.latitude, position.coords.longitude);
                 },
                 (err) => {
                 },
@@ -155,7 +146,7 @@ export const saveLocationOnline=()=> async dispatch=> {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
 
-                   /*  axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
+                     axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + position.coords.latitude + "," + position.coords.longitude + "&sensor=false&key=AIzaSyCHZ-obEHL8TTP4_8vPfQKAyzvRrrlmi5Q")
                             .then(function (res) {
                                 if (res.data.status == "OK") {
                                     dispatch({
@@ -169,8 +160,8 @@ export const saveLocationOnline=()=> async dispatch=> {
                                  payload: "",
                              });
                             });
-                   */
-                        //await savelocation(userid, position.coords.latitude, position.coords.longitude,"foreground online");
+                   
+                        await savelocation(userid, position.coords.latitude, position.coords.longitude,"foreground online");
                     console.log("foreground online")
                     console.log(position.coords)
                    

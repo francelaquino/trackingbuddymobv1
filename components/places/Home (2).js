@@ -16,7 +16,6 @@ import { connect } from 'react-redux';
 import Moment from 'moment';
 import { displayHomeMember, displayMember, addMember } from '../../redux/actions/memberActions';
 import { saveLocationOnline, pushLocationOnline, saveLocationOffline, saveLocation } from '../../redux/actions/locationActions';
-import firebase from 'react-native-firebase';
 //import type { Notification } from 'react-native-firebase';
 import axios from 'axios';
 //var PushNotification = require('react-native-push-notification');
@@ -153,8 +152,6 @@ var trackPositionSchedule = {
     //period: 90000,
     period: 15000,
     exact: true,
-    allowWhileIdle: true,
-    requiresCharging: true,
     allowExecutionInForeground: true
 }
 
@@ -260,8 +257,8 @@ class HomePlaces extends Component {
             });
         }
 
-        BackgroundJob.schedule(trackPositionSchedule);
-        BackgroundJob.schedule(refreshTokenSchedule);
+        //BackgroundJob.schedule(trackPositionSchedule);
+        //BackgroundJob.schedule(refreshTokenSchedule);
 
         
        
@@ -318,7 +315,7 @@ class HomePlaces extends Component {
 
     componentWillMount() {
         BackgroundJob.cancelAll(); 
-        this.initialize();
+        //this.initialize();
 
     }
 
@@ -520,24 +517,7 @@ class HomePlaces extends Component {
                         <View style={styles.mainContainer}>
 
                             <View style={styles.mapContainer}>
-                                    <Image  style={styles.marker}
-                                        source={require('../../images/marker.png')} />
-                                    <MapView ref={map => { this.map = map }}
-                                    provider={PROVIDER_GOOGLE}
-                                    customMapStyle={settings.retro}
-                                    mapType={this.state.mapMode}
-                                    showsUserLocation={true}
-                                    showsMyLocationButton={false}
-                                    followsUserLocation={true}
-                                    loadingEnabled={true}
-                                zoomEnabled={true}
-                                    style={styles.map}
-                            >
-                                   
-                                    {markers}
-
-                                </MapView>
-                                
+                                    
                             </View>
 
 
@@ -727,6 +707,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
     members: state.fetchMember.home_members,
     address: state.fetchLocation.address,
+    //isLoading:state.fetchMember.isLoading,
     isConnected:state.fetchConnection.isConnected,
     
   })

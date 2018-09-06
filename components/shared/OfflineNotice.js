@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { View, Text, NetInfo, Dimensions, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
-import { setConnection  } from '../../actions/connectionActions' ;
+import { setConnection  } from '../../redux/actions/connectionActions' ;
 const { width,height } = Dimensions.get('window');
 
 

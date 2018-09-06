@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import {  BackHandler, AsyncStorage, NetInfo, Platform,  StyleSheet,  Text,  View, ScrollView,TextInput, TouchableOpacity, Image,ToastAndroid, NavigationActions  } from 'react-native';
 import { Root, Container, Header, Body, Title, Item, Input, Label, Button, Icon } from 'native-base';
 import firebase from 'react-native-firebase';
-import Geocoder from 'react-native-geocoder';
 import { connect } from 'react-redux';
 import { saveLocationOffline, saveLocationOnline  } from '../../redux/actions/locationActions' ;
 import { displayHomeMember } from '../../redux/actions/memberActions' ;
